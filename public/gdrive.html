@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Drive Folder Links</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .file-count {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #555;
+    }
+    #search {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+    }
+    #folder-input {
+      width: 300px;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    #add-folder-btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .folder-info {
+      font-size: 16px;
+      margin-bottom: 20px;
+      color: #555;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+    }
+    .copy-icon, .status-icon, .copy-name-icon {
+      cursor: pointer;
+      margin-right: 10px;
+      font-size: 18px;
+    }
+    .copy-icon:hover, .status-icon:hover, .copy-name-icon:hover {
+      opacity: 0.7;
+    }
+    .status-icon.uploaded {
+      color: green;
+    }
+    .status-icon.pending {
+      color: orange;
+    }
+  </style>
+  <script>
+    const API_KEY = 'AIzaSyBnaxoka-2PFJuTm3Lv3VxhMuAT1LLLEyg'; // Replace with your Google API key
+    const STATUS_API_URL = 'data.json'; // URL to the JSON file on the server
+    const UPDATE_STATUS_URL = 'update-status.php'; // URL to the PHP script
+
+    let statusData = {}; // Global variable to store status data
+    let folderIds = []; // Global variable to store folder IDs
+
+    // Fetch status data and folder IDs from the server
+    async function fetchData() {
+      try {
+        const response = await fetch(STATUS_API_URL);
+        const data = await response.json();
+        statusData = data.statuses || {};
+        folderIds = data.folders || [];
+        updateFolderInfo();
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+
+    // Save data (statuses and folder IDs) to the server
+    async function saveData() {
+      try {
+        const response = await fetch(UPDATE_STATUS_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            folders: folderIds,
+            statuses: statusData,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save data');
+        }
+
+        const result = await response.json();
+        console.log('Data saved:', result);
+      } catch (error) {
+        console.error('Error saving data:', error);
+      }
+    }
+
+    // Add a new folder ID
+    async function addFolder() {
+      const folderId = document.getElementById('folder-input').value.trim();
+      if (folderId && !folderIds.includes(folderId)) {
+        folderIds.push(folderId);
+        await saveData();
+        updateFolderInfo();
+        displayFiles();
+      }
+      document.getElementById('folder-input').value = ''; // Clear the input
+    }
+
+    // Update the folder info display
+    function updateFolderInfo() {
+      const folderInfo = document.getElementById('folder-info');
+      folderInfo.textContent = `Showing data from ${folderIds.length} folder(s): ${folderIds.join(', ')}`;
+    }
+
+    // Fetch all files from all folders
+    async function fetchAllFiles() {
+      let allFiles = [];
+
+      for (const folderId of folderIds) {
+        let pageToken = null;
+
+        do {
+          const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${API_KEY}&fields=files(id,name,webViewLink),nextPageToken&pageSize=100&pageToken=${pageToken || ''}`;
+
+          try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.files && data.files.length > 0) {
+              allFiles = allFiles.concat(data.files); // Add files to the list
+            }
+
+            pageToken = data.nextPageToken; // Update the page token for the next request
+          } catch (error) {
+            console.error('Error fetching files:', error);
+            document.getElementById('file-list').innerHTML = '<li>Error loading files. Check the console for details.</li>';
+            document.getElementById('total-files').textContent = 'Total Files: Error';
+            return;
+          }
+        } while (pageToken); // Continue until there are no more pages
+      }
+
+      return allFiles;
+    }
+
+    // Display files on the page
+    async function displayFiles() {
+      const allFiles = await fetchAllFiles();
+
+      if (allFiles && allFiles.length > 0) {
+        const fileList = document.getElementById('file-list');
+        fileList.innerHTML = ''; // Clear any previous content
+
+        // Display total file count
+        const totalFiles = allFiles.length;
+        document.getElementById('total-files').textContent = `Total Files: ${totalFiles}`;
+
+        // Loop through files and display them
+        allFiles.forEach(file => {
+          const listItem = document.createElement('li');
+
+          // Create copy URL icon
+          const copyIcon = document.createElement('span');
+          copyIcon.className = 'copy-icon';
+          copyIcon.textContent = '📋';
+          copyIcon.title = 'Copy URL';
+          copyIcon.onclick = () => copyToClipboard(file.webViewLink);
+
+          // Create copy file name icon
+          const copyNameIcon = document.createElement('span');
+          copyNameIcon.className = 'copy-name-icon';
+          copyNameIcon.textContent = '📄';
+          copyNameIcon.title = 'Copy first two words of file name';
+          copyNameIcon.onclick = () => copyFirstTwoWords(file.name);
+
+          // Create status icon (uploaded/pending)
+          const statusIcon = document.createElement('span');
+          const fileStatus = statusData[file.id] || 'pending';
+          statusIcon.className = 'status-icon ' + fileStatus;
+          statusIcon.textContent = fileStatus === 'uploaded' ? '✅' : '⏳';
+          statusIcon.title = fileStatus === 'uploaded' ? 'Mark as Pending' : 'Mark as Uploaded';
+          statusIcon.onclick = () => toggleStatus(file.id, statusIcon);
+
+          // Append icons and file name to the list item
+          listItem.appendChild(copyIcon);
+          listItem.appendChild(copyNameIcon);
+          listItem.appendChild(statusIcon);
+          listItem.appendChild(document.createTextNode(file.name));
+          fileList.appendChild(listItem);
+        });
+      } else {
+        document.getElementById('file-list').innerHTML = '<li>No files found in the folders.</li>';
+        document.getElementById('total-files').textContent = 'Total Files: 0';
+      }
+    }
+
+    // Function to copy URL to clipboard
+    function copyToClipboard(url) {
+      navigator.clipboard.writeText(url)
+        .then(() => {
+          alert('URL copied to clipboard: ' + url);
+        })
+        .catch((error) => {
+          console.error('Failed to copy URL:', error);
+          alert('Failed to copy URL. Please try again.');
+        });
+    }
+
+    // Function to copy the first two words of the file name
+    function copyFirstTwoWords(fileName) {
+      const firstTwoWords = fileName.split(' ').slice(0, 2).join(' ');
+      navigator.clipboard.writeText(firstTwoWords)
+        .then(() => {
+          alert('Copied to clipboard: ' + firstTwoWords);
+        })
+        .catch((error) => {
+          console.error('Failed to copy file name:', error);
+          alert('Failed to copy file name. Please try again.');
+        });
+    }
+
+    // Function to toggle file status (uploaded/pending)
+    async function toggleStatus(fileId, statusIcon) {
+      const currentStatus = statusData[fileId] || 'pending';
+      const newStatus = currentStatus === 'uploaded' ? 'pending' : 'uploaded';
+
+      // Update status in memory
+      statusData[fileId] = newStatus;
+
+      // Save updated status to the server
+      await saveData();
+
+      // Update icon and tooltip
+      statusIcon.className = 'status-icon ' + newStatus;
+      statusIcon.textContent = newStatus === 'uploaded' ? '✅' : '⏳';
+      statusIcon.title = newStatus === 'uploaded' ? 'Mark as Pending' : 'Mark as Uploaded';
+    }
+
+    // Function to filter files based on search input
+    function filterFiles() {
+      const searchQuery = document.getElementById('search').value.toLowerCase();
+      const fileItems = document.querySelectorAll('#file-list li');
+
+      fileItems.forEach(item => {
+        const fileName = item.textContent.toLowerCase();
+        if (fileName.includes(searchQuery)) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    // Fetch and display files when the page loads
+    window.onload = async () => {
+      await fetchData(); // Fetch data from the server
+      displayFiles();
+      document.getElementById('search').focus(); // Focus on the search input
+    };
+  </script>
+</head>
+<body>
+  <h1>Files in Google Drive Folder</h1>
+  <input type="text" id="folder-input" placeholder="Enter Folder ID">
+  <button id="add-folder-btn" onclick="addFolder()">Add Folder</button>
+  <div id="folder-info" class="folder-info"></div>
+  <input type="text" id="search" placeholder="Search files..." oninput="filterFiles()">
+  <div id="total-files" class="file-count">Loading file count...</div>
+  <ul id="file-list">
+    <li>Loading files...</li>
+  </ul>
+</body>
+</html>

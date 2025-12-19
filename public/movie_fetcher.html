@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMDb Movie ID Fetcher</title>
+    <style>
+        :root {
+            --primary-color: #0d253f;
+            --secondary-color: #01b4e4;
+            --light-grey: #f0f2f5;
+            --dark-text: #333;
+            --light-text: #fff;
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--light-grey);
+            color: var(--dark-text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--light-text);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+            align-items: end;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        select, input[type="number"] {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button#fetch-button {
+            grid-column: 1 / -1; /* Span across both columns */
+            padding: 15px;
+            background-color: var(--secondary-color);
+            color: var(--light-text);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        button#fetch-button:hover {
+            background-color: #01a1cd;
+        }
+        
+        button#fetch-button:active {
+            transform: scale(0.98);
+        }
+
+        #results-container {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .copyable-id {
+            font-family: "Courier New", Courier, monospace;
+            font-weight: bold;
+            color: var(--secondary-color);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .copyable-id:hover {
+            background-color: #e0f7ff;
+        }
+        
+        #copy-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        #copy-notification.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>TMDb Movie ID Fetcher</h1>
+        <div class="controls">
+            <div class="control-group">
+                <label for="category-select">Select Category</label>
+                <select id="category-select">
+                    <option value="en">Hollywood (English)</option>
+                    <option value="hi">Bollywood (Hindi)</option>
+                    <option value="ko">Korean Cinema (Korean)</option>
+                    <option value="ja">Japanese Cinema (Japanese)</option>
+                    <option value="fr">French Cinema (French)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="number-input">Number of IDs</label>
+                <input type="number" id="number-input" value="20" min="1" max="100">
+            </div>
+            <button id="fetch-button">Fetch Movies</button>
+        </div>
+        <div id="results-container">
+             <p style="text-align:center; color: #888;">Results will be displayed here.</p>
+        </div>
+    </div>
+    
+    <div id="copy-notification">Copied to clipboard!</div>
+
+    <script>
+        // --- Your API Key ---
+        // WARNING: This is not secure for public websites.
+        // This is a V4 Auth Token, so we will use it in the Authorization header.
+        const apiToken = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkMzNjYmNkOWY5YTk2MDMyN2NlYWY2MGI4YjU1MGFkYiIsIm5iZiI6MTcxOTM1ODcwNi41MDg5OTk4LCJzdWIiOiI2NjdiNTRmMmQ5ODVjMGExZjA5M2VkMGQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.-ZBH06Vdgfadz1_1sedaX1AvxKVduksgClmc307TxvA';
+
+        // --- DOM Elements ---
+        const fetchButton = document.getElementById('fetch-button');
+        const categorySelect = document.getElementById('category-select');
+        const numberInput = document.getElementById('number-input');
+        const resultsContainer = document.getElementById('results-container');
+        const copyNotification = document.getElementById('copy-notification');
+
+        // --- Event Listeners ---
+        fetchButton.addEventListener('click', fetchMovies);
+        
+        // Use event delegation for copy functionality
+        resultsContainer.addEventListener('click', (event) => {
+            if (event.target && event.target.classList.contains('copyable-id')) {
+                copyToClipboard(event.target.textContent);
+            }
+        });
+
+        // --- Core Functions ---
+        async function fetchMovies() {
+            const language = categorySelect.value;
+            const count = parseInt(numberInput.value, 10);
+            
+            if (count < 1) {
+                resultsContainer.innerHTML = '<p>Please enter a number greater than 0.</p>';
+                return;
+            }
+
+            resultsContainer.innerHTML = '<p style="text-align:center; color: #888;">Fetching popular movies...</p>';
+            fetchButton.disabled = true;
+
+            const movies = [];
+            let currentPage = 1;
+            const totalPagesToFetch = Math.ceil(count / 20); // API returns 20 per page
+
+            try {
+                while (movies.length < count && currentPage <= totalPagesToFetch) {
+                    const url = `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=${currentPage}&sort_by=popularity.desc&with_original_language=${language}`;
+                    
+                    const options = {
+                        method: 'GET',
+                        headers: {
+                            accept: 'application/json',
+                            Authorization: `Bearer ${apiToken}`
+                        }
+                    };
+
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        throw new Error(`API Error: ${response.statusText}`);
+                    }
+                    const data = await response.json();
+                    movies.push(...data.results);
+                    currentPage++;
+                }
+
+                renderResults(movies.slice(0, count));
+
+            } catch (error) {
+                resultsContainer.innerHTML = `<p style="color: red; text-align:center;">Failed to fetch movies. Please check your API key and network connection. Error: ${error.message}</p>`;
+                console.error(error);
+            } finally {
+                fetchButton.disabled = false;
+            }
+        }
+
+        function renderResults(movies) {
+            if (movies.length === 0) {
+                resultsContainer.innerHTML = '<p>No movies found for this category.</p>';
+                return;
+            }
+
+            const tableHeader = `
+                <thead>
+                    <tr>
+                        <th>Movie Title</th>
+                        <th>TMDb ID (Click to Copy)</th>
+                    </tr>
+                </thead>`;
+
+            const tableBody = movies.map(movie => `
+                <tr>
+                    <td>${movie.title}</td>
+                    <td><span class="copyable-id" title="Click to copy">${movie.id}</span></td>
+                </tr>`
+            ).join('');
+
+            resultsContainer.innerHTML = `<table>${tableHeader}<tbody>${tableBody}</tbody></table>`;
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification();
+            }).catch(err => {
+                console.error('Failed to copy ID: ', err);
+                alert('Could not copy text.');
+            });
+        }
+        
+        function showNotification() {
+            copyNotification.classList.add('show');
+            setTimeout(() => {
+                copyNotification.classList.remove('show');
+            }, 2000); // Notification is visible for 2 seconds
+        }
+
+    </script>
+</body>
+</html>
