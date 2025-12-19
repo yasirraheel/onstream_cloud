@@ -639,4 +639,5 @@ return [
     
     'store_id' => 'Store ID',
     'store_password' => 'Store Password',
+    'pending_order_exists' => 'A pending order already exists. Please complete it before placing a new one.',
  ];
