@@ -46,6 +46,15 @@ class PaystackController extends Controller
     public function PayEasyPaisa(Request $request)
 {
 
+    // Check for existing pending orders for the current user
+    $existing_pending_order = Transactions::where('user_id', Auth::user()->id)
+        ->where('payment_status', '!=', 'COMPLETED')
+        ->first();
+
+    if ($existing_pending_order) {
+        return redirect('dashboard')->with('error_flash_message', trans('words.pending_order_exists'));
+    }
+
     $plan_id = $request->plan_id;
     $plan_info = SubscriptionPlan::where('id', $plan_id)->where('status', '1')->first();
 
