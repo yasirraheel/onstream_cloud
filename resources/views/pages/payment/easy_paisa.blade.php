@@ -69,6 +69,7 @@
                                 <input type="hidden" name="plan_price" value="{{ $plan_info->plan_price }}">
                                 <input type="hidden" name="plan_id" value="{{ $plan_info->id }}">
                                 <input type="hidden" name="plan_device_limit" value="{{ $plan_info->plan_device_limit }}">
+                                <input type="hidden" name="payment_id" value="{{ $payment_id }}">
 
                                 <!-- Payment Instructions -->
                                 {{-- <h4>{{ $paystack_secret_key }}</h4> --}}

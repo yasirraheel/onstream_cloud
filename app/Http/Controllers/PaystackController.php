@@ -95,7 +95,7 @@ class PaystackController extends Controller
         // If plan is invalid, mark transaction as failed
         $payment_trans->payment_status = 'FAILED';
         $payment_trans->save();
-        return redirect()->back()->with('error_flash_message', 'Invalid plan.');
+        return redirect()->back()->with('error_flash_message', trans('words.invalid_plan'));
     }
 
     $plan_name = $plan_info->plan_name;
@@ -121,7 +121,7 @@ class PaystackController extends Controller
 
     // Update user plan information
     $user->plan_id = $plan_id;
-    $user->plan_payment_status = true; // Assuming successful payment
+    $user->plan_payment_status = false; // Initial status before admin approval
     $user->start_date = strtotime(date('m/d/Y'));
     $user->exp_date = strtotime("+$plan_days days");
     $user->plan_amount = $final_plan_amount;
@@ -134,8 +134,9 @@ class PaystackController extends Controller
     }
 
     // Update existing payment transaction
-    $payment_trans->payment_status = 'COMPLETED'; // Mark as completed
+    $payment_trans->payment_status = 'PENDING'; // Keep as PENDING for manual approval
     $payment_trans->payment_amount = $final_plan_amount;
+    $payment_trans->payment_id = $request->payment_id; // Store the user-provided transaction ID
     $payment_trans->coupon_code = $coupon_code;
     $payment_trans->coupon_percentage = $coupon_percentage;
     $payment_trans->save();
