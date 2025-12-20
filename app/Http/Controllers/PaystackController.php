@@ -30,7 +30,7 @@ class PaystackController extends Controller
     {
         // Check for existing pending orders for the current user
         $existing_pending_order = Transactions::where('user_id', Auth::user()->id)
-            ->where('payment_status', 0) // 0 = PENDING
+            ->where('payment_status', 0) // Only block if status is pending
             ->first();
 
         if ($existing_pending_order) {
@@ -201,21 +201,22 @@ public function updateTransactionStatus(Request $request, $id)
     else
     {
         $user = User::findOrFail($user_id);
-        if($request->payment_status == '1')
+        if($request->payment_status == '1') // Paid
         {
             $user->plan_payment_status = true;
             $user->save();
         }
-        else
+        elseif($request->payment_status == '3') // Rejected
         {
             $user->plan_payment_status = false;
             $user->save();
-
         }
-
+        else // Pending or Failed
+        {
+            $user->plan_payment_status = false;
+            $user->save();
+        }
     }
-
-
     return redirect()->back()->with('flash_message', 'Payment status updated successfully.');
 }
 

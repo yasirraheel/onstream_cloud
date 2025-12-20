@@ -168,16 +168,20 @@
                                                         <div class="dropdown">
                                                             <select
                                                                 name="payment_status"
-                                                                class="form-select {{ $transaction_data->payment_status == 1 ? 'bg-success text-white' : 'bg-danger text-white' }}"
+                                                                class="form-select {{ $transaction_data->payment_status == 1 ? 'bg-success text-white' : ($transaction_data->payment_status == 3 ? 'bg-warning text-dark' : 'bg-danger text-white') }}"
                                                                 onchange="this.form.submit()"
                                                                 style="width: auto; padding: 5px; font-weight: bold; text-align: center; border: none;">
                                                                 <option value="1" class="bg-success text-white"
                                                                     {{ $transaction_data->payment_status == 1 ? 'selected' : '' }}>
-                                                                    Paid
+                                                                    {{ trans('words.paid') }}
                                                                 </option>
                                                                 <option value="0" class="bg-danger text-white"
                                                                     {{ $transaction_data->payment_status == 0 ? 'selected' : '' }}>
-                                                                    Pending
+                                                                    {{ trans('words.pending') }}
+                                                                </option>
+                                                                <option value="3" class="bg-warning text-dark"
+                                                                    {{ $transaction_data->payment_status == 3 ? 'selected' : '' }}>
+                                                                    {{ trans('words.rejected') }}
                                                                 </option>
                                                             </select>
                                                         </div>
