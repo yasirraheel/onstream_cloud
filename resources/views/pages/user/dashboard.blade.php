@@ -59,24 +59,27 @@
               <h5 class="color-up">{{trans('words.my_subscription')}}</h5>
 
               @if($user->plan_id!=0)
-
-                <span class="premuim-memplan-bold-text"><strong>{{trans('words.current_plan')}}:</strong><span>{{\App\SubscriptionPlan::getSubscriptionPlanInfo($user->plan_id,'plan_name')}}</span></span>
-
-                @if ($user->plan_payment_status==1)
-                <span class="premuim-memplan-bold-text"><strong>{{trans('Payment Status')}}:</strong><span class="alert alert-danger">Approved</span></span>
+                @php
+                  // Get last transaction for user
+                  $lastTrans = \App\Transactions::where('user_id', $user->id)->orderBy('id', 'desc')->first();
+                @endphp
+                @if($lastTrans && $lastTrans->payment_status == 3)
+                  <span class="premuim-memplan-bold-text"><strong>{{trans('Payment Status')}}:</strong><span class="alert alert-warning">{{ trans('words.rejected') }}</span></span>
+                  <div class="mt-3"><a href="{{ URL::to('membership_plan') }}" class="vfx-item-btn-danger text-uppercase">{{trans('words.select_plan')}}</a></div>
                 @else
-                <span class="premuim-memplan-bold-text"><strong>{{trans('Payment Status')}}:</strong><span class="alert alert-danger">Pending</span></span>
+                  <span class="premuim-memplan-bold-text"><strong>{{trans('words.current_plan')}}:</strong><span>{{\App\SubscriptionPlan::getSubscriptionPlanInfo($user->plan_id,'plan_name')}}</span></span>
+                  @if ($user->plan_payment_status==1)
+                    <span class="premuim-memplan-bold-text"><strong>{{trans('Payment Status')}}:</strong><span class="alert alert-success">{{ trans('words.paid') }}</span></span>
+                  @else
+                    <span class="premuim-memplan-bold-text"><strong>{{trans('Payment Status')}}:</strong><span class="alert alert-danger">{{ trans('words.pending') }}</span></span>
+                  @endif
+                  @if($user->exp_date)
+                    <span class="premuim-memplan-bold-text"><strong>{{trans('words.subscription_expires_on')}}:</strong><span>{{date('F,  d, Y',$user->exp_date)}}</span></span>
+                  @endif
+                  <div class="mt-3"><a href="{{ URL::to('membership_plan') }}" class="vfx-item-btn-danger text-uppercase">{{trans('words.upgrade_plan')}}</a></div>
                 @endif
-                @if($user->exp_date)
-                <span class="premuim-memplan-bold-text"><strong>{{trans('words.subscription_expires_on')}}:</strong><span>{{date('F,  d, Y',$user->exp_date)}}</span></span>
-                @endif
-
-                <div class="mt-3"><a href="{{ URL::to('membership_plan') }}" class="vfx-item-btn-danger text-uppercase">{{trans('words.upgrade_plan')}}</a></div>
-
               @else
-
                 <div class="mt-3"><a href="{{ URL::to('membership_plan') }}" class="vfx-item-btn-danger text-uppercase">{{trans('words.select_plan')}}</a></div>
-
               @endif
 
               </div>
