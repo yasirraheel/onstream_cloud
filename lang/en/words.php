@@ -539,6 +539,8 @@ return [
     'do_not_refresh' => 'Please do not refresh this page...',
 
     'paid' => 'Paid',
+    'pending' => 'Pending',
+    'rejected' => 'Rejected',
     'free' => 'Free',
     'select' => 'Select',
     'start_date' => 'Start Date',
