@@ -30,7 +30,7 @@ class PaystackController extends Controller
     {
         // Check for existing pending orders for the current user
         $existing_pending_order = Transactions::where('user_id', Auth::user()->id)
-            ->where('payment_status', '!=', 'COMPLETED')
+            ->where('payment_status', 0) // 0 = PENDING
             ->first();
 
         if ($existing_pending_order) {
@@ -62,7 +62,7 @@ class PaystackController extends Controller
         $payment_trans->gateway = 'Paystack';
         $payment_trans->payment_amount = $plan_price;
         $payment_trans->payment_id = $payment_id;
-        $payment_trans->payment_status = 'PENDING';
+        $payment_trans->payment_status = 0; // PENDING
         $payment_trans->date = strtotime(date('m/d/Y H:i:s'));
         $payment_trans->save();
 
@@ -86,14 +86,14 @@ class PaystackController extends Controller
     // Retrieve the pending transaction
     $payment_trans = Transactions::where('payment_id', $payment_id)
         ->where('user_id', Auth::user()->id)
-        ->where('payment_status', 'PENDING')
+        ->where('payment_status', 0) // PENDING
         ->firstOrFail();
 
     $plan_info = SubscriptionPlan::where('id', $plan_id)->where('status', '1')->first();
 
     if (!$plan_info) {
         // If plan is invalid, mark transaction as failed
-        $payment_trans->payment_status = 'FAILED';
+        $payment_trans->payment_status = 2; // FAILED
         $payment_trans->save();
         return redirect()->back()->with('error_flash_message', trans('words.invalid_plan'));
     }
@@ -134,7 +134,7 @@ class PaystackController extends Controller
     }
 
     // Update existing payment transaction
-    $payment_trans->payment_status = 'PENDING'; // Keep as PENDING for manual approval
+    $payment_trans->payment_status = 0; // Keep as PENDING (manual approval)
     $payment_trans->payment_amount = $final_plan_amount;
     $payment_trans->payment_id = $request->payment_id; // Store the user-provided transaction ID
     $payment_trans->coupon_code = $coupon_code;
