@@ -645,4 +645,38 @@ class IndexController extends Controller
         return response()->json(['success' => false], 400);
     }
 
+    public function offers()
+    {
+        if(!$this->alreadyInstalled())
+        {
+            return redirect('public/install');
+        }
+
+        $page_title = "Exclusive Deals & Offers";
+
+        // Fetch all products from external API
+        $ads_products = [];
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(30)->get('https://topdealsplus.com/api/listings');
+            if ($response->successful()) {
+                $api_data = $response->json();
+                $products_data = $api_data['data'] ?? [];
+
+                // Shuffle for random order
+                shuffle($products_data);
+
+                // Add click count to each product
+                foreach ($products_data as &$product) {
+                    $product['click_count'] = AdClick::getClickCount($product['id']);
+                }
+
+                $ads_products = $products_data;
+            }
+        } catch (\Exception $e) {
+            $ads_products = [];
+        }
+
+        return view('pages.offers', compact('page_title', 'ads_products'));
+    }
+
 }

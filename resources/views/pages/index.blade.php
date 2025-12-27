@@ -332,12 +332,15 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="vfx-item-section">
-                            <h3>
+                        <div class="vfx-item-section" style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="margin: 0;">
                                 <i class="fa fa-bullhorn" style="margin-right: 8px; color: #ff8508; animation: pulse 2s infinite;"></i>
                                 Exclusive Deals - Limited Time Offers!
                                 <span style="font-size: 12px; color: #999; font-weight: 400; margin-left: 10px;">Sponsored</span>
                             </h3>
+                            <a href="{{ URL::to('offers') }}" style="background: linear-gradient(135deg, #ff8508, #fd0575); color: #fff; padding: 10px 20px; border-radius: 25px; font-size: 13px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(255, 133, 8, 0.4); transition: all 0.3s ease;">
+                                <i class="fa fa-th"></i> View All Offers
+                            </a>
                         </div>
                         <div class="video-carousel owl-carousel">
                             @foreach ($ads_products as $product)
@@ -780,6 +783,395 @@
                 </div>
             </div>
         </div>
+    @endif
+
+    <!-- Offer Popup Modal -->
+    @if (count($ads_products) > 0)
+        <style>
+            .offer-popup-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.85);
+                z-index: 99999;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                animation: fadeIn 0.3s ease;
+            }
+
+            .offer-popup-overlay.show {
+                display: flex;
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            @keyframes slideUp {
+                from {
+                    transform: translateY(50px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            .offer-popup {
+                background: linear-gradient(135deg, #1e272e 0%, #2c3e50 100%);
+                border: 2px solid #ff8508;
+                border-radius: 20px;
+                max-width: 550px;
+                width: 90%;
+                padding: 30px;
+                position: relative;
+                box-shadow: 0 20px 60px rgba(255, 133, 8, 0.4);
+                animation: slideUp 0.4s ease;
+            }
+
+            .popup-close {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                background: rgba(231, 76, 60, 0.2);
+                border: 1px solid #e74c3c;
+                color: #e74c3c;
+                width: 35px;
+                height: 35px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-size: 18px;
+            }
+
+            .popup-close:hover {
+                background: #e74c3c;
+                color: #fff;
+                transform: rotate(90deg);
+            }
+
+            .popup-header {
+                text-align: center;
+                margin-bottom: 25px;
+            }
+
+            .popup-header h2 {
+                font-size: 24px;
+                font-weight: 900;
+                color: #fff;
+                margin: 0 0 10px 0;
+                text-transform: uppercase;
+            }
+
+            .popup-header p {
+                font-size: 14px;
+                color: #bdc3c7;
+                margin: 0;
+            }
+
+            .popup-deal {
+                background: rgba(0, 0, 0, 0.3);
+                border: 1px solid #34495e;
+                border-radius: 15px;
+                padding: 20px;
+                display: flex;
+                gap: 18px;
+                margin-bottom: 25px;
+            }
+
+            .popup-deal-icon {
+                width: 100px;
+                height: 120px;
+                border-radius: 10px;
+                object-fit: cover;
+                border: 2px solid #445566;
+                flex-shrink: 0;
+            }
+
+            .popup-deal-content {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .popup-deal-title {
+                font-size: 15px;
+                font-weight: 700;
+                color: #fff;
+                line-height: 1.4;
+                margin: 0 0 10px 0;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .popup-deal-price {
+                font-size: 26px;
+                font-weight: 900;
+                color: #1abc9c;
+                margin-bottom: 10px;
+                text-shadow: 0 2px 10px rgba(26, 188, 156, 0.4);
+            }
+
+            .popup-deal-badges {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin-bottom: 10px;
+            }
+
+            .popup-badge {
+                background: rgba(52, 152, 219, 0.2);
+                border: 1px solid rgba(52, 152, 219, 0.4);
+                color: #5dade2;
+                font-size: 10px;
+                padding: 3px 8px;
+                border-radius: 5px;
+                font-weight: 600;
+            }
+
+            .popup-badge.green {
+                background: rgba(46, 204, 113, 0.2);
+                border-color: rgba(46, 204, 113, 0.4);
+                color: #58d68d;
+            }
+
+            .popup-deal-rating {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                background: rgba(52, 152, 219, 0.15);
+                padding: 4px 10px;
+                border-radius: 15px;
+                font-size: 12px;
+                font-weight: 700;
+                color: #3498db;
+            }
+
+            .popup-actions {
+                display: flex;
+                gap: 12px;
+                margin-top: 20px;
+            }
+
+            .popup-btn {
+                flex: 1;
+                padding: 14px 20px;
+                border-radius: 30px;
+                font-size: 14px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-align: center;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .popup-btn-primary {
+                background: linear-gradient(135deg, #ff8508, #fd0575);
+                color: #fff;
+                border: none;
+                box-shadow: 0 5px 20px rgba(255, 133, 8, 0.4);
+            }
+
+            .popup-btn-primary:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(255, 133, 8, 0.6);
+                color: #fff;
+                text-decoration: none;
+            }
+
+            .popup-btn-secondary {
+                background: transparent;
+                color: #bdc3c7;
+                border: 2px solid #34495e;
+            }
+
+            .popup-btn-secondary:hover {
+                border-color: #3498db;
+                color: #3498db;
+                text-decoration: none;
+            }
+
+            .popup-view-all {
+                display: block;
+                text-align: center;
+                color: #3498db;
+                font-size: 13px;
+                font-weight: 600;
+                margin-top: 15px;
+                text-decoration: none;
+                transition: all 0.3s ease;
+            }
+
+            .popup-view-all:hover {
+                color: #5dade2;
+                text-decoration: none;
+            }
+
+            @media (max-width: 768px) {
+                .offer-popup {
+                    padding: 20px;
+                }
+
+                .popup-deal {
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                }
+
+                .popup-deal-icon {
+                    width: 150px;
+                    height: 180px;
+                }
+
+                .popup-actions {
+                    flex-direction: column;
+                }
+            }
+        </style>
+
+        <div class="offer-popup-overlay" id="offerPopup">
+            <div class="offer-popup">
+                <div class="popup-close" onclick="closeOfferPopup()">
+                    <i class="fa fa-times"></i>
+                </div>
+
+                <div class="popup-header">
+                    <h2>
+                        <i class="fa fa-fire" style="color: #e74c3c; animation: pulse 2s infinite;"></i>
+                        Exclusive Deal!
+                    </h2>
+                    <p>Limited time offer - Don't miss out!</p>
+                </div>
+
+                <div class="popup-deal" id="popupDealContent">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+
+                <div class="popup-actions">
+                    <button class="popup-btn popup-btn-secondary" onclick="closeOfferPopup()">
+                        <i class="fa fa-clock-o"></i> Later
+                    </button>
+                    <a href="#" class="popup-btn popup-btn-primary" id="popupGetOfferBtn">
+                        <i class="fa fa-shopping-cart"></i> Get Offer
+                    </a>
+                </div>
+
+                <a href="{{ URL::to('offers') }}" class="popup-view-all">
+                    <i class="fa fa-th"></i> View All Offers
+                </a>
+            </div>
+        </div>
+
+        <script>
+            // Offers data from server
+            const offersData = @json($ads_products);
+
+            function showOfferPopup() {
+                if (offersData.length === 0) return;
+
+                // Get a random offer
+                const randomOffer = offersData[Math.floor(Math.random() * offersData.length)];
+
+                // Build popup content
+                let badges = '';
+                if (randomOffer.badges?.duration) {
+                    badges += `<span class="popup-badge"><i class="fa fa-clock-o"></i> ${randomOffer.badges.duration}</span>`;
+                }
+                if (randomOffer.badges?.delivery_speed) {
+                    badges += `<span class="popup-badge green"><i class="fa fa-truck"></i> ${randomOffer.badges.delivery_speed}</span>`;
+                }
+
+                let hotBadge = '';
+                if (randomOffer.badges?.is_trending) {
+                    hotBadge = '<span style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 5px; animation: pulse 2s infinite;"><i class="fa fa-fire"></i> HOT</span>';
+                } else if (randomOffer.badges?.is_flash) {
+                    hotBadge = '<span style="position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, #f39c12, #e67e22); color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 5px; animation: flash 1.5s infinite;"><i class="fa fa-bolt"></i> FLASH</span>';
+                }
+
+                const popupContent = `
+                    <div style="position: relative;">
+                        ${hotBadge}
+                        <img src="${randomOffer.thumbnail_url || ''}"
+                             alt="${randomOffer.title || 'Product'}"
+                             class="popup-deal-icon"
+                             onerror="this.src='{{ URL::asset('site_assets/images/video-placeholder.jpg') }}'">
+                    </div>
+                    <div class="popup-deal-content">
+                        <h3 class="popup-deal-title">${randomOffer.title || 'No Title'}</h3>
+                        <div class="popup-deal-price">
+                            ${randomOffer.currency_symbol || '$'}${parseFloat(randomOffer.final_price || 0).toFixed(2)}
+                        </div>
+                        <div class="popup-deal-badges">
+                            ${badges}
+                        </div>
+                        ${randomOffer.rating?.percentage > 0 ? `
+                        <div class="popup-deal-rating">
+                            <i class="fa fa-thumbs-up"></i>
+                            ${Math.round(randomOffer.rating.percentage)}%
+                            <span style="color: #7f8c8d; font-weight: 400;">(${randomOffer.rating.count || 0})</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                document.getElementById('popupDealContent').innerHTML = popupContent;
+                document.getElementById('popupGetOfferBtn').onclick = function() {
+                    trackAdClick(randomOffer.id, randomOffer.url || '#');
+                    closeOfferPopup();
+                };
+
+                document.getElementById('offerPopup').classList.add('show');
+            }
+
+            function closeOfferPopup() {
+                document.getElementById('offerPopup').classList.remove('show');
+                // Save last shown time
+                localStorage.setItem('lastOfferPopupTime', Date.now());
+            }
+
+            // Check and show popup based on time
+            function checkAndShowOfferPopup() {
+                const lastShown = localStorage.getItem('lastOfferPopupTime');
+                const currentTime = Date.now();
+                const minInterval = 20 * 60 * 1000; // 20 minutes in milliseconds
+                const maxInterval = 30 * 60 * 1000; // 30 minutes in milliseconds
+
+                // Random interval between 20-30 minutes
+                const randomInterval = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + minInterval;
+
+                if (!lastShown || (currentTime - parseInt(lastShown)) > randomInterval) {
+                    // Show popup after 5 seconds on page load (first time or after interval)
+                    setTimeout(function() {
+                        showOfferPopup();
+                    }, 5000);
+                }
+            }
+
+            // Run on page load
+            checkAndShowOfferPopup();
+
+            // Close popup when clicking overlay
+            document.getElementById('offerPopup').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeOfferPopup();
+                }
+            });
+        </script>
     @endif
 
 
