@@ -255,6 +255,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
 
 Route::get('/', 'IndexController@index');
 
+Route::post('track-ad-click', 'IndexController@trackAdClick');
+
 Route::get('collections/{slug}/{id}', 'IndexController@home_collections');
 
 Route::get('movies', 'MoviesController@movies');

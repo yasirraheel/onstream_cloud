@@ -13,6 +13,7 @@ use App\Pages;
 use App\RecentlyWatched;
 use App\LiveTV;
 use App\UsersDeviceHistory;
+use App\AdClick;
 
 use Illuminate\Http\Request;
 
@@ -94,11 +95,23 @@ class IndexController extends Controller
         $upcoming_movies = Movies::where('upcoming',1)->orderby('id','DESC')->get();
         $upcoming_series = Series::where('upcoming',1)->orderby('id','DESC')->get();
 
+        // Fetch ads from external API
+        $ads_products = [];
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(10)->get('https://topdealsplus.com/api/listings');
+            if ($response->successful()) {
+                $api_data = $response->json();
+                $ads_products = array_slice($api_data['data'] ?? [], 0, 12); // Limit to 12 products
+            }
+        } catch (\Exception $e) {
+            $ads_products = [];
+        }
+
         //dd($upcoming_movies);exit;
         $movies_list = Movies::where('status',1)->where('upcoming',0)->orderBy('id','DESC')->paginate(30);
         $home_sections = HomeSections::where('status',1)->orderby('id')->get();
 
-        return view('pages.index',compact('slider','recently_watched','upcoming_movies','upcoming_series','home_sections','movies_list'));
+        return view('pages.index',compact('slider','recently_watched','upcoming_movies','upcoming_series','home_sections','movies_list','ads_products'));
 
     }
 
@@ -613,6 +626,18 @@ class IndexController extends Controller
         {
           echo "false";
         }
+    }
+
+    public function trackAdClick(Request $request)
+    {
+        $productId = $request->input('product_id');
+
+        if ($productId) {
+            AdClick::incrementClick($productId);
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false], 400);
     }
 
 }

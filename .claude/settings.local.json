@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd Ad Management module to admin panel with TopDealsPlus API integration\n\n- Create AdManagementController to fetch products from TopDealsPlus API\n- Add responsive card grid layout displaying all product details\n- Include product info: thumbnail, price, ratings, seller, badges, category\n- Add Ad Management menu to admin sidebar\n- Handle API errors gracefully with user feedback\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push)",
+      "Bash(git commit:*)",
+      "Bash(php artisan:*)",
+      "Bash(git reset:*)"
+    ]
+  }
+}

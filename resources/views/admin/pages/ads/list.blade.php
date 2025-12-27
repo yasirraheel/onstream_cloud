@@ -235,6 +235,26 @@
             border: 1px solid #445566;
         }
 
+        .ad-click-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: rgba(52, 152, 219, 0.9);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 6px 0 0 0;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .ad-click-badge i {
+            font-size: 12px;
+        }
+
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -367,6 +387,11 @@
                                                         <i class="fa fa-clock-o"></i>
                                                         {{ $product['badges']['delivery_speed'] ?? 'N/A' }}
                                                     </div>
+                                                </div>
+
+                                                <div class="ad-click-badge">
+                                                    <i class="fa fa-mouse-pointer"></i>
+                                                    {{ number_format($product['click_count'] ?? 0) }} Clicks
                                                 </div>
                                             </div>
                                         </a>

@@ -112,6 +112,77 @@
         <!-- End Recently Watched Video Section -->
     @endif
 
+    <!-- Start Ads Section -->
+    @if (count($ads_products) > 0)
+        <div class="video-carousel-area vfx-item-ptb">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="vfx-item-section">
+                            <h3>
+                                <i class="fa fa-bullhorn" style="margin-right: 8px; color: #ff8508;"></i>
+                                Sponsored Deals
+                                <span style="font-size: 12px; color: #999; font-weight: 400; margin-left: 10px;">Advertisement</span>
+                            </h3>
+                        </div>
+                        <div class="video-carousel owl-carousel">
+                            @foreach ($ads_products as $product)
+                                <div class="single-video">
+                                    <a href="javascript:void(0);"
+                                       onclick="trackAdClick({{ $product['id'] }}, '{{ $product['url'] ?? '#' }}')"
+                                       title="{{ $product['title'] ?? 'Product' }}">
+                                        <div class="video-img">
+                                            @if ($product['badges']['is_trending'] ?? false)
+                                                <div class="vid-lab-premium" style="background: linear-gradient(135deg, #e74c3c, #c0392b); padding: 4px 8px; border-radius: 4px;">
+                                                    <span style="color: #fff; font-size: 10px; font-weight: 700;">
+                                                        <i class="fa fa-fire"></i> HOT
+                                                    </span>
+                                                </div>
+                                            @elseif ($product['badges']['is_flash'] ?? false)
+                                                <div class="vid-lab-premium" style="background: linear-gradient(135deg, #f39c12, #e67e22); padding: 4px 8px; border-radius: 4px;">
+                                                    <span style="color: #fff; font-size: 10px; font-weight: 700;">
+                                                        <i class="fa fa-bolt"></i> FLASH
+                                                    </span>
+                                                </div>
+                                            @endif
+
+                                            <span class="video-item-content">
+                                                <div style="font-size: 14px; font-weight: 700; margin-bottom: 5px;">
+                                                    {{ $product['title'] ?? 'No Title' }}
+                                                </div>
+                                                <div style="font-size: 20px; color: #1abc9c; font-weight: 700; margin-bottom: 5px;">
+                                                    {{ $product['currency_symbol'] ?? '$' }}{{ number_format($product['final_price'] ?? 0, 2) }}
+                                                </div>
+                                                @if(isset($product['rating']['percentage']) && $product['rating']['percentage'] > 0)
+                                                    <div style="font-size: 11px; color: #3498db;">
+                                                        <i class="fa fa-thumbs-up"></i> {{ number_format($product['rating']['percentage'], 1) }}%
+                                                        @if(isset($product['rating']['count']))
+                                                            ({{ $product['rating']['count'] }})
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                                @if(isset($product['seller']['username']))
+                                                    <div style="font-size: 11px; color: #bdc3c7; margin-top: 5px;">
+                                                        By {{ $product['seller']['username'] }}
+                                                    </div>
+                                                @endif
+                                            </span>
+
+                                            <img src="{{ $product['thumbnail_url'] ?? '' }}"
+                                                 alt="{{ $product['title'] ?? 'Product' }}"
+                                                 onerror="this.src='{{ URL::asset('site_assets/images/video-placeholder.jpg') }}'">
+                                        </div>
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+    <!-- End Ads Section -->
+
     @if (getcong('menu_movies'))
         <!-- Start Upcoming Section -->
         @if ($upcoming_movies->count() > 0)

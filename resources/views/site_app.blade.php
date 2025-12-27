@@ -233,6 +233,25 @@ function showSuggestions(inputString) {
     $("head link#theme").attr("href", $(this).data("path"));
 });
 
+function trackAdClick(productId, productUrl) {
+  $.ajax({
+    url: "{{ URL::to('track-ad-click') }}",
+    method: "POST",
+    data: {
+      product_id: productId,
+      _token: "{{ csrf_token() }}"
+    },
+    success: function(response) {
+      // Open product URL in new tab after tracking
+      window.open(productUrl, '_blank');
+    },
+    error: function() {
+      // Even if tracking fails, open the product URL
+      window.open(productUrl, '_blank');
+    }
+  });
+}
+
 </script>
 
 @if(Auth::check())

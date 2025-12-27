@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Auth;
 use Session;
+use App\AdClick;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -33,6 +34,11 @@ class AdManagementController extends MainAdminController
             if ($response->successful()) {
                 $api_data = $response->json();
                 $products = $api_data['data'] ?? [];
+
+                // Add click count to each product
+                foreach ($products as &$product) {
+                    $product['click_count'] = AdClick::getClickCount($product['id']);
+                }
             } else {
                 $products = [];
                 Session::flash('error_flash_message', 'Failed to fetch products from API');
