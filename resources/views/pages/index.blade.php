@@ -115,6 +115,79 @@
     <!-- Start Ads Section -->
     @if (count($ads_products) > 0)
         <style>
+            .deals-section-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .deals-section-title {
+                margin: 0;
+            }
+
+            .view-all-offers-btn {
+                background: linear-gradient(135deg, #ff8508, #fd0575);
+                color: #fff;
+                padding: 10px 20px;
+                border-radius: 25px;
+                font-size: 13px;
+                font-weight: 700;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                box-shadow: 0 4px 15px rgba(255, 133, 8, 0.4);
+                transition: all 0.3s ease;
+                white-space: nowrap;
+            }
+
+            .view-all-offers-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(255, 133, 8, 0.6);
+                text-decoration: none;
+                color: #fff;
+            }
+
+            @media (max-width: 768px) {
+                .deals-section-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 15px;
+                }
+
+                .deals-section-title {
+                    font-size: 16px !important;
+                }
+
+                .deals-section-title .sponsored-label {
+                    display: block;
+                    margin-top: 5px;
+                    margin-left: 0 !important;
+                }
+
+                .view-all-offers-btn {
+                    padding: 8px 16px;
+                    font-size: 12px;
+                    width: 100%;
+                    justify-content: center;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .deals-section-title {
+                    font-size: 14px !important;
+                }
+
+                .deals-section-title i {
+                    font-size: 14px;
+                }
+
+                .view-all-offers-btn {
+                    font-size: 11px;
+                    padding: 7px 14px;
+                }
+            }
+
             .sponsored-deal-card {
                 background: linear-gradient(135deg, #1e272e 0%, #2c3e50 100%);
                 border: 1px solid #34495e;
@@ -332,13 +405,13 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="vfx-item-section" style="display: flex; justify-content: space-between; align-items: center;">
-                            <h3 style="margin: 0;">
+                        <div class="vfx-item-section deals-section-header">
+                            <h3 class="deals-section-title">
                                 <i class="fa fa-bullhorn" style="margin-right: 8px; color: #ff8508; animation: pulse 2s infinite;"></i>
                                 Exclusive Deals - Limited Time Offers!
-                                <span style="font-size: 12px; color: #999; font-weight: 400; margin-left: 10px;">Sponsored</span>
+                                <span class="sponsored-label" style="font-size: 12px; color: #999; font-weight: 400; margin-left: 10px;">Sponsored</span>
                             </h3>
-                            <a href="{{ URL::to('offers') }}" style="background: linear-gradient(135deg, #ff8508, #fd0575); color: #fff; padding: 10px 20px; border-radius: 25px; font-size: 13px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(255, 133, 8, 0.4); transition: all 0.3s ease;">
+                            <a href="{{ URL::to('offers') }}" class="view-all-offers-btn">
                                 <i class="fa fa-th"></i> View All Offers
                             </a>
                         </div>
@@ -1024,22 +1097,70 @@
 
             @media (max-width: 768px) {
                 .offer-popup {
-                    padding: 20px;
+                    max-width: 95%;
+                    padding: 15px;
+                    margin: 10px;
+                }
+
+                .popup-header h2 {
+                    font-size: 18px;
+                }
+
+                .popup-header p {
+                    font-size: 12px;
                 }
 
                 .popup-deal {
-                    flex-direction: column;
-                    align-items: center;
-                    text-align: center;
+                    padding: 12px;
+                    gap: 12px;
                 }
 
                 .popup-deal-icon {
-                    width: 150px;
-                    height: 180px;
+                    width: 70px;
+                    height: 85px;
+                }
+
+                .popup-deal-title {
+                    font-size: 13px;
+                    -webkit-line-clamp: 2;
+                }
+
+                .popup-deal-price {
+                    font-size: 20px;
+                }
+
+                .popup-deal-badges {
+                    gap: 4px;
+                }
+
+                .popup-badge {
+                    font-size: 9px;
+                    padding: 2px 6px;
+                }
+
+                .popup-deal-rating {
+                    font-size: 10px;
+                    padding: 3px 8px;
                 }
 
                 .popup-actions {
-                    flex-direction: column;
+                    gap: 8px;
+                }
+
+                .popup-btn {
+                    padding: 10px 15px;
+                    font-size: 12px;
+                }
+
+                .popup-view-all {
+                    font-size: 11px;
+                    margin-top: 10px;
+                }
+
+                .popup-close {
+                    width: 30px;
+                    height: 30px;
+                    font-size: 14px;
                 }
             }
         </style>

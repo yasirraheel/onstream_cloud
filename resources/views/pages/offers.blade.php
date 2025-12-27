@@ -286,12 +286,152 @@
     }
 
     @media (max-width: 768px) {
-        .offers-grid {
-            grid-template-columns: 1fr;
+        .offers-page {
+            padding: 30px 0 20px 0;
+        }
+
+        .offers-header {
+            margin-bottom: 30px;
+            padding: 0 10px;
         }
 
         .offers-header h1 {
-            font-size: 28px;
+            font-size: 22px;
+            letter-spacing: 0;
+        }
+
+        .offers-header p {
+            font-size: 13px;
+        }
+
+        .offers-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+            padding: 0 10px;
+        }
+
+        .offer-card {
+            padding: 12px;
+            gap: 12px;
+            min-height: auto;
+        }
+
+        .offer-icon {
+            width: 80px;
+            height: 95px;
+        }
+
+        .offer-top {
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .offer-title {
+            font-size: 13px;
+        }
+
+        .offer-hot-badge {
+            font-size: 9px;
+            padding: 3px 6px;
+        }
+
+        .offer-price-row {
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .offer-price {
+            font-size: 22px;
+        }
+
+        .offer-discount {
+            font-size: 10px;
+            padding: 3px 6px;
+        }
+
+        .offer-info-badges {
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .offer-badge {
+            font-size: 9px;
+            padding: 3px 7px;
+        }
+
+        .offer-bottom {
+            padding-top: 8px;
+        }
+
+        .offer-seller {
+            gap: 6px;
+            font-size: 11px;
+        }
+
+        .offer-seller img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .offer-rating {
+            gap: 4px;
+            padding: 4px 8px;
+            font-size: 11px;
+        }
+
+        .offer-cta {
+            bottom: 10px;
+            right: 10px;
+            padding: 8px 14px;
+            font-size: 11px;
+        }
+
+        .offer-click-count {
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            font-size: 10px;
+        }
+
+        .empty-offers {
+            padding: 60px 20px;
+        }
+
+        .empty-offers i {
+            font-size: 60px;
+        }
+
+        .empty-offers h3 {
+            font-size: 20px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .offers-header h1 {
+            font-size: 18px;
+        }
+
+        .offer-card {
+            padding: 10px;
+            gap: 10px;
+        }
+
+        .offer-icon {
+            width: 70px;
+            height: 85px;
+        }
+
+        .offer-title {
+            font-size: 12px;
+        }
+
+        .offer-price {
+            font-size: 20px;
+        }
+
+        .offer-cta {
+            padding: 6px 12px;
+            font-size: 10px;
         }
     }
 </style>
@@ -313,13 +453,6 @@
                        onclick="trackAdClick({{ $product['id'] }}, '{{ $product['url'] ?? '#' }}')"
                        style="text-decoration: none; display: block;">
                         <div class="offer-card">
-                            @if(isset($product['click_count']) && $product['click_count'] > 0)
-                                <div class="offer-click-count">
-                                    <i class="fa fa-mouse-pointer"></i>
-                                    {{ number_format($product['click_count']) }}
-                                </div>
-                            @endif
-
                             <img src="{{ $product['thumbnail_url'] ?? '' }}"
                                  alt="{{ $product['title'] ?? 'Product' }}"
                                  class="offer-icon"
