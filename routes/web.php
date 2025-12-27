@@ -149,6 +149,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::get('transactions', 'TransactionsController@transactions_list');
     Route::post('transactions/export', 'TransactionsController@transactions_export');
 
+    Route::get('ads', 'AdManagementController@ads_list');
+
     Route::get('pages', 'PagesController@pages_list');
     Route::get('pages/add', 'PagesController@add');
     Route::get('pages/edit/{id}', 'PagesController@edit');

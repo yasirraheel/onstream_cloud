@@ -79,6 +79,7 @@
             <li><a href="{{ URL::to('admin/coupons') }}" class="waves-effect {{classActivePath('coupons')}}"><i class="fa fa-gift"></i><span>{{trans('words.coupons')}}</span></a></li>
             <li><a href="{{ URL::to('admin/payment_gateway') }}" class="waves-effect {{classActivePath('payment_gateway')}}"><i class="fa fa-credit-card-alt"></i><span>{{trans('words.payment_gateway')}}</span></a></li>
             <li><a href="{{ URL::to('admin/transactions') }}" class="waves-effect {{classActivePath('transactions')}}"><i class="fa fa-list"></i><span>{{trans('words.transactions')}}</span></a></li>
+            <li><a href="{{ URL::to('admin/ads') }}" class="waves-effect {{classActivePath('ads')}}"><i class="fa fa-bullhorn"></i><span>Ad Management</span></a></li>
             <li class="has_sub">
               <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-edit"></i><span>{{trans('words.pages')}}</span><span class="menu-arrow"></span></a>
               <ul class="list-unstyled">
@@ -178,6 +179,8 @@
             </li>
 
             <li><a href="{{ URL::to('admin/transactions') }}" class="waves-effect {{classActivePath('transactions')}}"><i class="fa fa-list"></i><span>{{trans('words.transactions')}}</span></a></li>
+
+            <li><a href="{{ URL::to('admin/ads') }}" class="waves-effect {{classActivePath('ads')}}"><i class="fa fa-bullhorn"></i><span>Ad Management</span></a></li>
 
             </ul>
 
