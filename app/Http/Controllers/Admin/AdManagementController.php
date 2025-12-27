@@ -35,6 +35,9 @@ class AdManagementController extends MainAdminController
                 $api_data = $response->json();
                 $products = $api_data['data'] ?? [];
 
+                // Shuffle products for random order
+                shuffle($products);
+
                 // Add click count to each product
                 foreach ($products as &$product) {
                     $product['click_count'] = AdClick::getClickCount($product['id']);

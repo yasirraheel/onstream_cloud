@@ -101,7 +101,12 @@ class IndexController extends Controller
             $response = \Illuminate\Support\Facades\Http::timeout(10)->get('https://topdealsplus.com/api/listings');
             if ($response->successful()) {
                 $api_data = $response->json();
-                $ads_products = array_slice($api_data['data'] ?? [], 0, 12); // Limit to 12 products
+                $products_data = $api_data['data'] ?? [];
+
+                // Shuffle for random order
+                shuffle($products_data);
+
+                $ads_products = array_slice($products_data, 0, 12); // Limit to 12 products
             }
         } catch (\Exception $e) {
             $ads_products = [];
