@@ -4,159 +4,229 @@
     <style>
         .ads-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 16px;
             margin-top: 20px;
         }
 
         .ad-card {
             background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #e8e8e8;
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.2s ease;
+            position: relative;
             display: flex;
             flex-direction: column;
+            gap: 12px;
         }
 
         .ad-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
         }
 
-        .ad-card-image {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            background: #f5f5f5;
+        .ad-card-header {
+            display: flex;
+            gap: 12px;
+            position: relative;
         }
 
-        .ad-card-body {
-            padding: 15px;
+        .ad-hot-badge {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+        }
+
+        .ad-flash-badge {
+            background: linear-gradient(135deg, #ffa502 0%, #ff8c00 100%);
+            box-shadow: 0 2px 8px rgba(255, 165, 2, 0.3);
+        }
+
+        .ad-content-left {
             flex: 1;
             display: flex;
             flex-direction: column;
+            gap: 8px;
+            padding-top: 26px;
         }
 
-        .ad-card-title {
-            font-size: 14px;
+        .ad-content-right {
+            flex-shrink: 0;
+        }
+
+        .ad-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #f5f7fa;
+            border: 1px solid #e8e8e8;
+        }
+
+        .ad-title {
+            font-size: 13px;
             font-weight: 600;
-            color: #333;
-            margin: 0 0 10px 0;
+            color: #2c3e50;
             line-height: 1.4;
+            margin: 0;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            min-height: 40px;
         }
 
-        .ad-price {
-            font-size: 24px;
-            font-weight: 700;
-            color: #2ecc71;
-            margin-bottom: 10px;
+        .ad-description {
+            font-size: 11px;
+            color: #27ae60;
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+            gap: 4px;
         }
 
-        .ad-price-original {
-            text-decoration: line-through;
-            color: #999;
-            font-size: 14px;
-            margin-left: 8px;
+        .ad-description i {
+            margin-top: 2px;
+            flex-shrink: 0;
         }
 
-        .ad-badges {
+        .ad-meta-badges {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-            margin-bottom: 10px;
+            margin-top: 4px;
         }
 
-        .ad-badge {
-            font-size: 11px;
+        .ad-meta-badge {
+            font-size: 10px;
             padding: 4px 8px;
-            border-radius: 4px;
-            background: #f0f0f0;
+            border-radius: 6px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ad-badge-private {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .ad-badge-plus {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .ad-badge-platform {
+            background: #f5f5f5;
             color: #666;
-            white-space: nowrap;
         }
 
-        .ad-badge-trending {
-            background: #ff6b6b;
-            color: #fff;
+        .ad-seller-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
         }
 
-        .ad-badge-flash {
-            background: #ffa502;
-            color: #fff;
+        .ad-seller-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ad-seller-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #e8e8e8;
+        }
+
+        .ad-seller-name {
+            font-size: 11px;
+            color: #2c3e50;
+            font-weight: 500;
+            text-transform: uppercase;
         }
 
         .ad-rating {
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-bottom: 10px;
-            font-size: 13px;
+            gap: 4px;
+            font-size: 11px;
+            color: #3498db;
+            font-weight: 600;
         }
 
-        .ad-rating-stars {
-            color: #f39c12;
+        .ad-rating i {
+            font-size: 12px;
         }
 
         .ad-rating-count {
             color: #999;
+            font-weight: 400;
         }
 
-        .ad-seller {
+        .ad-footer {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding-top: 10px;
-            margin-top: auto;
-            border-top: 1px solid #eee;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
         }
 
-        .ad-seller-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
+        .ad-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e74c3c;
         }
 
-        .ad-seller-name {
-            font-size: 13px;
-            color: #555;
-            font-weight: 500;
+        .ad-delivery {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #7f8c8d;
         }
 
-        .ad-seller-verified {
-            color: #3498db;
-            font-size: 14px;
-        }
-
-        .ad-category {
+        .ad-delivery i {
             font-size: 12px;
-            color: #888;
-            margin-bottom: 8px;
         }
 
         .ad-link {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 8px 16px;
-            background: #3498db;
-            color: #fff;
+            display: block;
             text-decoration: none;
-            border-radius: 4px;
-            font-size: 13px;
-            text-align: center;
-            transition: background 0.2s;
+            color: inherit;
         }
 
         .ad-link:hover {
-            background: #2980b9;
-            color: #fff;
+            color: inherit;
             text-decoration: none;
+        }
+
+        .ad-category-tag {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 9px;
+            color: #95a5a6;
+            background: #ecf0f1;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 500;
         }
 
         .empty-state {
@@ -169,24 +239,6 @@
             font-size: 64px;
             margin-bottom: 20px;
             opacity: 0.3;
-        }
-
-        .badge-info-list {
-            font-size: 12px;
-            color: #666;
-            line-height: 1.8;
-            margin: 10px 0;
-        }
-
-        .badge-info-list div {
-            display: flex;
-            justify-content: space-between;
-            padding: 2px 0;
-        }
-
-        .badge-info-list strong {
-            color: #333;
-            font-weight: 600;
         }
     </style>
 
@@ -219,109 +271,95 @@
                             @if(count($products) > 0)
                                 <div class="ads-grid">
                                     @foreach($products as $product)
-                                        <div class="ad-card">
-                                            <img src="{{ $product['thumbnail_url'] ?? '' }}"
-                                                 alt="{{ $product['title'] ?? 'Product' }}"
-                                                 class="ad-card-image"
-                                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'%3E%3Crect fill=\'%23f0f0f0\' width=\'100\' height=\'100\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\' font-family=\'Arial\' font-size=\'14\'%3ENo Image%3C/text%3E%3C/svg%3E'">
+                                        <a href="{{ $product['url'] ?? '#' }}" target="_blank" class="ad-link">
+                                            <div class="ad-card">
+                                                @if($product['badges']['is_trending'] ?? false)
+                                                    <div class="ad-hot-badge">
+                                                        <i class="fa fa-fire"></i> HOT
+                                                    </div>
+                                                @elseif($product['badges']['is_flash'] ?? false)
+                                                    <div class="ad-hot-badge ad-flash-badge">
+                                                        <i class="fa fa-bolt"></i> FLASH
+                                                    </div>
+                                                @endif
 
-                                            <div class="ad-card-body">
-                                                <div class="ad-category">
-                                                    <i class="fa fa-folder"></i> {{ $product['category']['name'] ?? 'N/A' }}
+                                                <div class="ad-card-header">
+                                                    <div class="ad-content-left">
+                                                        <h3 class="ad-title">{{ $product['title'] ?? 'No Title' }}</h3>
+
+                                                        @if(isset($product['badges']['plan']))
+                                                            <div class="ad-description">
+                                                                <i class="fa fa-check-circle"></i>
+                                                                <span>{{ $product['badges']['plan'] ?? '' }}: Access to the latest "fro...</span>
+                                                            </div>
+                                                        @endif
+
+                                                        <div class="ad-meta-badges">
+                                                            @if(isset($product['badges']['delivery_method']))
+                                                                <span class="ad-meta-badge ad-badge-private">
+                                                                    <i class="fa fa-user"></i> {{ $product['badges']['delivery_method'] }}
+                                                                </span>
+                                                            @endif
+                                                            @if(isset($product['badges']['plan']))
+                                                                <span class="ad-meta-badge ad-badge-plus">
+                                                                    <i class="fa fa-check"></i> {{ $product['badges']['plan'] }}
+                                                                </span>
+                                                            @endif
+                                                            @if(isset($product['badges']['devices']))
+                                                                <span class="ad-meta-badge ad-badge-platform">
+                                                                    <i class="fa fa-desktop"></i> {{ Str::limit($product['badges']['devices'], 12) }}
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="ad-content-right">
+                                                        @if(isset($product['category']['name']))
+                                                            <div class="ad-category-tag">
+                                                                <i class="fa fa-clock-o"></i> {{ $product['badges']['duration'] ?? 'N/A' }}
+                                                            </div>
+                                                        @endif
+                                                        <img src="{{ $product['thumbnail_url'] ?? '' }}"
+                                                             alt="{{ $product['title'] ?? 'Product' }}"
+                                                             class="ad-image"
+                                                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'%3E%3Crect fill=\'%23f5f7fa\' width=\'80\' height=\'80\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23bdc3c7\' font-family=\'Arial\' font-size=\'10\'%3ENo Image%3C/text%3E%3C/svg%3E'">
+                                                    </div>
                                                 </div>
 
-                                                <h3 class="ad-card-title" title="{{ $product['title'] ?? '' }}">
-                                                    {{ $product['title'] ?? 'No Title' }}
-                                                </h3>
-
-                                                <div class="ad-price">
-                                                    {{ $product['currency_symbol'] ?? '$' }}{{ number_format($product['final_price'] ?? 0, 2) }}
-                                                    @if(isset($product['discount']) && $product['discount'] > 0)
-                                                        <span class="ad-price-original">
-                                                            {{ $product['currency_symbol'] ?? '$' }}{{ number_format($product['price'] ?? 0, 2) }}
-                                                        </span>
-                                                    @endif
-                                                </div>
-
-                                                @if(isset($product['badges']))
-                                                    <div class="ad-badges">
-                                                        @if($product['badges']['is_trending'] ?? false)
-                                                            <span class="ad-badge ad-badge-trending">
-                                                                <i class="fa fa-fire"></i> Trending
-                                                            </span>
-                                                        @endif
-                                                        @if($product['badges']['is_flash'] ?? false)
-                                                            <span class="ad-badge ad-badge-flash">
-                                                                <i class="fa fa-bolt"></i> Flash Deal
-                                                            </span>
-                                                        @endif
-                                                    </div>
-                                                @endif
-
-                                                @if(isset($product['rating']))
-                                                    <div class="ad-rating">
-                                                        <span class="ad-rating-stars">
-                                                            @for($i = 1; $i <= 5; $i++)
-                                                                @if($i <= floor($product['rating']['average'] ?? 0))
-                                                                    <i class="fa fa-star"></i>
-                                                                @elseif($i - 0.5 <= ($product['rating']['average'] ?? 0))
-                                                                    <i class="fa fa-star-half-o"></i>
-                                                                @else
-                                                                    <i class="fa fa-star-o"></i>
-                                                                @endif
-                                                            @endfor
-                                                        </span>
-                                                        <span class="ad-rating-count">
-                                                            ({{ $product['rating']['count'] ?? 0 }})
-                                                        </span>
-                                                    </div>
-                                                @endif
-
-                                                @if(isset($product['badges']))
-                                                    <div class="badge-info-list">
-                                                        @if(isset($product['badges']['duration']))
-                                                            <div>
-                                                                <span><i class="fa fa-clock-o"></i> Duration:</span>
-                                                                <strong>{{ $product['badges']['duration'] }}</strong>
-                                                            </div>
-                                                        @endif
-                                                        @if(isset($product['badges']['delivery_speed']))
-                                                            <div>
-                                                                <span><i class="fa fa-truck"></i> Delivery:</span>
-                                                                <strong>{{ $product['badges']['delivery_speed'] }}</strong>
-                                                            </div>
-                                                        @endif
-                                                        @if(isset($product['badges']['devices']))
-                                                            <div>
-                                                                <span><i class="fa fa-desktop"></i> Devices:</span>
-                                                                <strong>{{ $product['badges']['devices'] }}</strong>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                @endif
-
-                                                @if(isset($product['seller']))
-                                                    <div class="ad-seller">
+                                                <div class="ad-seller-row">
+                                                    <div class="ad-seller-info">
                                                         <img src="{{ $product['seller']['avatar'] ?? '' }}"
                                                              alt="{{ $product['seller']['username'] ?? 'Seller' }}"
                                                              class="ad-seller-avatar"
-                                                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'%3E%3Ccircle fill=\'%23ccc\' cx=\'16\' cy=\'16\' r=\'16\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23fff\' font-family=\'Arial\' font-size=\'14\'%3E{{ substr($product['seller']['username'] ?? 'U', 0, 1) }}%3C/text%3E%3C/svg%3E'">
-                                                        <span class="ad-seller-name">{{ $product['seller']['username'] ?? 'Unknown' }}</span>
-                                                        @if($product['seller']['is_verified'] ?? false)
-                                                            <i class="fa fa-check-circle ad-seller-verified" title="Verified Seller"></i>
+                                                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\'%3E%3Ccircle fill=\'%23bdc3c7\' cx=\'10\' cy=\'10\' r=\'10\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23fff\' font-family=\'Arial\' font-size=\'10\' font-weight=\'bold\'%3E{{ strtoupper(substr($product['seller']['username'] ?? 'U', 0, 1)) }}%3C/text%3E%3C/svg%3E'">
+                                                        <span class="ad-seller-name">{{ strtoupper($product['seller']['username'] ?? 'Unknown') }}</span>
+                                                    </div>
+
+                                                    <div class="ad-rating">
+                                                        <i class="fa fa-thumbs-up"></i>
+                                                        @if(isset($product['rating']['percentage']))
+                                                            {{ number_format($product['rating']['percentage'], 1) }}%
+                                                        @else
+                                                            100.0%
+                                                        @endif
+                                                        @if(isset($product['rating']['count']))
+                                                            <span class="ad-rating-count">({{ $product['rating']['count'] }})</span>
                                                         @endif
                                                     </div>
-                                                @endif
+                                                </div>
 
-                                                @if(isset($product['url']))
-                                                    <a href="{{ $product['url'] }}"
-                                                       target="_blank"
-                                                       class="ad-link">
-                                                        <i class="fa fa-external-link"></i> View Product
-                                                    </a>
-                                                @endif
+                                                <div class="ad-footer">
+                                                    <div class="ad-price">
+                                                        {{ $product['currency_symbol'] ?? '$' }}{{ number_format($product['final_price'] ?? 0, 2) }}
+                                                    </div>
+
+                                                    <div class="ad-delivery">
+                                                        <i class="fa fa-clock-o"></i>
+                                                        {{ $product['badges']['delivery_speed'] ?? 'N/A' }}
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </a>
                                     @endforeach
                                 </div>
                             @else
