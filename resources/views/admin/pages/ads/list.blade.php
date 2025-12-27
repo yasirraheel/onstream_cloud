@@ -10,8 +10,8 @@
         }
 
         .ad-card {
-            background: #fff;
-            border: 1px solid #e8e8e8;
+            background: #2c3e50;
+            border: 1px solid #34495e;
             border-radius: 12px;
             padding: 16px;
             transition: all 0.2s ease;
@@ -22,8 +22,9 @@
         }
 
         .ad-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
             transform: translateY(-2px);
+            border-color: #3498db;
         }
 
         .ad-card-header {
@@ -36,7 +37,7 @@
             position: absolute;
             top: 0;
             left: 0;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: #fff;
             font-size: 10px;
             font-weight: 700;
@@ -47,12 +48,13 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
+            z-index: 1;
         }
 
         .ad-flash-badge {
-            background: linear-gradient(135deg, #ffa502 0%, #ff8c00 100%);
-            box-shadow: 0 2px 8px rgba(255, 165, 2, 0.3);
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            box-shadow: 0 2px 8px rgba(243, 156, 18, 0.4);
         }
 
         .ad-content-left {
@@ -72,14 +74,14 @@
             height: 80px;
             border-radius: 10px;
             object-fit: cover;
-            background: #f5f7fa;
-            border: 1px solid #e8e8e8;
+            background: #34495e;
+            border: 1px solid #445566;
         }
 
         .ad-title {
             font-size: 13px;
             font-weight: 600;
-            color: #2c3e50;
+            color: #ecf0f1;
             line-height: 1.4;
             margin: 0;
             display: -webkit-box;
@@ -90,7 +92,7 @@
 
         .ad-description {
             font-size: 11px;
-            color: #27ae60;
+            color: #1abc9c;
             line-height: 1.4;
             display: flex;
             align-items: flex-start;
@@ -120,18 +122,21 @@
         }
 
         .ad-badge-private {
-            background: #e3f2fd;
-            color: #1976d2;
+            background: rgba(52, 152, 219, 0.2);
+            color: #5dade2;
+            border: 1px solid rgba(52, 152, 219, 0.3);
         }
 
         .ad-badge-plus {
-            background: #e8f5e9;
-            color: #388e3c;
+            background: rgba(46, 204, 113, 0.2);
+            color: #58d68d;
+            border: 1px solid rgba(46, 204, 113, 0.3);
         }
 
         .ad-badge-platform {
-            background: #f5f5f5;
-            color: #666;
+            background: rgba(149, 165, 166, 0.2);
+            color: #aab7b8;
+            border: 1px solid rgba(149, 165, 166, 0.3);
         }
 
         .ad-seller-row {
@@ -152,12 +157,12 @@
             height: 20px;
             border-radius: 50%;
             object-fit: cover;
-            border: 1px solid #e8e8e8;
+            border: 1px solid #445566;
         }
 
         .ad-seller-name {
             font-size: 11px;
-            color: #2c3e50;
+            color: #bdc3c7;
             font-weight: 500;
             text-transform: uppercase;
         }
@@ -176,7 +181,7 @@
         }
 
         .ad-rating-count {
-            color: #999;
+            color: #7f8c8d;
             font-weight: 400;
         }
 
@@ -185,13 +190,13 @@
             align-items: center;
             justify-content: space-between;
             padding-top: 12px;
-            border-top: 1px solid #f0f0f0;
+            border-top: 1px solid #34495e;
         }
 
         .ad-price {
             font-size: 20px;
             font-weight: 700;
-            color: #e74c3c;
+            color: #1abc9c;
         }
 
         .ad-delivery {
@@ -199,7 +204,7 @@
             align-items: center;
             gap: 4px;
             font-size: 11px;
-            color: #7f8c8d;
+            color: #95a5a6;
         }
 
         .ad-delivery i {
@@ -223,22 +228,27 @@
             right: 0;
             font-size: 9px;
             color: #95a5a6;
-            background: #ecf0f1;
+            background: rgba(52, 73, 94, 0.8);
             padding: 3px 8px;
             border-radius: 6px;
             font-weight: 500;
+            border: 1px solid #445566;
         }
 
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #999;
+            color: #7f8c8d;
         }
 
         .empty-state i {
             font-size: 64px;
             margin-bottom: 20px;
             opacity: 0.3;
+        }
+
+        .empty-state h4 {
+            color: #95a5a6;
         }
     </style>
 
@@ -322,7 +332,7 @@
                                                         <img src="{{ $product['thumbnail_url'] ?? '' }}"
                                                              alt="{{ $product['title'] ?? 'Product' }}"
                                                              class="ad-image"
-                                                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'%3E%3Crect fill=\'%23f5f7fa\' width=\'80\' height=\'80\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23bdc3c7\' font-family=\'Arial\' font-size=\'10\'%3ENo Image%3C/text%3E%3C/svg%3E'">
+                                                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'%3E%3Crect fill=\'%2334495e\' width=\'80\' height=\'80\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%237f8c8d\' font-family=\'Arial\' font-size=\'10\'%3ENo Image%3C/text%3E%3C/svg%3E'">
                                                     </div>
                                                 </div>
 
@@ -331,7 +341,7 @@
                                                         <img src="{{ $product['seller']['avatar'] ?? '' }}"
                                                              alt="{{ $product['seller']['username'] ?? 'Seller' }}"
                                                              class="ad-seller-avatar"
-                                                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\'%3E%3Ccircle fill=\'%23bdc3c7\' cx=\'10\' cy=\'10\' r=\'10\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23fff\' font-family=\'Arial\' font-size=\'10\' font-weight=\'bold\'%3E{{ strtoupper(substr($product['seller']['username'] ?? 'U', 0, 1)) }}%3C/text%3E%3C/svg%3E'">
+                                                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\'%3E%3Ccircle fill=\'%2334495e\' cx=\'10\' cy=\'10\' r=\'10\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23ecf0f1\' font-family=\'Arial\' font-size=\'10\' font-weight=\'bold\'%3E{{ strtoupper(substr($product['seller']['username'] ?? 'U', 0, 1)) }}%3C/text%3E%3C/svg%3E'">
                                                         <span class="ad-seller-name">{{ strtoupper($product['seller']['username'] ?? 'Unknown') }}</span>
                                                     </div>
 
