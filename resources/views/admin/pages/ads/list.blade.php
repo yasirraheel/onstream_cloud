@@ -235,49 +235,120 @@
             border: 1px solid #445566;
         }
 
-        .ad-stats-section {
+        .ad-click-badge {
             position: absolute;
             bottom: 0;
-            left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            padding: 8px 12px;
-            border-radius: 0 0 12px 12px;
+            background: rgba(52, 152, 219, 0.9);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 6px 0 0 0;
+            font-size: 11px;
+            font-weight: 600;
             display: flex;
-            gap: 10px;
-            justify-content: space-around;
-            border-top: 1px solid rgba(52, 152, 219, 0.3);
-        }
-
-        .ad-stat-item {
-            display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .ad-stat-value {
-            font-size: 16px;
+        .ad-click-badge i {
+            font-size: 12px;
+        }
+
+        .stats-dashboard {
+            background: linear-gradient(135deg, #1e272e 0%, #2c3e50 100%);
+            border: 2px solid #3498db;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+        }
+
+        .stats-dashboard-title {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-dashboard-title i {
+            color: #3498db;
+            font-size: 22px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #34495e;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card.total {
+            border-color: #1abc9c;
+            background: rgba(26, 188, 156, 0.1);
+        }
+
+        .stat-card.recent {
+            border-color: #f39c12;
+            background: rgba(243, 156, 18, 0.1);
+        }
+
+        .stat-card.live {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .stat-value {
+            font-size: 42px;
             font-weight: 900;
-            color: #1abc9c;
             line-height: 1;
+            margin-bottom: 10px;
         }
 
-        .ad-stat-value.warning {
+        .stat-card.total .stat-value {
+            color: #1abc9c;
+            text-shadow: 0 3px 15px rgba(26, 188, 156, 0.4);
+        }
+
+        .stat-card.recent .stat-value {
             color: #f39c12;
+            text-shadow: 0 3px 15px rgba(243, 156, 18, 0.4);
         }
 
-        .ad-stat-value.danger {
+        .stat-card.live .stat-value {
             color: #e74c3c;
+            text-shadow: 0 3px 15px rgba(231, 76, 60, 0.4);
+            animation: pulse 2s infinite;
         }
 
-        .ad-stat-label {
-            font-size: 9px;
+        .stat-label {
+            font-size: 13px;
             color: #bdc3c7;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
             font-weight: 600;
+        }
+
+        .stat-description {
+            font-size: 11px;
+            color: #7f8c8d;
+            margin-top: 5px;
         }
 
         .empty-state {
@@ -322,6 +393,31 @@
                                     {{ Session::get('error_flash_message') }}
                                 </div>
                             @endif
+
+                            <!-- Overall Statistics Dashboard -->
+                            <div class="stats-dashboard">
+                                <div class="stats-dashboard-title">
+                                    <i class="fa fa-bar-chart"></i>
+                                    Overall Click Analytics
+                                </div>
+                                <div class="stats-grid">
+                                    <div class="stat-card total">
+                                        <div class="stat-value">{{ number_format($overall_stats['total'] ?? 0) }}</div>
+                                        <div class="stat-label">Total Views</div>
+                                        <div class="stat-description">All-time clicks</div>
+                                    </div>
+                                    <div class="stat-card recent">
+                                        <div class="stat-value">{{ number_format($overall_stats['last_30_min'] ?? 0) }}</div>
+                                        <div class="stat-label">Last 30 Minutes</div>
+                                        <div class="stat-description">Recent activity</div>
+                                    </div>
+                                    <div class="stat-card live">
+                                        <div class="stat-value">{{ number_format($overall_stats['last_5_min'] ?? 0) }}</div>
+                                        <div class="stat-label">Last 5 Minutes</div>
+                                        <div class="stat-description">Live traffic</div>
+                                    </div>
+                                </div>
+                            </div>
 
                             @if(count($products) > 0)
                                 <div class="ads-grid">
@@ -414,19 +510,9 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="ad-stats-section">
-                                                    <div class="ad-stat-item">
-                                                        <div class="ad-stat-value">{{ number_format($product['click_count'] ?? 0) }}</div>
-                                                        <div class="ad-stat-label">Total Views</div>
-                                                    </div>
-                                                    <div class="ad-stat-item">
-                                                        <div class="ad-stat-value warning">{{ number_format($product['clicks_last_30min'] ?? 0) }}</div>
-                                                        <div class="ad-stat-label">Last 30 Min</div>
-                                                    </div>
-                                                    <div class="ad-stat-item">
-                                                        <div class="ad-stat-value danger">{{ number_format($product['clicks_last_5min'] ?? 0) }}</div>
-                                                        <div class="ad-stat-label">Last 5 Min</div>
-                                                    </div>
+                                                <div class="ad-click-badge">
+                                                    <i class="fa fa-mouse-pointer"></i>
+                                                    {{ number_format($product['click_count'] ?? 0) }} Clicks
                                                 </div>
                                             </div>
                                         </a>

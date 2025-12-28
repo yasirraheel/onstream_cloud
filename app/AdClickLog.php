@@ -74,4 +74,20 @@ class AdClickLog extends Model
 
         return $stats;
     }
+
+    /**
+     * Get overall statistics for all products combined
+     */
+    public static function getOverallStats()
+    {
+        $total = self::count();
+        $last5min = self::where('clicked_at', '>=', now()->subMinutes(5))->count();
+        $last30min = self::where('clicked_at', '>=', now()->subMinutes(30))->count();
+
+        return [
+            'total' => $total,
+            'last_5_min' => $last5min,
+            'last_30_min' => $last30min,
+        ];
+    }
 }

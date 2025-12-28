@@ -39,12 +39,9 @@ class AdManagementController extends MainAdminController
                 // Shuffle products for random order
                 shuffle($products);
 
-                // Add click statistics to each product
+                // Add click count to each product (for individual card display)
                 foreach ($products as &$product) {
-                    $stats = AdClickLog::getClickStats($product['id']);
-                    $product['click_count'] = $stats['total'];
-                    $product['clicks_last_5min'] = $stats['last_5_min'];
-                    $product['clicks_last_30min'] = $stats['last_30_min'];
+                    $product['click_count'] = AdClickLog::getTotalClicks($product['id']);
                 }
             } else {
                 $products = [];
@@ -55,6 +52,9 @@ class AdManagementController extends MainAdminController
             Session::flash('error_flash_message', 'Error connecting to API: ' . $e->getMessage());
         }
 
-        return view('admin.pages.ads.list', compact('page_title', 'products'));
+        // Get overall statistics for all products
+        $overall_stats = AdClickLog::getOverallStats();
+
+        return view('admin.pages.ads.list', compact('page_title', 'products', 'overall_stats'));
     }
 }
