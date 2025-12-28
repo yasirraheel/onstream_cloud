@@ -41,7 +41,7 @@ class AdManagementController extends MainAdminController
 
                 // Add click count to each product (for individual card display)
                 foreach ($products as &$product) {
-                    $product['click_count'] = AdClickLog::getTotalClicks($product['id']);
+                    $product['click_count'] = AdClick::getClickCount($product['id']);
                 }
             } else {
                 $products = [];

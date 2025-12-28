@@ -80,7 +80,10 @@ class AdClickLog extends Model
      */
     public static function getOverallStats()
     {
-        $total = self::count();
+        // Use AdClick table for total (existing data)
+        $total = AdClick::sum('click_count');
+
+        // Use AdClickLog for time-based analytics
         $last5min = self::where('clicked_at', '>=', now()->subMinutes(5))->count();
         $last30min = self::where('clicked_at', '>=', now()->subMinutes(30))->count();
 
