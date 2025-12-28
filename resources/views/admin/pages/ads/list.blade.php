@@ -235,24 +235,49 @@
             border: 1px solid #445566;
         }
 
-        .ad-click-badge {
+        .ad-stats-section {
             position: absolute;
             bottom: 0;
+            left: 0;
             right: 0;
-            background: rgba(52, 152, 219, 0.9);
-            color: #fff;
-            padding: 4px 10px;
-            border-radius: 6px 0 0 0;
-            font-size: 11px;
-            font-weight: 600;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            padding: 8px 12px;
+            border-radius: 0 0 12px 12px;
             display: flex;
-            align-items: center;
-            gap: 4px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            gap: 10px;
+            justify-content: space-around;
+            border-top: 1px solid rgba(52, 152, 219, 0.3);
         }
 
-        .ad-click-badge i {
-            font-size: 12px;
+        .ad-stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .ad-stat-value {
+            font-size: 16px;
+            font-weight: 900;
+            color: #1abc9c;
+            line-height: 1;
+        }
+
+        .ad-stat-value.warning {
+            color: #f39c12;
+        }
+
+        .ad-stat-value.danger {
+            color: #e74c3c;
+        }
+
+        .ad-stat-label {
+            font-size: 9px;
+            color: #bdc3c7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
         .empty-state {
@@ -389,9 +414,19 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="ad-click-badge">
-                                                    <i class="fa fa-mouse-pointer"></i>
-                                                    {{ number_format($product['click_count'] ?? 0) }} Clicks
+                                                <div class="ad-stats-section">
+                                                    <div class="ad-stat-item">
+                                                        <div class="ad-stat-value">{{ number_format($product['click_count'] ?? 0) }}</div>
+                                                        <div class="ad-stat-label">Total Views</div>
+                                                    </div>
+                                                    <div class="ad-stat-item">
+                                                        <div class="ad-stat-value warning">{{ number_format($product['clicks_last_30min'] ?? 0) }}</div>
+                                                        <div class="ad-stat-label">Last 30 Min</div>
+                                                    </div>
+                                                    <div class="ad-stat-item">
+                                                        <div class="ad-stat-value danger">{{ number_format($product['clicks_last_5min'] ?? 0) }}</div>
+                                                        <div class="ad-stat-label">Last 5 Min</div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </a>

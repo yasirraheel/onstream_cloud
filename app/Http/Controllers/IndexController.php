@@ -638,7 +638,10 @@ class IndexController extends Controller
         $productId = $request->input('product_id');
 
         if ($productId) {
-            AdClick::incrementClick($productId);
+            $ipAddress = $request->ip();
+            $userAgent = $request->userAgent();
+
+            AdClick::incrementClick($productId, $ipAddress, $userAgent);
             return response()->json(['success' => true]);
         }
 

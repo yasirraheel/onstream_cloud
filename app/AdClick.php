@@ -11,7 +11,7 @@ class AdClick extends Model
     /**
      * Increment click count for a product
      */
-    public static function incrementClick($productId)
+    public static function incrementClick($productId, $ipAddress = null, $userAgent = null)
     {
         $adClick = self::firstOrCreate(
             ['product_id' => $productId],
@@ -19,6 +19,9 @@ class AdClick extends Model
         );
 
         $adClick->increment('click_count');
+
+        // Also log to ad_click_logs for time-based tracking
+        AdClickLog::logClick($productId, $ipAddress, $userAgent);
 
         return $adClick;
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Auth;
 use Session;
 use App\AdClick;
+use App\AdClickLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -38,9 +39,12 @@ class AdManagementController extends MainAdminController
                 // Shuffle products for random order
                 shuffle($products);
 
-                // Add click count to each product
+                // Add click statistics to each product
                 foreach ($products as &$product) {
-                    $product['click_count'] = AdClick::getClickCount($product['id']);
+                    $stats = AdClickLog::getClickStats($product['id']);
+                    $product['click_count'] = $stats['total'];
+                    $product['clicks_last_5min'] = $stats['last_5_min'];
+                    $product['clicks_last_30min'] = $stats['last_30_min'];
                 }
             } else {
                 $products = [];
