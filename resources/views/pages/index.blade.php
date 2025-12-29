@@ -586,31 +586,16 @@
 
                 {{-- Show "Today" badge if movie was created today --}}
 @php
-    $created = \Carbon\Carbon::parse($movies_data->created_at);
-    $now = \Carbon\Carbon::now();
-
-    if ($created->greaterThanOrEqualTo($now->copy()->subDay())) {
-        $label = 'Today';
-    } elseif ($created->isYesterday()) {
-        $label = 'Yesterday';
-    } elseif ($created->greaterThanOrEqualTo($now->copy()->subWeek())) {
-        $label = $created->diffInDays($now) . ' ' . \Illuminate\Support\Str::plural('day', $created->diffInDays($now)) . ' ago';
-    } elseif ($created->greaterThanOrEqualTo($now->copy()->subMonth())) {
-        $label = $created->diffInWeeks($now) . ' ' . \Illuminate\Support\Str::plural('week', $created->diffInWeeks($now)) . ' ago';
-    } elseif ($created->greaterThanOrEqualTo($now->copy()->subYear())) {
-        $label = $created->diffInMonths($now) . ' ' . \Illuminate\Support\Str::plural('month', $created->diffInMonths($now)) . ' ago';
-    } else {
-        $label = $created->diffInYears($now) . ' ' . \Illuminate\Support\Str::plural('year', $created->diffInYears($now)) . ' ago';
-    }
+    $label = \Carbon\Carbon::parse($movies_data->created_at)->format('M d, Y');
 @endphp
 
 <span class="badge badge-danger today-badge">{{ $label }}</span>
                 <span class="video-item-content">
                     {{ Str::limit(stripslashes($movies_data->video_title), 20) }}
                 </span>
-                
-                <img src="{{ URL::to('/' . $movies_data->video_image_thumb) }}" 
-                    alt="{{ stripslashes($movies_data->video_title) }}" 
+
+                <img src="{{ URL::to('/' . $movies_data->video_image_thumb) }}"
+                    alt="{{ stripslashes($movies_data->video_title) }}"
                     title="{{ stripslashes($movies_data->video_title) }}">
             </div>
             </a>
@@ -646,7 +631,7 @@
 
         {{-- @if (getcong('menu_movies'))
             @if ($sections_data->post_type == 'Movie')
-            
+
                 <!-- Start Movies Video Carousel -->
                 <div class="video-carousel-area vfx-item-ptb">
                     <div class="container-fluid">
