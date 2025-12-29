@@ -589,6 +589,8 @@
               $label = '';
               if($movies_data->created_at){
                   $label = \Carbon\Carbon::parse($movies_data->created_at)->format('M d, Y');
+              } elseif($movies_data->updated_at){
+                  $label = \Carbon\Carbon::parse($movies_data->updated_at)->format('M d, Y');
               }
               @endphp
               @if($label)

@@ -11,7 +11,7 @@ class Movies extends Model
     protected $fillable = ['video_title','video_image'];
 
 
-	public $timestamps = false;
+	public $timestamps = true;
  
 	 
 	
