@@ -586,10 +586,14 @@
 
                 {{-- Show "Today" badge if movie was created today --}}
 @php
-    $label = \Carbon\Carbon::parse($movies_data->created_at)->format('M d, Y');
-@endphp
-
-<span class="badge badge-danger today-badge">{{ $label }}</span>
+              $label = '';
+              if($movies_data->created_at){
+                  $label = \Carbon\Carbon::parse($movies_data->created_at)->format('M d, Y');
+              }
+              @endphp
+              @if($label)
+              <span class="badge badge-danger today-badge">{{ $label }}</span>
+              @endif
                 <span class="video-item-content">
                     {{ Str::limit(stripslashes($movies_data->video_title), 20) }}
                 </span>
