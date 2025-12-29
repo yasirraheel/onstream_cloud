@@ -11,6 +11,7 @@
 <link rel="canonical" href="@yield('head_url', url('/'))">
 
 <meta property="og:type" content="movie" />
+<meta property="og:site_name" content="{{getcong('site_name')}}" />
 <meta property="og:title" content="@yield('head_title',  getcong('site_name'))" />
 <meta property="og:description" content="@yield('head_description', getcong('site_description'))" />
 <meta property="og:image" content="@yield('head_image', URL::asset('/'.getcong('site_meta_image')))" />
@@ -18,6 +19,8 @@
 <meta property="og:image:width" content="1024" />
 <meta property="og:image:height" content="1024" />
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="@yield('head_title',  getcong('site_name'))">
+<meta name="twitter:description" content="@yield('head_description', getcong('site_description'))">
 <meta name="twitter:image" content="@yield('head_image', URL::asset('/'.getcong('site_meta_image')))">
 <link rel="image_src" href="@yield('head_image', URL::asset('/'.getcong('site_meta_image')))">
 
