@@ -4,10 +4,16 @@
 
  <!-- Setup EVP -->
  <script type="text/javascript">
+ 		console.log('Player script starting...');
+ 		console.log('Video URL:', '{{$movies_info->video_url}}');
+ 		console.log('Video Type:', '{{$movies_info->video_type}}');
+ 		
 			 FWDEVPUtils.onReady(function(){
+			 	console.log('FWDEVPUtils ready');
  
 				 FWDEVPlayer.videoStartBehaviour = "pause";
 				 
+				 console.log('Initializing player...');
 				 new FWDEVPlayer({		
 					 //main settings
 					 instanceName:"player1",
