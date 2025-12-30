@@ -8,7 +8,7 @@
   padding-top: 56.25% !important;
   position: relative;
 }
- 
+
 .iframe-container iframe {
    border: 0;
    height: 100%;
@@ -28,21 +28,21 @@
     width: 100%;
     z-index: 9999999;
     opacity: 1;
-}  
+}
 .payment_loading{
   opacity: 0.5;
 }
-</style>  
+</style>
 
 <div id="loading" style="display: none;"></div>
- 
+
   <div class="content-page">
       <div class="content">
         <div class="container-fluid">
           <div class="row">
             <div class="col-lg-12">
               <div class="card-box">
-                
+
                 <div class="row">
                  <div class="col-sm-6">
                       <a href="{{ URL::to('admin/episodes') }}"><h4 class="header-title m-t-0 m-b-30 text-primary pull-left" style="font-size: 20px;"><i class="fa fa-arrow-left"></i> {{trans('words.back')}}</h4></a>
@@ -54,17 +54,17 @@
                  @endif
                </div>
 
-                  
+
                @if(!getcong('tmdb_api_key'))
                   <div class="alert alert-danger">
-                        
+
                           Please set TMDB API key <a href="{{ URL::to('admin/general_settings') }}#tmdbapi_id" target="_blank">here</a>
                   </div>
                 @endif
 
                 @if(!isset($episode_info->id))
                 <div id="result" class="m-t-15"></div>
-                
+
                  <input type="hidden" id="from" name="from" value="episode">
 
                   <div class="form-group row">
@@ -75,17 +75,17 @@
                       <small id="emailHelp" class="form-text text-muted">Note: Keep in mind that the information about some episodes may be missing since it relies on fetching data from the TMDb API. </small>
                     </div>
                      <div class="col-sm-2">
-                      <button type="submit" id="import_episode_btn" class="btn btn-primary waves-effect waves-light text-uppercase mt-1 pt-2 pb-2 pl-3 pr-3" @if(!getcong('omdb_api_key')) disabled @endif> {{trans('words.fetch')}} </button>                      
-                    </div>                    
-                  </div>                 
+                      <button type="submit" id="import_episode_btn" class="btn btn-primary waves-effect waves-light text-uppercase mt-1 pt-2 pb-2 pl-3 pr-3" @if(!getcong('omdb_api_key')) disabled @endif> {{trans('words.fetch')}} </button>
+                    </div>
+                  </div>
                 <hr/>
-                @endif                
-                {!! Form::open(array('url' => array('admin/episodes/add_edit_episode'),'class'=>'form-horizontal','name'=>'episode_form','id'=>'episode_form','role'=>'form','enctype' => 'multipart/form-data')) !!}                  
+                @endif
+                {!! Form::open(array('url' => array('admin/episodes/add_edit_episode'),'class'=>'form-horizontal','name'=>'episode_form','id'=>'episode_form','role'=>'form','enctype' => 'multipart/form-data')) !!}
                   <input type="hidden" name="id" value="{{ isset($episode_info->id) ? $episode_info->id : null }}">
-                  <input type="hidden" name="imdb_id" id="imdb_id" value="">                   
+                  <input type="hidden" name="imdb_id" id="imdb_id" value="">
                   <input type="hidden" name="imdb_votes" id="imdb_votes" value="">
                   <div class="row">
-                    <div class="col-md-6"> 
+                    <div class="col-md-6">
                       <h4 class="m-t-0 m-b-30 header-title" style="font-size: 20px;">{{trans('words.episode_info')}}</h4>
                       <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.episode_title')}}*</label>
@@ -96,18 +96,18 @@
                   <div class="form-group row">
                     <label for="webSite" class="col-sm-12 col-form-label">{{trans('words.description')}}</label>
                     <div class="col-sm-12">
-                      <div class="card-box pl-0 description_box">            
-                      <textarea id="elm1" name="video_description">{{ isset($episode_info->video_description) ? stripslashes($episode_info->video_description) : old('video_description') }}</textarea>                     
+                      <div class="card-box pl-0 description_box">
+                      <textarea id="elm1" name="video_description">{{ isset($episode_info->video_description) ? stripslashes($episode_info->video_description) : old('video_description') }}</textarea>
                     </div>
                     </div>
-                  </div>    
+                  </div>
 
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.episode_access')}}</label>
                       <div class="col-sm-8">
-                        <select class="form-control" name="video_access">                               
+                        <select class="form-control" name="video_access">
                             <option value="Paid" @if(isset($episode_info->video_access) AND $episode_info->video_access=='Paid') selected @endif>{{trans('words.paid')}}</option>
-                            <option value="Free" @if(isset($episode_info->video_access) AND $episode_info->video_access=='Free') selected @endif>{{trans('words.free')}}</option>                            
+                            <option value="Free" @if(isset($episode_info->video_access) AND $episode_info->video_access=='Free') selected @endif>{{trans('words.free')}}</option>
                         </select>
                       </div>
                   </div>
@@ -121,36 +121,36 @@
                                 @endforeach
                             </select>
                       </div>
-                  </div> 
+                  </div>
 
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.seasons_text')}}*</label>
                       <div class="col-sm-8">
                             <select class="form-control select2" name="season" id="episode_season_id">
                                 <option value="">Select Season</option>
-                                @if(isset($episode_info->id)) 
-                                  @foreach($season_list as $i => $season_data)    
-                                      <option value="{{ $season_data->id }}" @if($season_data->id==$episode_info->episode_season_id) selected @endif>{{ stripslashes($season_data->season_name) }}</option>    
+                                @if(isset($episode_info->id))
+                                  @foreach($season_list as $i => $season_data)
+                                      <option value="{{ $season_data->id }}" @if($season_data->id==$episode_info->episode_season_id) selected @endif>{{ stripslashes($season_data->season_name) }}</option>
                                   @endforeach
-                                @endif                                
+                                @endif
                             </select>
                       </div>
                   </div>
-                    
-                   
+
+
                   <div class="form-group row">
                     <label class="control-label col-sm-3">{{trans('words.imdb_rating')}}</label>
                     <div class="col-sm-8">
-                      <div class="input-group"> 
+                      <div class="input-group">
                         <input type="text" id="imdb_rating" name="imdb_rating" value="{{ isset($episode_info->imdb_rating) ? $episode_info->imdb_rating : old('imdb_rating') }}" class="form-control" placeholder="">
-                         
+
                       </div>
                     </div>
                   </div>
                   <div class="form-group row">
                     <label class="control-label col-sm-3">{{trans('words.release_date')}}</label>
                     <div class="col-sm-8">
-                      <div class="input-group"> 
+                      <div class="input-group">
                         <input type="text" id="datepicker-autoclose" name="release_date" value="{{ isset($episode_info->release_date) ? $episode_info->release_date ? date('m/d/Y',$episode_info->release_date) : '' : old('release_date') }}" class="form-control" placeholder="mm/dd/yyyy">
                         <div class="input-group-append">
                             <span class="input-group-text"><i class="ti-calendar"></i></span>
@@ -172,16 +172,16 @@
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.status')}}</label>
                       <div class="col-sm-8">
-                            <select class="form-control" name="status">                               
+                            <select class="form-control" name="status">
                                 <option value="1" @if(isset($episode_info->status) AND $episode_info->status==1) selected @endif>{{trans('words.active')}}</option>
-                                <option value="0" @if(isset($episode_info->status) AND $episode_info->status==0) selected @endif>{{trans('words.inactive')}}</option>                            
+                                <option value="0" @if(isset($episode_info->status) AND $episode_info->status==0) selected @endif>{{trans('words.inactive')}}</option>
                             </select>
                       </div>
                   </div>
 
                   <hr/>
                   <h4 class="m-t-0 m-b-30 header-title" style="font-size: 20px;">{{trans('words.seo')}}</h4>
-                  
+
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.seo_title')}}</label>
                     <div class="col-sm-8">
@@ -190,14 +190,14 @@
                   </div>
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.seo_desc')}}</label>
-                    <div class="col-sm-8">                       
+                    <div class="col-sm-8">
                       <textarea name="seo_description" id="seo_description" class="form-control">{{ isset($episode_info->seo_description) ? stripslashes($episode_info->seo_description) : old('seo_description') }}</textarea>
                     </div>
                   </div>
 
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.seo_keyword')}}</label>
-                    <div class="col-sm-8">                      
+                    <div class="col-sm-8">
                       <textarea name="seo_keyword" id="seo_keyword" class="form-control">{{ isset($episode_info->seo_keyword) ? stripslashes($episode_info->seo_keyword) : old('seo_keyword') }}</textarea>
                       <small id="emailHelp" class="form-text text-muted">{{trans('words.seo_keyword_note')}}</small>
                     </div>
@@ -205,7 +205,7 @@
                  </div>
                  <div class="col-md-6">
                       <h4 class="m-t-0 m-b-30 header-title" style="font-size: 20px;">{{trans('words.episode_poster_video')}}</h4>
-                       
+
                   <!--<div class="form-group row">
                     <label class="col-sm-3 col-form-label">Movie Poster</label>
                     <div class="col-sm-8">
@@ -215,32 +215,32 @@
 
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.episode_poster')}}*</label>
-                    <div class="col-sm-8">                       
+                    <div class="col-sm-8">
                       <div class="input-group">
                           <input type="text" name="video_image" id="video_image" value="{{ isset($episode_info->video_image) ? $episode_info->video_image : null }}" class="form-control" readonly>
-                          <div class="input-group-append">                           
-                            <button type="button" class="btn btn-dark waves-effect waves-light popup_selector" data-input="video_image" data-preview="holder_thumb" data-inputid="video_image">Select</button>                        
+                          <div class="input-group-append">
+                            <button type="button" class="btn btn-dark waves-effect waves-light popup_selector" data-input="video_image" data-preview="holder_thumb" data-inputid="video_image">Select</button>
                           </div>
                       </div>
                       <small id="emailHelp" class="form-text text-muted">({{trans('words.recommended_resolution')}} : 800x450)</small>
-                      <div id="image_holder" style="margin-top:5px;max-height:100px;"></div>                     
+                      <div id="image_holder" style="margin-top:5px;max-height:100px;"></div>
                     </div>
                   </div>
 
-                  @if(isset($episode_info->video_image)) 
+                  @if(isset($episode_info->video_image))
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">&nbsp;</label>
                     <div class="col-sm-8">
-                      <img src="{{URL::to('/'.$episode_info->video_image)}}" alt="video image" class="img-thumbnail" width="200"> 
+                      <img src="{{URL::to('/'.$episode_info->video_image)}}" alt="video image" class="img-thumbnail" width="200">
                     </div>
                   </div>
                   @endif
 
                   <div class="form-group row" id="display_poster_img" style="display: none;">
                     <label class="col-sm-3 col-form-label">&nbsp;</label>
-                    <div class="col-sm-8">   
-                           <input type="hidden" name="poster_link" id="poster_link" value="">                                                  
-                           <img id="imdb_poster_image" src="" alt="video poster" class="img-thumbnail" width="160">                       
+                    <div class="col-sm-8">
+                           <input type="hidden" name="poster_link" id="poster_link" value="">
+                           <img id="imdb_poster_image" src="" alt="video poster" class="img-thumbnail" width="160">
                     </div>
                   </div>
 
@@ -249,12 +249,12 @@
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.video_upload_type')}}</label>
                       <div class="col-sm-8">
-                            <select class="form-control" name="video_type" id="video_type">                               
+                            <select class="form-control" name="video_type" id="video_type">
                                 <option value="Local" @if(isset($episode_info->video_type) AND $episode_info->video_type=="Local") selected @endif>Local</option>
-                                <option value="URL" @if(isset($episode_info->video_type) AND $episode_info->video_type=="URL") selected @endif>URL</option>                                
+                                <option value="URL" @if(isset($episode_info->video_type) AND $episode_info->video_type=="URL") selected @endif>URL</option>
                                 <option value="HLS" @if(isset($episode_info->video_type) AND $episode_info->video_type=="HLS") selected @endif>HLS/m3u8 / MPEG-DASH / YouTube / Vimeo</option>
                                 <option value="Embed" @if(isset($episode_info->video_type) AND $episode_info->video_type=="Embed") selected @endif>Embed Code</option>
-                                                             
+
                             </select>
                       </div>
                   </div>
@@ -272,7 +272,7 @@
                       </div>
                     </div>
                   </div>
-                  
+
                   <div class="form-group row" id="local_id" @if(isset($episode_info->video_type) AND $episode_info->video_type!="Local") style="display:none;" @endif>
 
                     <div class="col-sm-11">
@@ -281,50 +281,50 @@
 
                     <label class="col-sm-3 col-form-label">{{trans('words.video_file')}} <small id="emailHelp" class="form-text text-muted">(Defualt Player File)</small></label>
                     <div class="col-sm-8 mb-3">
-                       
+
                       <div class="input-group">
                         <input type="text" name="video_url_local" id="video_url_local" value="{{ isset($episode_info->video_url) ? $episode_info->video_url : null }}" class="form-control" readonly>
-                        <div class="input-group-append">                           
-                          <button type="button" class="btn btn-dark waves-effect waves-light popup_selector" data-input="video_url_local" data-inputid="video_url_local">Select</button>                      
+                        <div class="input-group-append">
+                          <button type="button" class="btn btn-dark waves-effect waves-light popup_selector" data-input="video_url_local" data-inputid="video_url_local">Select</button>
                         </div>
                       </div>
-                     
+
                     </div>
 
                     <label class="col-sm-3 col-form-label">{{trans('words.video_file')}} 480P <small id="emailHelp" class="form-text text-muted"></small></label>
                     <div class="col-sm-8 mb-3">
-                       
+
                       <div class="input-group">
                         <input type="text" name="video_url_local_480" id="video_url_local_480" value="{{ isset($episode_info->video_url_480) ? $episode_info->video_url_480 : null }}" class="form-control" readonly>
-                        <div class="input-group-append">                           
-                          <button type="button" class="btn btn-dark waves-effect waves-light popup_selector" data-input="video_url_local_480" data-inputid="video_url_local_480">Select</button>                      
+                        <div class="input-group-append">
+                          <button type="button" class="btn btn-dark waves-effect waves-light popup_selector" data-input="video_url_local_480" data-inputid="video_url_local_480">Select</button>
                         </div>
                       </div>
-                     
+
                     </div>
 
                     <label class="col-sm-3 col-form-label">{{trans('words.video_file')}} 720P <small id="emailHelp" class="form-text text-muted"></small></label>
                     <div class="col-sm-8 mb-3">
-                       
+
                       <div class="input-group">
                         <input type="text" name="video_url_local_720" id="video_url_local_720" value="{{ isset($episode_info->video_url_720) ? $episode_info->video_url_720 : null }}" class="form-control" readonly>
-                        <div class="input-group-append">                           
-                          <button type="button" class="btn btn-dark waves-effect waves-light popup_selector" data-input="video_url_local_720" data-inputid="video_url_local_720">Select</button>                      
+                        <div class="input-group-append">
+                          <button type="button" class="btn btn-dark waves-effect waves-light popup_selector" data-input="video_url_local_720" data-inputid="video_url_local_720">Select</button>
                         </div>
                       </div>
-                     
+
                     </div>
 
                     <label class="col-sm-3 col-form-label">{{trans('words.video_file')}} 1080P <small id="emailHelp" class="form-text text-muted"></small></label>
                     <div class="col-sm-8 mb-3">
-                       
+
                        <div class="input-group">
                         <input type="text" name="video_url_local_1080" id="video_url_local_1080" value="{{ isset($episode_info->video_url_1080) ? $episode_info->video_url_1080 : null }}" class="form-control" readonly>
-                        <div class="input-group-append">                           
-                          <button type="button" class="btn btn-dark waves-effect waves-light popup_selector" data-input="video_url_local_1080" data-inputid="video_url_local_1080">Select</button>                      
+                        <div class="input-group-append">
+                          <button type="button" class="btn btn-dark waves-effect waves-light popup_selector" data-input="video_url_local_1080" data-inputid="video_url_local_1080">Select</button>
                         </div>
                       </div>
-                     
+
                     </div>
 
                   </div>
@@ -337,7 +337,10 @@
 
                     <label class="col-sm-3 col-form-label">{{trans('words.video_url')}} <small id="emailHelp" class="form-text text-muted">(Defualt Player File)</small></label>
                      <div class="col-sm-8 mb-3">
-                      <input type="text" name="video_url" value="{{ isset($episode_info->video_url) ? $episode_info->video_url : null }}" class="form-control" placeholder="http://example.com/demo.mp4">
+                      <select id="api_file_select" class="form-control mb-3" style="display: none;">
+                          <option value="">Select File from API</option>
+                      </select>
+                      <input type="text" name="video_url" id="video_url_input" value="{{ isset($episode_info->video_url) ? $episode_info->video_url : null }}" class="form-control" placeholder="http://example.com/demo.mp4">
                     </div>
 
                     <label class="col-sm-3 col-form-label">{{trans('words.video_url')}} 480P<small id="emailHelp" class="form-text text-muted"></small></label>
@@ -358,7 +361,7 @@
                   </div>
 
                   <div class="form-group row" id="embed_id" @if(isset($episode_info->video_type) AND $episode_info->video_type!="Embed") style="display:none;" @endif @if(!isset($episode_info->id)) style="display:none;" @endif>
-                      
+
                     <label class="col-sm-3 col-form-label">{{trans('words.video_embed_code')}}</label>
                      <div class="col-sm-8 mb-3">
                        <textarea class="form-control" name="video_embed_code">{{ isset($episode_info->video_url) ? $episode_info->video_url : null }}</textarea>
@@ -369,7 +372,7 @@
 
                   <div class="col-sm-11">
                     <small id="emailHelp" class="form-text text-muted">(Supported : MP4, YouTube, Vimeo, HLS / m3u8 URL. If you are using external files then those files have to be <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank">CORS</a> enabled otherwise they will not work.)</small></label><br>
-                    </div>       
+                    </div>
 
                     <label class="col-sm-3 col-form-label">{{trans('words.hls_streaming')}}</label>
                      <div class="col-sm-8 mb-3">
@@ -405,7 +408,7 @@
 
                   <hr/>
                   <h4 class="m-t-0 m-b-15 header-title" style="font-size: 20px;">{{trans('words.subtitles')}}</h4>
-                  <div class="col-sm-9 pl-0"> 
+                  <div class="col-sm-9 pl-0">
                     <small id="emailHelp" class="form-text text-muted">(Supported : .srt or .vtt files URL only. If you are using external files then those files have to be <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank">CORS</a> enabled otherwise they will not work.)</small>
                   </div> <br/>
 
@@ -436,7 +439,7 @@
                     </label>
                     <div class="col-sm-8">
                       <input type="text" name="subtitle_url1" id="subtitle_url1" value="{{ isset($episode_info->subtitle_url1) ? $episode_info->subtitle_url1 : old('subtitle_url1') }}" class="form-control" placeholder="http://example.com/demo.srt">
-                       
+
                     </div>
                   </div>
 
@@ -453,7 +456,7 @@
                     </label>
                     <div class="col-sm-8">
                       <input type="text" name="subtitle_url2" id="subtitle_url2" value="{{ isset($episode_info->subtitle_url2) ? $episode_info->subtitle_url2 : old('subtitle_url2') }}" class="form-control" placeholder="http://example.com/demo.srt">
-                       
+
                     </div>
                   </div>
 
@@ -470,37 +473,37 @@
                     </label>
                     <div class="col-sm-8">
                       <input type="text" name="subtitle_url3" id="subtitle_url3" value="{{ isset($episode_info->subtitle_url3) ? $episode_info->subtitle_url3 : old('subtitle_url3') }}" class="form-control" placeholder="http://example.com/demo.srt">
-                       
+
                     </div>
-                  </div> 
-                  
+                  </div>
+
 
                   <div class="form-group">
                   <div class="offset-sm-9 col-sm-9">
-                    <button type="submit" class="btn btn-primary waves-effect waves-light"><i class="fa fa-save"></i> {{trans('words.save')}} </button>                      
+                    <button type="submit" class="btn btn-primary waves-effect waves-light"><i class="fa fa-save"></i> {{trans('words.save')}} </button>
                   </div>
                 </div>
-                  
-
-                 </div> 
 
 
-                </div> 
- 
- 
-                {!! Form::close() !!} 
+                 </div>
+
+
+                </div>
+
+
+                {!! Form::close() !!}
               </div>
-            </div>            
-          </div>              
+            </div>
+          </div>
         </div>
       </div>
-      @include("admin.copyright") 
-    </div> 
+      @include("admin.copyright")
+    </div>
 
 
 <script type="text/javascript">
-     
-     
+
+
 // function to update the file selected by elfinder
 function processSelectedFile(filePath, requestingField) {
 
@@ -517,18 +520,18 @@ function processSelectedFile(filePath, requestingField) {
             );
       target_preview.trigger('change');
     }
- 
+
     //$('#' + requestingField).val(filePath.split('\\').pop()).trigger('change'); //For only filename
     $('#' + requestingField).val(filePath.replace(/\\/g,"/")).trigger('change');
- 
+
 }
- 
+
  </script>
 
 <script type="text/javascript">
-    
-    @if(Session::has('flash_message'))     
- 
+
+    @if(Session::has('flash_message'))
+
       const Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -544,12 +547,12 @@ function processSelectedFile(filePath, requestingField) {
       Toast.fire({
         icon: 'success',
         title: '{{ Session::get('flash_message') }}'
-      })     
-     
+      })
+
   @endif
 
   @if (count($errors) > 0)
-                  
+
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
@@ -558,9 +561,76 @@ function processSelectedFile(filePath, requestingField) {
             confirmButtonColor: '#10c469',
             background:"#1a2234",
             color:"#fff"
-           }) 
+           })
   @endif
 
   </script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    var apiFilesFetched = false;
+    var apiUrl = "https://cineworm.twoflip.com/api/files?api_key=MbTNkiPl03fHCkjkCCgRqx1ANg0A9e4hqdtJbGFZijBfY5D4DKDSImPPDnDw";
+
+    function fetchApiFiles() {
+        if (apiFilesFetched) return;
+
+        // Show loading state in dropdown
+        $('#api_file_select').html('<option value="">Loading files...</option>');
+
+        $.ajax({
+            url: apiUrl,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success' && response.data) {
+                    var options = '<option value="">Select File from API</option>';
+                    $.each(response.data, function(index, file) {
+                        options += '<option value="' + file.direct_link + '">' + file.name + '</option>';
+                    });
+                    $('#api_file_select').html(options);
+                    apiFilesFetched = true;
+
+                    // Show the dropdown if it was hidden/loading
+                    $('#api_file_select').show();
+                } else {
+                     $('#api_file_select').html('<option value="">No files found or API error</option>');
+                }
+            },
+            error: function(error) {
+                console.error('Error fetching API files:', error);
+                $('#api_file_select').html('<option value="">Error fetching files</option>');
+            }
+        });
+    }
+
+    function checkVideoType() {
+        var videoType = $('#video_type').val();
+        if (videoType === 'URL') {
+            $('#api_file_select').show();
+            fetchApiFiles();
+        } else {
+             if(apiFilesFetched) {
+                 $('#api_file_select').show();
+             }
+        }
+    }
+
+    // Initial check
+    checkVideoType();
+
+    // Listen for changes on video_type
+    $('#video_type').change(function() {
+        checkVideoType();
+    });
+
+    // Populate input on selection
+    $('#api_file_select').change(function() {
+        var selectedLink = $(this).val();
+        if (selectedLink) {
+            $('#video_url_input').val(selectedLink);
+        }
+    });
+});
+</script>
 
 @endsection
