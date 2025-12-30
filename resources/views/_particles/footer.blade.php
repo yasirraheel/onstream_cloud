@@ -18,7 +18,7 @@
           @foreach(\App\Pages::where('status','1')->orderBy('page_order')->get() as $page_data)
                 <li><a href="{{ URL::to('page/'.$page_data->page_slug) }}" title="{{$page_data->page_title}}">{{$page_data->page_title}}</a></li>
           @endforeach                 
-           
+           <li><a href="{{ URL::to('movies_request') }}" title="Request Movies">Request Movies</a></li>
           </ul>
         </div>
         <div class="copyright-text">

@@ -155,6 +155,11 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::get('search_history/delete/{id}', 'SearchHistoryController@delete');
     Route::get('search_history/clear', 'SearchHistoryController@clear_all');
 
+    // Movie Requests
+    Route::get('movie_requests', 'MovieRequestController@index');
+    Route::get('movie_requests/delete/{id}', 'MovieRequestController@delete');
+    Route::get('movie_requests/status/{id}/{status}', 'MovieRequestController@status');
+
     Route::get('ads', 'AdManagementController@ads_list');
 
     Route::get('pages', 'PagesController@pages_list');
@@ -201,254 +206,112 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
 
     Route::get('android_settings', 'SettingsAndroidAppController@android_settings');
     Route::post('android_settings', 'SettingsAndroidAppController@update_android_settings');
+
     Route::get('android_notification', 'SettingsAndroidAppController@android_notification');
     Route::post('android_notification', 'SettingsAndroidAppController@send_android_notification');
 
-    Route::get('ad_list', 'AppAdsController@list');
-    Route::get('ad_list/edit/{id}', 'AppAdsController@edit');
-    Route::post('ad_list/admob', 'AppAdsController@admob');
-    Route::post('ad_list/startapp', 'AppAdsController@startapp');
-    Route::post('ad_list/facebook', 'AppAdsController@facebook');
-    Route::post('ad_list/applovins', 'AppAdsController@applovins');
-    Route::post('ad_list/wortise', 'AppAdsController@wortise');
 
-    Route::get('coupons', 'CouponsController@coupons');
-    Route::get('coupons/addcoupon', 'CouponsController@addeditCoupons');
-    Route::get('coupons/addcoupon/{id}', 'CouponsController@editCoupons');
-    Route::post('coupons/addcoupon', 'CouponsController@addnew');
-    Route::get('coupons/delete/{id}', 'CouponsController@delete');
-
-
-    Route::get('actor', 'ActorController@list');
-    Route::get('actor/add', 'ActorController@add');
-    Route::get('actor/edit/{id}', 'ActorController@edit');
-    Route::post('actor/add_edit', 'ActorController@addnew');
-    Route::get('actor/delete/{id}', 'ActorController@delete');
-
-    Route::get('director', 'DirectorController@list');
-    Route::get('director/add', 'DirectorController@add');
-    Route::get('director/edit/{id}', 'DirectorController@edit');
-    Route::post('director/add_edit', 'DirectorController@addnew');
-    Route::get('director/delete/{id}', 'DirectorController@delete');
-
-    Route::get('payment_gateway', 'PaymentGatewayController@list');
-    Route::get('payment_gateway/edit/{id}', 'PaymentGatewayController@edit');
-    Route::post('payment_gateway/paypal', 'PaymentGatewayController@paypal');
-    Route::post('payment_gateway/stripe', 'PaymentGatewayController@stripe');
-    Route::post('payment_gateway/razorpay', 'PaymentGatewayController@razorpay');
-    Route::post('payment_gateway/paystack', 'PaymentGatewayController@paystack');
-    Route::post('payment_gateway/instamojo', 'PaymentGatewayController@instamojo');
-    Route::post('payment_gateway/payu', 'PaymentGatewayController@payu');
-    Route::post('payment_gateway/mollie', 'PaymentGatewayController@mollie');
-    Route::post('payment_gateway/flutterwave', 'PaymentGatewayController@flutterwave');
-    Route::post('payment_gateway/paytm', 'PaymentGatewayController@paytm');
-    Route::post('payment_gateway/cashfree', 'PaymentGatewayController@cashfree');
-    Route::post('payment_gateway/coingate', 'PaymentGatewayController@coingate');
-    Route::post('payment_gateway/banktransfer', 'PaymentGatewayController@banktransfer');
-    Route::post('payment_gateway/braintree', 'PaymentGatewayController@braintree');
-    Route::post('payment_gateway/sslcommerz', 'PaymentGatewayController@sslcommerz');
-    Route::post('payment_gateway/cinetpay', 'PaymentGatewayController@cinetpay');
-
-    Route::post('ajax_status', 'ActionsController@ajax_status');
-    Route::post('ajax_delete', 'ActionsController@ajax_delete');
-
-    Route::get('maintenance/{mode}', 'SettingsController@maintenance')->where('mode', 'down|up');
-
-    Route::get('cache', 'DashboardController@cache');
 });
 
-//Site
+Route::group(['middleware' => ['web']], function() {
 
-Route::get('/', 'IndexController@index');
+    Route::get('/', 'IndexController@index');
 
-Route::post('track-ad-click', 'IndexController@trackAdClick');
+    Route::get('login', 'IndexController@login');
+    Route::post('login', 'IndexController@postLogin');
+    Route::get('signup', 'IndexController@signup');
+    Route::post('signup', 'IndexController@postSignup');
+    Route::get('logout', 'IndexController@logout');
 
-Route::get('offers', 'IndexController@offers');
+    Route::get('password/email', 'Auth\PasswordController@getEmail');
+    Route::post('password/email', 'Auth\PasswordController@postEmail');
+    Route::get('password/reset/{token}', 'Auth\PasswordController@getReset');
+    Route::post('password/reset', 'Auth\PasswordController@postReset');
 
-Route::get('collections/{slug}/{id}', 'IndexController@home_collections');
+    Route::get('dashboard', 'UsersController@dashboard');
+    Route::get('profile', 'UsersController@profile');
+    Route::post('profile', 'UsersController@updateProfile');
 
-Route::get('movies', 'MoviesController@movies');
-Route::get('movies/details/{slug}/{id}', 'MoviesController@movies_details');
-Route::get('movies/watch/{slug}/{id}', 'MoviesController@movies_watch');
+    Route::get('membership_plan', 'UsersController@membership_plan');
+    Route::get('membership_plan/paypal/{id}', 'UsersController@membership_plan_paypal');
+    Route::get('paypal_success/{id}', 'UsersController@paypal_success');
+    Route::get('paypal_cancel/{id}', 'UsersController@paypal_cancel');
 
-Route::get('movies/{slug}/{id}', 'MoviesController@movies_single')->name('movies_single');
+    Route::get('membership_plan/stripe/{id}', 'UsersController@membership_plan_stripe');
+    Route::post('stripe/payment', 'UsersController@stripe_payment');
 
-if(getcong('menu_shows'))
-{
-Route::get('shows', 'ShowsController@shows');
-
-Route::get('shows/details/{series_slug}/{id}', 'ShowsController@show_details');
-
-Route::get('shows/{series_slug}/seasons/{season_slug}/{id}', 'ShowsController@season_episodes');
-
-Route::get('shows/{series_slug}/{episodes_slug}/{id}', 'ShowsController@episodes_details')->name('episodes_single');
-}
-
-if(getcong('menu_sports'))
-{
-Route::get('sports', 'SportsController@sports');
-Route::get('sports/{slug}', 'SportsController@sports_by_category');
-Route::get('sports/details/{slug}/{id}', 'SportsController@sports_details');
-Route::get('sports/watch/{slug}/{id}', 'SportsController@sports_watch');
-}
-
-if(getcong('menu_livetv'))
-{
-Route::get('livetv', 'LiveTvController@live_tv_list');
-Route::get('livetv/{slug}', 'LiveTvController@live_tv_by_category');
-Route::get('livetv/details/{slug}/{id}', 'LiveTvController@live_tv_details');
-Route::get('livetv/watch/{slug}/{id}', 'LiveTvController@live_tv_single');
-}
-
-/*========================================*/
+    Route::get('membership_plan/paystack/{id}', 'UsersController@membership_plan_paystack');
+    Route::post('/pay', [PaystackController::class, 'redirectToGateway'])->name('pay');
+    Route::get('/payment/callback', [PaystackController::class, 'handleGatewayCallback']);
 
 
-Route::get('login', 'IndexController@login');
-Route::post('login', 'IndexController@postLogin');
+    Route::get('membership_plan/razorpay/{id}', 'UsersController@membership_plan_razorpay');
+    Route::post('razorpay/payment', 'UsersController@razorpay_payment');
 
-Route::get('auth/google', 'Auth\GoogleController@redirectToGoogle');
-Route::get('auth/google/callback', 'Auth\GoogleController@handleGoogleCallback');
+    Route::get('movies', 'IndexController@movies');
+    Route::get('movies/{slug}/{id}', 'IndexController@movies_single');
 
-Route::get('auth/facebook', 'Auth\FacebookController@redirectToFacebook');
-Route::get('auth/facebook/callback', 'Auth\FacebookController@handleFacebookCallback');
+    Route::get('series', 'IndexController@series');
+    Route::get('series/{slug}/{id}', 'IndexController@series_single');
 
-Route::get('signup', 'IndexController@signup');
-Route::post('signup', 'IndexController@postSignup');
+    Route::get('sports', 'IndexController@sports');
+    Route::get('sports/{slug}/{id}', 'IndexController@sports_single');
 
-Route::get('logout', 'IndexController@logout');
+    Route::get('livetv', 'IndexController@livetv');
+    Route::get('livetv/{slug}/{id}', 'IndexController@livetv_single');
 
-Route::get('logout_user_remotely/{session_id}', 'IndexController@logout_user_remotely');
-Route::get('check_user_remotely_logout_or_not/{session_id}', 'IndexController@check_user_remotely_logout_or_not');
+    Route::get('search', 'IndexController@search');
+    Route::get('search_elastic', 'IndexController@search_elastic');
 
-Route::get('dashboard', 'UserController@dashboard');
-Route::get('profile', 'UserController@profile');
-Route::post('profile', 'UserController@editprofile');
-Route::post('phone_update', 'UserController@phone_update');
-Route::get('watchlist', 'UserController@my_watchlist');
-Route::get('account_delete', 'UserController@account_delete');
+    Route::get('sitemap.xml', 'IndexController@sitemap');
+    Route::get('sitemap_misc.xml', 'IndexController@sitemap_misc');
+    Route::get('sitemap_movies.xml', 'IndexController@sitemap_movies');
+    Route::get('sitemap_show.xml', 'IndexController@sitemap_show');
+    Route::get('sitemap_sports.xml', 'IndexController@sitemap_sports');
+    Route::get('sitemap_livetv.xml', 'IndexController@sitemap_livetv');
 
-Route::get('membership_plan', 'UserController@membership_plan');
-Route::get('payment_method/{plan_id}', 'UserController@payment_method');
+    Route::get('page/{slug}', 'IndexController@pages');
 
-Route::post('paypal/pay', 'PaypalController@paypal_pay');
-Route::get('paypal/success', 'PaypalController@paypal_success');
-Route::get('paypal/fail', 'PaypalController@paypal_fail');
+    Route::get('movies_request', 'IndexController@movies_request');
+    Route::post('movies_request', 'IndexController@post_movies_request');
 
+    Route::get('google_login', 'IndexController@google_login');
+    Route::get('facebook_login', 'IndexController@facebook_login');
 
-Route::get('stripe/pay', 'StripeController@stripe_pay');
-Route::get('stripe/success', 'StripeController@stripe_success');
-Route::get('stripe/fail', 'StripeController@stripe_fail');
+    Route::get('watchlist', 'UsersController@watchlist');
+    Route::get('watchlist/add', 'UsersController@watchlist_add');
+    Route::get('watchlist/remove', 'UsersController@watchlist_remove');
 
-Route::post('razorpay_get_order_id', 'RazorpayController@get_order_id');
-Route::post('razorpay-success', 'RazorpayController@payment_success');
+    Route::get('{slug}/{id}', 'IndexController@home_collections');
 
-Route::post('pay', 'PaystackController@redirectToGateway')->name('pay');
-Route::post('payment/PayEasyPaisa', 'PaystackController@PayEasyPaisa');
+    // Database Update Route
+    Route::get('db_update', function() {
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('search_history', 'country')) {
+                \Illuminate\Support\Facades\Schema::table('search_history', function ($table) {
+                    $table->string('country')->nullable()->after('ip_address');
+                    $table->string('country_code')->nullable()->after('country');
+                });
+            }
 
+            if (!\Illuminate\Support\Facades\Schema::hasTable('movie_requests')) {
+                \Illuminate\Support\Facades\Schema::create('movie_requests', function ($table) {
+                    $table->id();
+                    $table->integer('user_id')->nullable();
+                    $table->string('movie_name');
+                    $table->string('language')->nullable();
+                    $table->text('message')->nullable();
+                    $table->string('email')->nullable();
+                    $table->enum('status', ['Pending', 'Completed'])->default('Pending');
+                    $table->timestamps();
+                });
+                return "Success: movie_requests table created.";
+            }
 
-Route::post('payu_success', 'PayuController@payu_success');
-Route::post('payu_fail', 'PayuController@payu_fail');
+            return "Info: Updates already applied.";
+        } catch (\Exception $e) {
+            return "Error: " . $e->getMessage();
+        }
+    });
 
-Route::post('instamojo/pay', 'InstamojoController@instamojo_pay');
-Route::get('instamojo/success', 'InstamojoController@instamojo_success');
-
-Route::post('mollie/pay', 'MollieController@mollie_pay');
-Route::get('mollie/success', 'MollieController@mollie_success');
-Route::get('mollie/fail', 'MollieController@mollie_fail');
-
-Route::post('flutterwave/pay', 'FlutterwaveController@flutterwave_pay');
-Route::get('flutterwave/success', 'FlutterwaveController@flutterwave_success');
-
-Route::get('paytm/pay', 'PaytmController@paytm_pay');
-Route::post('paytm/success', 'PaytmController@paytm_success');
-
-Route::post('cashfree/get_cashfree_session_id', 'CashfreeController@get_cashfree_session_id');
-Route::get('cashfree/success', 'CashfreeController@cashfree_success');
-
-Route::get('coingate/pay', 'CoingateController@coingate_pay');
-Route::get('coingate/success', 'CoingateController@coingate_success');
-Route::get('coingate/fail', 'CoingateController@coingate_fail');
-
-Route::get('sslcommerz/pay', 'SslcommerzController@sslcommerz_pay');
-Route::post('sslcommerz/success', 'SslcommerzController@sslcommerz_success');
-Route::post('sslcommerz/fail', 'SslcommerzController@sslcommerz_fail');
-
-Route::get('cinetpay/pay', 'CinetpayController@pay');
-Route::post('cinetpay/success', 'CinetpayController@success');
-Route::get('cinetpay/notify', 'CinetpayController@notify');
-
-Route::get('language/series', 'LanguageController@series_language');
-Route::get('language/series/{slug}', 'LanguageController@series_by_language');
-Route::get('language/movies', 'LanguageController@movies_language');
-Route::get('language/movies/{slug}', 'LanguageController@movies_by_language');
-
-
-Route::get('genres/series', 'GenresController@series_genres');
-Route::get('genres/series/{slug}', 'GenresController@series_by_genres');
-Route::get('genres/movies', 'GenresController@movies_genres');
-Route::get('genres/movies/{slug}', 'GenresController@movies_by_genres');
-
-
-Route::get('actors/{slug}/{id}', 'ActorDirectorController@actor_details');
-Route::get('directors/{slug}/{id}', 'ActorDirectorController@director_details');
-
-Route::get('page/{slug}', 'PagesController@get_page');
-Route::post('contact_send', 'PagesController@contact_send');
-
-Route::get('search', 'IndexController@search');
-Route::get('search_elastic', 'IndexController@search_elastic');
-
-Route::get('password/email', 'Auth\ForgotPasswordController@forget_password');
-Route::post('password/email', 'Auth\ForgotPasswordController@forget_password_submit');
-Route::get('password/reset/{token}', 'Auth\ForgotPasswordController@reset_password');
-Route::post('password/reset', 'Auth\ForgotPasswordController@reset_password_submit');
-
-Route::get('delete_account', 'UserController@delete_account');
-Route::post('delete_account_verify', 'UserController@delete_account_verify');
-
-Route::get('sitemap.xml', 'IndexController@sitemap');
-Route::get('sitemap-misc.xml', 'IndexController@sitemap_misc');
-Route::get('sitemap-movies.xml', 'IndexController@sitemap_movies');
-Route::get('sitemap-show.xml', 'IndexController@sitemap_show');
-Route::get('sitemap-sports.xml', 'IndexController@sitemap_sports');
-Route::get('sitemap-livetv.xml', 'IndexController@sitemap_livetv');
-
-
-Route::get('watchlist/add', 'UserController@watchlist_add');
-Route::get('watchlist/remove', 'UserController@watchlist_remove');
-
-Route::post('apply_coupon_code', 'UserController@apply_coupon_code');
-
-//For App Only
-Route::any('app_payu_success', function () {
-    return view('app.app_payu_success');
 });
-
-Route::any('app_payu_failed', function () {
-    return view('app.app_payu_failed');
-});
-
-Route::any('app_coingate_success', function () {
-    return view('app.app_success');
-});
-
-Route::any('app_coingate_failed', function () {
-    return view('app.app_failed');
-});
-
-Route::any('app_mollie_success', function () {
-    return view('app.app_success');
-});
-
-Route::any('app_mollie_failed', function () {
-    return view('app.app_failed');
-});
-
-
-//Clear Cache
-Route::get('/clear-cache', function() {
-
-        Artisan::call('optimize:clear');
-
-       echo "View cache cleared. \r\n";
- });

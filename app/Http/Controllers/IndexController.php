@@ -40,6 +40,7 @@ use DeviceDetector\Parser\Device\AbstractDeviceParser;
 AbstractDeviceParser::setVersionTruncation(AbstractDeviceParser::VERSION_TRUNCATION_NONE);
 
 use App\SearchHistory;
+use App\MovieRequest;
 
 class IndexController extends Controller
 {
@@ -171,6 +172,11 @@ class IndexController extends Controller
     {
         if ($ip == '127.0.0.1' || $ip == '::1') {
             return ['country' => 'Localhost', 'country_code' => 'LO'];
+        }
+
+        // Check for private IP ranges
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+            return ['country' => 'Private Network', 'country_code' => 'PN'];
         }
 
         try {
@@ -798,6 +804,50 @@ class IndexController extends Controller
         }
 
         return view('pages.offers', compact('page_title', 'ads_products'));
+    }
+
+    public function movies_request()
+    {
+        return view('pages.movies_request');
+    }
+
+    public function post_movies_request(Request $request)
+    {
+        $data =  \Request::except(array('_token'));
+
+        $rule = array(
+            'movie_name' => 'required',
+            'email' => 'nullable|email',
+        );
+
+        $validator = \Validator::make($data, $rule);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withInput()->withErrors($validator->messages());
+        }
+
+        $inputs = $request->all();
+
+        $request_obj = new MovieRequest;
+        $request_obj->movie_name = $inputs['movie_name'];
+        $request_obj->language = $inputs['language'];
+        $request_obj->message = $inputs['message'];
+        $request_obj->email = $inputs['email'];
+
+        if(Auth::check())
+        {
+            $request_obj->user_id = Auth::User()->id;
+            if(empty($inputs['email']))
+            {
+                $request_obj->email = Auth::User()->email;
+            }
+        }
+
+        $request_obj->save();
+
+        Session::flash('flash_message', 'Your movie request has been submitted successfully!');
+
+        return redirect()->back();
     }
 
 }

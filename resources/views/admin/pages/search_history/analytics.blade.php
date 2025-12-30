@@ -56,7 +56,7 @@
                                     @foreach($top_countries as $country)
                                     <tr>
                                         <td>
-                                            @if($country->country_code)
+                                            @if($country->country_code && !in_array($country->country_code, ['LO', 'PN']))
                                                 <img src="https://flagcdn.com/24x18/{{strtolower($country->country_code)}}.png" alt="{{$country->country_code}}">
                                             @endif
                                             {{$country->country}}
