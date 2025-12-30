@@ -171,6 +171,15 @@ class IndexController extends Controller
     {
         $keyword = $_GET['s'];
 
+        // Save search history
+        if (!empty($keyword)) {
+            SearchHistory::create([
+                'keyword' => $keyword,
+                'user_id' => Auth::check() ? Auth::id() : null,
+                'ip_address' => request()->ip()
+            ]);
+        }
+
         if(getcong('menu_movies'))
         {
             $s_movies_list = Movies::where('status',1)->where("video_title", "LIKE","%$keyword%")->orderBy('video_title')->get();
