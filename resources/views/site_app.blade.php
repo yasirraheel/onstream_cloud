@@ -86,6 +86,31 @@
       .search .search-input input[type=text]::placeholder, .search .search-input input[type=text].focus {
           background: {{$search_bg}} !important;
       }
+
+      .vid-lab-premium {
+        background: linear-gradient(45deg, #ffd700, #ff8c00) !important;
+        border-radius: 50%;
+        padding: 0;
+        position: absolute;
+        z-index: 9;
+        right: 10px;
+        top: 10px;
+        width: 35px;
+        height: 35px;
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #fff;
+    }
+
+    .vid-lab-premium img {
+        width: 18px !important;
+        height: 18px !important;
+        object-fit: contain !important;
+        vertical-align: middle;
+        filter: brightness(0) invert(1);
+    }
  </style>
 
 </head>
