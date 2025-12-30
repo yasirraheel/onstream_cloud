@@ -39,6 +39,8 @@ use DeviceDetector\Parser\Device\AbstractDeviceParser;
 
 AbstractDeviceParser::setVersionTruncation(AbstractDeviceParser::VERSION_TRUNCATION_NONE);
 
+use App\SearchHistory;
+
 class IndexController extends Controller
 {
 
@@ -214,6 +216,15 @@ class IndexController extends Controller
     public function search()
     {
         $keyword = $_GET['s'];
+
+        // Save search history
+        if (!empty($keyword)) {
+            SearchHistory::create([
+                'keyword' => $keyword,
+                'user_id' => Auth::check() ? Auth::id() : null,
+                'ip_address' => request()->ip()
+            ]);
+        }
 
         $movies_list = Movies::where('status',1)->where('upcoming',0)->where("video_title", "LIKE","%$keyword%")->orderBy('video_title')->get();
 

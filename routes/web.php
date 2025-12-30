@@ -149,6 +149,11 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::get('transactions', 'TransactionsController@transactions_list');
     Route::post('transactions/export', 'TransactionsController@transactions_export');
 
+    // Search History
+    Route::get('search_history', 'SearchHistoryController@index');
+    Route::get('search_history/delete/{id}', 'SearchHistoryController@delete');
+    Route::get('search_history/clear', 'SearchHistoryController@clear_all');
+
     Route::get('ads', 'AdManagementController@ads_list');
 
     Route::get('pages', 'PagesController@pages_list');

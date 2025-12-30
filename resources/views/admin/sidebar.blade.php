@@ -180,6 +180,8 @@
 
             <li><a href="{{ URL::to('admin/transactions') }}" class="waves-effect {{classActivePath('transactions')}}"><i class="fa fa-list"></i><span>{{trans('words.transactions')}}</span></a></li>
 
+            <li><a href="{{ URL::to('admin/search_history') }}" class="waves-effect {{classActivePath('search_history')}}"><i class="fa fa-history"></i><span>Search History</span></a></li>
+
             <li><a href="{{ URL::to('admin/ads') }}" class="waves-effect {{classActivePath('ads')}}"><i class="fa fa-bullhorn"></i><span>Ad Management</span></a></li>
 
             </ul>
