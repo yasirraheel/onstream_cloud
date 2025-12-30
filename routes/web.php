@@ -250,15 +250,19 @@ Route::group(['middleware' => ['web']], function() {
 
     Route::get('movies', 'MoviesController@movies');
     Route::get('movies/details/{slug}/{id}', 'MoviesController@movies_details');
+    Route::get('movies/watch/{slug}/{id}', 'MoviesController@movies_watch');
 
     Route::get('shows', 'ShowsController@shows');
     Route::get('shows/details/{slug}/{id}', 'ShowsController@show_details');
+    Route::get('shows/{series_slug}/{slug}/{id}', 'ShowsController@shows_watch');
 
     Route::get('sports', 'SportsController@sports');
     Route::get('sports/details/{slug}/{id}', 'SportsController@sports_details');
+    Route::get('sports/watch/{slug}/{id}', 'SportsController@sports_watch');
 
     Route::get('livetv', 'LiveTvController@live_tv_list');
     Route::get('livetv/details/{slug}/{id}', 'LiveTvController@live_tv_details');
+    Route::get('livetv/watch/{slug}/{id}', 'LiveTvController@live_tv_watch');
 
     Route::get('search', 'IndexController@search');
     Route::get('search_elastic', 'IndexController@search_elastic');
