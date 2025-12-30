@@ -2,7 +2,7 @@
 
 @section("content")
 
-  
+
   <div class="content-page">
       <div class="content">
         <div class="container-fluid">
@@ -16,32 +16,32 @@
 
 
                 <div class="row">
-                  
+
                   <div class="col-md-3">
-                     {!! Form::open(array('url' => 'admin/movies','class'=>'app-search','id'=>'search','role'=>'form','method'=>'get')) !!}   
+                     {!! Form::open(array('url' => 'admin/movies','class'=>'app-search','id'=>'search','role'=>'form','method'=>'get')) !!}
                       <input type="text" name="s" placeholder="{{trans('words.search_by_title')}}" class="form-control">
                       <button type="submit"><i class="fa fa-search"></i></button>
                     {!! Form::close() !!}
-                  </div>  
+                  </div>
                   <div class="col-sm-6">
                   &nbsp;
-                </div>           
+                </div>
                 <div class="col-md-3">
                   <a href="{{URL::to('admin/movies/add_movie')}}" class="btn btn-success btn-md waves-effect waves-light m-b-20 mt-2 pull-right" data-toggle="tooltip" title="{{trans('words.add_movie')}}"><i class="fa fa-plus"></i> {{trans('words.add_movie')}}</a>
                 </div>
               </div>
 
-              <div class="row">   
-                  <div class="wall-filter-block">  
-                    <div class="row" style="align-items: center;justify-content: space-between;">            
-                     
-                      <div class="col-sm-3"> 
+              <div class="row">
+                  <div class="wall-filter-block">
+                    <div class="row" style="align-items: center;justify-content: space-between;">
+
+                      <div class="col-sm-3">
                           <select class="form-control select2" name="movie_language_id" id="filter_language_id">
                             <option value="">{{trans('words.filter_by_lang')}}</option>
                             @foreach($language_list as $language_data)
                               <option value="?language_id={{$language_data->id}}" @if(isset($_GET['language_id']) && $_GET['language_id']==$language_data->id ) selected @endif>{{$language_data->language_name}}</option>
                             @endforeach
-                        </select>                         
+                        </select>
                       </div>
                       <div class="col-sm-3">
                       <select class="form-control select2" name="movie_genres_id" id="filter_genres_id">
@@ -49,9 +49,9 @@
                             @foreach($genres_list as $genres_data)
                               <option value="?genres_id={{$genres_data->id}}" @if(isset($_GET['genres_id']) && $_GET['genres_id']==$genres_data->id ) selected @endif>{{$genres_data->genre_name}}</option>
                             @endforeach
-                        </select>                    
+                        </select>
                       </div>
-                       
+
                       <div class="col-sm-4">
                         <div class="checkbox checkbox-success pull-right">
                             <input id="sellect_all" type="checkbox" name="sellect_all">
@@ -60,18 +60,47 @@
                             <div class="btn-group">
                                 <button type="button" class="btn btn-info dropdown-toggle waves-effect" data-toggle="dropdown" aria-expanded="false">{{trans('words.action')}}<span class="caret"></span></button>
                                 <div class="dropdown-menu">
-                                    <a href="javascript:void(0);" class="dropdown-item" data-action="delete" id="data_remove_selected">{{trans('words.delete')}}</a>                                                                  
+                                    <a href="javascript:void(0);" class="dropdown-item" data-action="delete" id="data_remove_selected">{{trans('words.delete')}}</a>
                                 </div>
                             </div>
                         </div>
                       </div>
-                    </div> 
-                  </div>                
+                    </div>
+                  </div>
                 </div>
 
                 <br/>
 
               <div class="row">
+                @if(isset($trial_movies))
+                  @foreach($trial_movies as $movies)
+                    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-6" id="card_box_id_{{$movies->id}}">
+                        <div class="card m-b-20">
+                            <div class="wall-list-item">
+                              <div class="checkbox checkbox-success wall_check">
+                                <input type="checkbox" name="post_ids[]" id="checkbox{{$movies->id}}" value="{{$movies->id}}" class="post_ids">
+                                <label for="checkbox{{$movies->id}}"></label>
+                              </div>
+                              <p class="wall_sub_text">{{ \App\Language::getLanguageInfo($movies->movie_lang_id,'language_name') }}</p>
+
+                              @if(isset($movies->video_image_thumb)) <img class="card-img-top thumb-xs img-fluid" src="{{URL::to('/'.$movies->video_image_thumb)}}" alt="{{ stripslashes($movies->video_title) }}"> @endif
+
+                              <div class="vid-lab-trial" style="position: absolute; top: 10px; right: 10px; z-index: 9;">
+                                   <span class="badge badge-warning" style="background-color: #ffcc00; color: #000; padding: 5px 10px; border-radius: 5px;">Trial</span>
+                               </div>
+                            </div>
+
+                            <div class="card-body p-3">
+                                <h4 class="card-title book_title mb-3 d-flex align-items-center">{{ stripslashes($movies->video_title) }}</h4>
+                                <a href="{{ url('admin/movies/edit_movie/'.$movies->id) }}" class="btn btn-icon waves-effect waves-light btn-success m-r-5" data-toggle="tooltip" title="{{trans('words.edit')}}"><i class="fa fa-edit"></i></a>
+                                <a href="#" class="btn btn-icon waves-effect waves-light btn-danger data_remove" data-toggle="tooltip" title="{{trans('words.remove')}}" data-id="{{$movies->id}}"><i class="fa fa-remove"></i></a>
+                                <a class="ml-2 fl-right mt-1" href="Javascript:void(0);" data-toggle="tooltip" title="@if($movies->status==1){{ trans('words.active')}} @else {{trans('words.inactive')}} @endif"><input type="checkbox" name="category_on_off" id="category_on_off" value="1" data-plugin="switchery" data-color="#28a745" data-size="small" class="enable_disable" data-id="{{$movies->id}}" @if($movies->status==1) {{ 'checked' }} @endif/></a>
+                            </div>
+                        </div>
+                    </div>
+                  @endforeach
+                @endif
+
                 @foreach($movies_list as $i => $movies)
                     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-6" id="card_box_id_{{$movies->id}}">
 
@@ -79,55 +108,55 @@
                         <div class="card m-b-20">
                             <div class="wall-list-item">
                               <div class="checkbox checkbox-success wall_check">
-                                <input type="checkbox" name="post_ids[]" id="checkbox<?php echo $i; ?>" value="<?php echo $movies->id; ?>" class="post_ids">
-                                <label for="checkbox<?php echo $i; ?>"></label>
-                              </div>  
+                                <input type="checkbox" name="post_ids[]" id="checkbox{{$movies->id}}" value="{{$movies->id}}" class="post_ids">
+                                <label for="checkbox{{$movies->id}}"></label>
+                              </div>
                               <p class="wall_sub_text">{{ \App\Language::getLanguageInfo($movies->movie_lang_id,'language_name') }}</p>
-                               
+
                               @if(isset($movies->video_image_thumb)) <img class="card-img-top thumb-xs img-fluid" src="{{URL::to('/'.$movies->video_image_thumb)}}" alt="{{ stripslashes($movies->video_title) }}"> @endif
-                              
+
                               @if($movies->video_type == 'URL' && (empty($movies->video_url) || strpos($movies->video_url, 'youtube') !== false))
                                 <div class="vid-lab-trial" style="position: absolute; top: 10px; right: 10px; z-index: 9;">
                                    <span class="badge badge-warning" style="background-color: #ffcc00; color: #000; padding: 5px 10px; border-radius: 5px;">Trial</span>
                                </div>
                               @endif
                             </div>
- 
+
                             <div class="card-body p-3">
                                 <h4 class="card-title book_title mb-3 d-flex align-items-center">{{ stripslashes($movies->video_title) }}</h4>
                                 <a href="{{ url('admin/movies/edit_movie/'.$movies->id) }}" class="btn btn-icon waves-effect waves-light btn-success m-r-5" data-toggle="tooltip" title="{{trans('words.edit')}}"><i class="fa fa-edit"></i></a>
                                 <a href="#" class="btn btn-icon waves-effect waves-light btn-danger data_remove" data-toggle="tooltip" title="{{trans('words.remove')}}" data-id="{{$movies->id}}"><i class="fa fa-remove"></i></a>
-                                <a class="ml-2 fl-right mt-1" href="Javascript:void(0);" data-toggle="tooltip" title="@if($movies->status==1){{ trans('words.active')}} @else {{trans('words.inactive')}} @endif"><input type="checkbox" name="category_on_off" id="category_on_off" value="1" data-plugin="switchery" data-color="#28a745" data-size="small" class="enable_disable" data-id="{{$movies->id}}" @if($movies->status==1) {{ 'checked' }} @endif/></a>    
+                                <a class="ml-2 fl-right mt-1" href="Javascript:void(0);" data-toggle="tooltip" title="@if($movies->status==1){{ trans('words.active')}} @else {{trans('words.inactive')}} @endif"><input type="checkbox" name="category_on_off" id="category_on_off" value="1" data-plugin="switchery" data-color="#28a745" data-size="small" class="enable_disable" data-id="{{$movies->id}}" @if($movies->status==1) {{ 'checked' }} @endif/></a>
                             </div>
                         </div>
 
                     </div>
-                   @endforeach      
+                   @endforeach
 
-                </div> 
-                 
+                </div>
+
                 <nav class="paging_simple_numbers">
-                @include('admin.pagination', ['paginator' => $movies_list]) 
+                @include('admin.pagination', ['paginator' => $movies_list])
                 </nav>
-           
+
               </div>
             </div>
           </div>
         </div>
       </div>
-      @include("admin.copyright") 
+      @include("admin.copyright")
     </div>
-    
+
 <script src="{{ URL::asset('admin_assets/js/jquery.min.js') }}"></script>
 
 
 <script type="text/javascript">
- 
-$(".enable_disable").on("change",function(e){      
-       
+
+$(".enable_disable").on("change",function(e){
+
       var post_id = $(this).data("id");
-      
-      var status_set = $(this).prop("checked"); 
+
+      var status_set = $(this).prop("checked");
 
       var action_name='movie_status';
       //alert($(this).is(":checked"));
@@ -151,10 +180,10 @@ $(".enable_disable").on("change",function(e){
                     background:"#1a2234",
                     color:"#fff"
                   })
-             
-          } 
+
+          }
           else
-          { 
+          {
             Swal.fire({
                     position: 'center',
                     icon: 'error',
@@ -165,17 +194,17 @@ $(".enable_disable").on("change",function(e){
                     color:"#fff"
                   })
           }
-          
+
         }
       });
-}); 
+});
 
 </script>
 
 <script type="text/javascript">
 
-$(".data_remove").click(function () {  
-  
+$(".data_remove").click(function () {
+
   var post_id = $(this).data("id");
   var action_name='movies_delete';
 
@@ -197,7 +226,7 @@ $(".data_remove").click(function () {
 
   //alert(JSON.stringify(result));
 
-    if(result.isConfirmed) { 
+    if(result.isConfirmed) {
 
         $.ajax({
             type: 'post',
@@ -207,7 +236,7 @@ $(".data_remove").click(function () {
             success: function(res) {
 
               if(res.status=='1')
-              {  
+              {
 
                   var selector = "#card_box_id_"+post_id;
                     $(selector ).fadeOut(1000);
@@ -224,10 +253,10 @@ $(".data_remove").click(function () {
                     background:"#1a2234",
                     color:"#fff"
                   })
-                
-              } 
+
+              }
               else
-              { 
+              {
                 Swal.fire({
                         position: 'center',
                         icon: 'error',
@@ -238,23 +267,23 @@ $(".data_remove").click(function () {
                         color:"#fff"
                        })
               }
-              
+
             }
         });
     }
- 
+
 })
 
 });
 
 
 //Multiple
-$("#data_remove_selected").click(function () {  
-  
+$("#data_remove_selected").click(function () {
+
   var post_ids = $.map($('.post_ids:checked'), function(c) {
       return c.value;
     });
-         
+
   var action_name='movies_delete_selected';
 
   Swal.fire({
@@ -270,8 +299,8 @@ $("#data_remove_selected").click(function () {
   color:"#fff"
 
 }).then((result) => {
- 
-    if(result.isConfirmed) { 
+
+    if(result.isConfirmed) {
 
         $.ajax({
             type: 'post',
@@ -281,11 +310,11 @@ $("#data_remove_selected").click(function () {
             success: function(res) {
 
               if(res.status=='1')
-              {  
+              {
                   $.map($('.post_ids:checked'), function(c) {
-                    
+
                     var post_id= c.value;
-                    
+
                     var selector = "#card_box_id_"+post_id;
                       $(selector ).fadeOut(1000);
                       setTimeout(function(){
@@ -294,7 +323,7 @@ $("#data_remove_selected").click(function () {
 
                     return c.value;
                   });
- 
+
                   Swal.fire({
                     position: 'center',
                     icon: 'success',
@@ -304,10 +333,10 @@ $("#data_remove_selected").click(function () {
                     background:"#1a2234",
                     color:"#fff"
                   })
-                
-              } 
+
+              }
               else
-              { 
+              {
                 Swal.fire({
                         position: 'center',
                         icon: 'error',
@@ -318,11 +347,11 @@ $("#data_remove_selected").click(function () {
                         color:"#fff"
                        })
               }
-              
+
             }
         });
     }
- 
+
 })
 
 });
@@ -330,16 +359,16 @@ $("#data_remove_selected").click(function () {
 </script>
 <script type="text/javascript">
 
-  
+
   var totalItems = 0;
  // $("#sellect_all").on("click", function(e) {
   $(document).on("click", "#sellect_all", function() {
-      
+
     totalItems = 0;
 
     $("input[name='post_ids[]']").not(this).prop('checked', this.checked);
     $.each($("input[name='post_ids[]']:checked"), function() {
-      totalItems = totalItems + 1;       
+      totalItems = totalItems + 1;
     });
 
     const Toast = Swal.mixin({
@@ -354,9 +383,9 @@ $("#data_remove_selected").click(function () {
         }*/
       })
 
-    
+
     if ($("input[name='post_ids[]']").prop("checked") == true) {
-        
+
       Toast.fire({
       icon: 'success',
       title: totalItems + ' {{trans('words.item_checked')}}'
@@ -364,18 +393,18 @@ $("#data_remove_selected").click(function () {
 
     } else if ($("input[name='post_ids[]']").prop("checked") == false) {
       totalItems = 0;
-      
+
       Toast.fire({
       icon: 'success',
       title: totalItems + ' {{trans('words.item_checked')}}'
     })
-      
+
     }
- 
+
 });
 
 $(document).on("click", ".post_ids", function(e) {
- 
+
 if ($(this).prop("checked") == true) {
   totalItems = totalItems + 1;
 } else if ($(this).prop("checked") == false) {
@@ -402,16 +431,16 @@ if ($(this).prop("checked") == true) {
 
       return true;
     }
- 
+
     Toast.fire({
       icon: 'success',
       title: totalItems + ' {{trans('words.item_checked')}}'
     })
 
- 
+
 });
 
-</script>  
-    
+</script>
+
 
 @endsection

@@ -67,15 +67,27 @@ class MoviesController extends MainAdminController
         }
         else
         {
-            $movies_list = Movies::orderByRaw("CASE WHEN video_type = 'URL' AND (video_url IS NULL OR video_url = '' OR video_url LIKE '%youtube%') THEN 1 ELSE 0 END DESC")
+            $trialQuery = Movies::where('video_type', 'URL')
+                ->where(function($q) {
+                    $q->whereNull('video_url')
+                      ->orWhere('video_url', '')
+                      ->orWhere('video_url', 'LIKE', '%youtube%');
+                })
+                ->where('upcoming', 0);
+
+            $trial_movies = $trialQuery->orderBy('id', 'DESC')->get();
+            $trial_ids = $trial_movies->pluck('id')->toArray();
+
+            $movies_list = Movies::whereNotIn('id', $trial_ids)
+                ->where('upcoming', 0)
                 ->orderBy('id','DESC')
-                ->where('upcoming',0)
                 ->paginate(12);
+
             $allMovies = Movies::where('upcoming',0)->orderBy('id','DESC')->get();
 
         }
  $allMovies = Movies::where('upcoming',0)->orderBy('id','DESC')->get();
-        return view('admin.pages.movies.list',compact('page_title','movies_list','language_list','genres_list','allMovies'));
+        return view('admin.pages.movies.list',compact('page_title','movies_list','language_list','genres_list','allMovies', 'trial_movies'));
     }
     public function upcoming_movies_list(){
         if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
