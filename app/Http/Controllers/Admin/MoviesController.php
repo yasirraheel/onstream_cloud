@@ -106,7 +106,7 @@ class MoviesController extends MainAdminController
                 return redirect('dashboard');
 
         }
-        
+
 
         $page_title=trans('words.add_movie');
 
@@ -116,7 +116,12 @@ class MoviesController extends MainAdminController
         $actor_list = ActorDirector::where('ad_type','actor')->orderBy('ad_name')->get();
         $director_list = ActorDirector::where('ad_type','director')->orderBy('ad_name')->get();
 
-        return view('admin.pages.movies.addedit',compact('page_title','language_list','genre_list','actor_list','director_list'));
+        $used_urls = array_merge(
+            Movies::where('video_type', 'URL')->whereNotNull('video_url')->pluck('video_url')->toArray(),
+            DB::table('episodes')->where('video_type', 'URL')->whereNotNull('video_url')->pluck('video_url')->toArray()
+        );
+
+        return view('admin.pages.movies.addedit',compact('page_title','language_list','genre_list','actor_list','director_list', 'used_urls'));
     }
 
 public function addnew(Request $request)
@@ -155,7 +160,7 @@ public function addnew(Request $request)
             'genres'            => 'required',
             'video_title'       => 'required',
             'imdb_id'           => [
-                
+
                 // Rule::unique('movie_videos', 'imdb_id')->ignore($inputs['id']),
             ],
         );
@@ -323,7 +328,12 @@ public function addnew(Request $request)
 
           $movie = Movies::findOrFail($movie_id);
 
-          return view('admin.pages.movies.addedit',compact('page_title','movie','language_list','genre_list','actor_list','director_list'));
+          $used_urls = array_merge(
+            Movies::where('video_type', 'URL')->whereNotNull('video_url')->pluck('video_url')->toArray(),
+            DB::table('episodes')->where('video_type', 'URL')->whereNotNull('video_url')->pluck('video_url')->toArray()
+          );
+
+          return view('admin.pages.movies.addedit',compact('page_title','movie','language_list','genre_list','actor_list','director_list', 'used_urls'));
 
     }
 

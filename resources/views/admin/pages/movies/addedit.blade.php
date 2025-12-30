@@ -681,6 +681,8 @@ function processSelectedFile(filePath, requestingField) {
 
 @section('extra_scripts')
 <script type="text/javascript">
+    var usedUrls = @json($used_urls ?? []);
+
     $(document).ready(function() {
         var apiFilesFetched = false;
         var apiUrl = "https://cineworm.twoflip.com/api/files?api_key=MbTNkiPl03fHCkjkCCgRqx1ANg0A9e4hqdtJbGFZijBfY5D4DKDSImPPDnDw";
@@ -699,12 +701,30 @@ function processSelectedFile(filePath, requestingField) {
                     if (response.status === 'success' && response.data) {
                         var options = '<option value="">Select File from API</option>';
                         $.each(response.data, function(index, file) {
-                            options += '<option value="' + file.direct_link + '">' + file.name + '</option>';
+                            var isUsed = usedUrls.includes(file.direct_link);
+                            var disabledAttr = isUsed ? 'disabled' : '';
+                            var styleAttr = isUsed ? 'style="background-color: #f8d7da; color: #721c24;"' : '';
+                            var labelText = file.name + (isUsed ? ' (Already Used)' : '');
+
+                            options += '<option value="' + file.direct_link + '" ' + disabledAttr + ' ' + styleAttr + '>' + labelText + '</option>';
                         });
                         $('#api_file_select').html(options);
 
                         // Initialize Select2
-                        $('#api_file_select').select2();
+                        $('#api_file_select').select2({
+                            templateResult: function(data) {
+                                if (!data.element) {
+                                    return data.text;
+                                }
+                                var $element = $(data.element);
+                                var $result = $('<span></span>');
+                                $result.text(data.text);
+                                if ($element.attr('style')) {
+                                    $result.attr('style', $element.attr('style'));
+                                }
+                                return $result;
+                            }
+                        });
 
                         apiFilesFetched = true;
 
