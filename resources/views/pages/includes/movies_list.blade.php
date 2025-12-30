@@ -21,6 +21,12 @@
                     </div>
                 @endif
 
+                @if($movies_data->video_type == 'URL' && (empty($movies_data->video_url) || strpos($movies_data->video_url, 'youtube') !== false))
+                     <div class="vid-lab-trial" style="position: absolute; top: 10px; right: 10px; z-index: 9;">
+                        <span class="badge" style="background-color: #ffcc00; color: #000; padding: 5px 10px; border-radius: 5px;">Trial</span>
+                    </div>
+                @endif
+
                 {{-- Show "Today" badge if movie was created today --}}
                 @php
                 $label = '';

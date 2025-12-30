@@ -75,14 +75,22 @@ class MoviesController extends Controller
             }
             else
             {
-                $movies_list = Movies::where('status',1)->where('upcoming',0)->orderBy('id','DESC')->paginate($pagination_limit);
+                $movies_list = Movies::where('status',1)
+                    ->where('upcoming',0)
+                    ->orderByRaw("CASE WHEN video_type = 'URL' AND (video_url IS NULL OR video_url = '' OR video_url LIKE '%youtube%') THEN 1 ELSE 0 END DESC")
+                    ->orderBy('id','DESC')
+                    ->paginate($pagination_limit);
                 $movies_list->appends(\Request::only('filter'))->links();
             }
-
+            
         }
         else
         {
-            $movies_list = Movies::where('status',1)->where('upcoming',0)->orderBy('id','DESC')->paginate($pagination_limit);
+            $movies_list = Movies::where('status',1)
+                ->where('upcoming',0)
+                ->orderByRaw("CASE WHEN video_type = 'URL' AND (video_url IS NULL OR video_url = '' OR video_url LIKE '%youtube%') THEN 1 ELSE 0 END DESC")
+                ->orderBy('id','DESC')
+                ->paginate($pagination_limit);
         }
 
        return view('pages.movies.list',compact('slider','movies_list'));

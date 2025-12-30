@@ -113,7 +113,11 @@ class IndexController extends Controller
         }
 
         //dd($upcoming_movies);exit;
-        $movies_list = Movies::where('status',1)->where('upcoming',0)->orderBy('id','DESC')->paginate(30);
+        $movies_list = Movies::where('status',1)
+            ->where('upcoming',0)
+            ->orderByRaw("CASE WHEN video_type = 'URL' AND (video_url IS NULL OR video_url = '' OR video_url LIKE '%youtube%') THEN 1 ELSE 0 END DESC")
+            ->orderBy('id','DESC')
+            ->paginate(30);
 
         if ($request->ajax()) {
             return view('pages.includes.movies_list', compact('movies_list'));
