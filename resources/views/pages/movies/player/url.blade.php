@@ -1,27 +1,21 @@
- 
+
 <div id="viavi_player" style="margin:auto;"></div>
- 
+
 
  <!-- Setup EVP -->
  <script type="text/javascript">
- 		console.log('Player script starting...');
- 		console.log('Video URL:', '{{$movies_info->video_url}}');
- 		console.log('Video Type:', '{{$movies_info->video_type}}');
- 		
 			 FWDEVPUtils.onReady(function(){
-			 	console.log('FWDEVPUtils ready');
- 
+
 				 FWDEVPlayer.videoStartBehaviour = "pause";
-				 
-				 console.log('Initializing player...');
-				 new FWDEVPlayer({		
+
+				 new FWDEVPlayer({
 					 //main settings
 					 instanceName:"player1",
 					 parentId:"viavi_player",
 					 mainFolderPath:"{{URL::asset('/site_assets/player/content/')}}",
 					 initializeOnlyWhenVisible:"no",
 					 skinPath:"{{ get_player_cong('player_style') }}",
-					 displayType:"responsive", 
+					 displayType:"responsive",
 					 autoScale:"yes",
 					 fillEntireVideoScreen:"no",
 					 playsinline:"yes",
@@ -39,20 +33,20 @@
 					 stopAtTime:"",
 					 videoSource:[
 						 {source:"encrypt:{{base64_encode($movies_info->video_url)}}", label:"default"},
-						 
-						  
+
+
 						 @if($movies_info->video_quality)
 						 @if($movies_info->video_url_480)
 						 {source:"encrypt:{{base64_encode($movies_info->video_url_480)}}", label:"480"},
-						 @endif	
-							 
-						 @if($movies_info->video_url_720)	
+						 @endif
+
+						 @if($movies_info->video_url_720)
 						 {source:"encrypt:{{base64_encode($movies_info->video_url_720)}}", label:"720"},
-						 @endif	
-							 
-						 @if($movies_info->video_url_1080)	
+						 @endif
+
+						 @if($movies_info->video_url_1080)
 						 {source:"encrypt:{{base64_encode($movies_info->video_url_1080)}}", label:"1080"}
-						 @endif	  
+						 @endif
 						 @endif
 					 ],
 					 posterPath:"{{URL::to('/'.$movies_info->video_image)}}",
@@ -132,18 +126,18 @@
 					 showSubtitleButton:"yes",
 					 subtitlesOffLabel:"Subtitle off",
 					 startAtSubtitle:1,
-					 subtitlesSource:[						 
-						  
+					 subtitlesSource:[
+
 						 @if($movies_info->subtitle_on_off)
-							 @if($movies_info->subtitle_url1)								
-							 {subtitlePath:"{{$movies_info->subtitle_url1}}", subtileLabel:"{{$movies_info->subtitle_language1?$movies_info->subtitle_language1:'English'}}"}, 
+							 @if($movies_info->subtitle_url1)
+							 {subtitlePath:"{{$movies_info->subtitle_url1}}", subtileLabel:"{{$movies_info->subtitle_language1?$movies_info->subtitle_language1:'English'}}"},
 							 @endif
 							 @if($movies_info->subtitle_url2)
-							 {subtitlePath:"{{$movies_info->subtitle_url2}}", subtileLabel:"{{$movies_info->subtitle_language2?$movies_info->subtitle_language2:'English'}}"}, 		
+							 {subtitlePath:"{{$movies_info->subtitle_url2}}", subtileLabel:"{{$movies_info->subtitle_language2?$movies_info->subtitle_language2:'English'}}"},
 							 @endif
 							 @if($movies_info->subtitle_url3)
-							 {subtitlePath:"{{$movies_info->subtitle_url3}}", subtileLabel:"{{$movies_info->subtitle_language3?$movies_info->subtitle_language3:'English'}}"},							 		
-							 @endif    
+							 {subtitlePath:"{{$movies_info->subtitle_url3}}", subtileLabel:"{{$movies_info->subtitle_language3?$movies_info->subtitle_language3:'English'}}"},
+							 @endif
 						 @endif
 					 ],
 					 //audio visualizer
@@ -177,7 +171,7 @@
 					 openerEqulizerOffsetLeft:3,
 					 offsetX:0,
 					 offsetY:0,
-					  
+
 					 //embed window
 					 embedWindowCloseButtonMargins:15,
 					 borderColor:"#333333",
@@ -212,21 +206,21 @@
 					 contextMenuItemNormalColor:"#bdbdbd",
 					 contextMenuItemSelectedColor:"#FFFFFF",
 					 contextMenuItemDisabledColor:"#333",
-					  
-					 
+
+
 					 @if(check_user_ad_allow() AND get_player_cong('player_default_ads')=="Custom")
- 
+
 						 //ads
 						 openNewPageAtTheEndOfTheAds:"no",
 						 adsSource:[
 							 @if(get_player_cong('custom_ad1_source')!="")
 							 {source:"{{ get_player_cong('custom_ad1_source') }}", timeStart:"{{get_player_cong('custom_ad1_timestart')}}", timeToHoldAds:5, thumbnailSource:"", link:"{{get_player_cong('custom_ad1_link')}}", target:"_blank"},
 							 @endif
-							 
+
 							 @if(get_player_cong('custom_ad2_source')!="")
 							 {source:"{{ get_player_cong('custom_ad2_source') }}", timeStart:"{{get_player_cong('custom_ad2_timestart')}}", timeToHoldAds:5, thumbnailSource:"", link:"{{get_player_cong('custom_ad2_link')}}", target:"_blank"},
 							 @endif
- 
+
 							 @if(get_player_cong('custom_ad3_source')!="")
 							 {source:"{{ get_player_cong('custom_ad3_source') }}", timeStart:"{{get_player_cong('custom_ad3_timestart')}}", timeToHoldAds:5, thumbnailSource:"", link:"{{get_player_cong('custom_ad3_link')}}", target:"_blank"},
 							 @endif
@@ -238,10 +232,10 @@
 						 adsTextNormalColor:"#999999",
 						 adsTextSelectedColor:"#FFFFFF",
 						 adsBorderNormalColor:"#666666",
-						 adsBorderSelectedColor:"#FFFFFF",	
-						 
+						 adsBorderSelectedColor:"#FFFFFF",
+
 					 @elseif(check_user_ad_allow() AND get_player_cong('player_default_ads')=="Vast")
- 
+
 						 //vast advertisement
 						 @if(get_player_cong('vast_url')!="")
 							 @if(get_player_cong('vast_type')=="Local")
@@ -249,17 +243,17 @@
 							 @else
 							 vastSource:"{{ get_player_cong('vast_url') }}",
 							 @endif
-							 
+
 							 vastLinearStartTime:"00:00:00",
 							 vastClickTroughTarget:"_blank",
 						 @endif
-					 
-					 @else	
+
+					 @else
 						 //No Ad
 					 @endif
-					 
-					 
+
+
 				 });
- 
+
 			 });
 		 </script>

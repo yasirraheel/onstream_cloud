@@ -54,16 +54,6 @@
       <div class="col-lg-12 col-md-12 col-sm-12">
         <div class="video-posts-video">
 
-        {{-- Debug Info (Remove after fixing) --}}
-        @if(Auth::check() && (Auth::user()->usertype == "Admin" || Auth::user()->usertype == "Sub_Admin"))
-        <div style="background: #1a1a1a; color: #fff; padding: 15px; margin-bottom: 15px; border-radius: 5px; font-size: 12px;">
-            <strong>Debug Info:</strong><br>
-            Video URL: {{ $movies_info->video_url ?? 'NULL' }}<br>
-            Video Type: {{ $movies_info->video_type ?? 'NULL' }}<br>
-            Video ID: {{ $movies_info->id ?? 'NULL' }}
-        </div>
-        @endif
-
         @if($movies_info->video_url!="")
 
           @if($movies_info->video_type=="Embed")
