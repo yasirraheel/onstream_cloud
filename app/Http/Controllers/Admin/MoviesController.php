@@ -44,6 +44,8 @@ class MoviesController extends MainAdminController
 
         $genres_list = Genres::orderBy('genre_name')->get();
 
+        $trial_movies = null;
+
         if(isset($_GET['s']))
         {
             $keyword = $_GET['s'];
