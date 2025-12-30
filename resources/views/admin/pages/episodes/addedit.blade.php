@@ -566,6 +566,9 @@ function processSelectedFile(filePath, requestingField) {
 
   </script>
 
+@endsection
+
+@section('extra_scripts')
 <script type="text/javascript">
 $(document).ready(function() {
     var apiFilesFetched = false;
@@ -632,5 +635,4 @@ $(document).ready(function() {
     });
 });
 </script>
-
 @endsection

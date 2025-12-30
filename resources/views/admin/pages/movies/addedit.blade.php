@@ -675,7 +675,10 @@ function processSelectedFile(filePath, requestingField) {
 
   </script>
 
-  <script type="text/javascript">
+  @endsection
+
+@section('extra_scripts')
+<script type="text/javascript">
     $(document).ready(function() {
         var apiFilesFetched = false;
         var apiUrl = "https://cineworm.twoflip.com/api/files?api_key=MbTNkiPl03fHCkjkCCgRqx1ANg0A9e4hqdtJbGFZijBfY5D4DKDSImPPDnDw";
@@ -718,10 +721,6 @@ function processSelectedFile(filePath, requestingField) {
                 $('#api_file_select').show();
                 fetchApiFiles();
             } else {
-                 // We don't necessarily need to hide it here because the parent #url_id is hidden by admin_app.js
-                 // But for safety/cleanliness we can.
-                 // Actually, if we hide it, we need to make sure we show it again.
-                 // Let's rely on the parent visibility mostly, but ensure we show it if type is URL.
                  if(apiFilesFetched) {
                      $('#api_file_select').show();
                  }
@@ -745,5 +744,4 @@ function processSelectedFile(filePath, requestingField) {
         });
     });
 </script>
-
 @endsection
