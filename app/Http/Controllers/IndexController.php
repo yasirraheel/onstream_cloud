@@ -830,14 +830,14 @@ class IndexController extends Controller
 
         $request_obj = new MovieRequest;
         $request_obj->movie_name = $inputs['movie_name'];
-        $request_obj->language = $inputs['language'];
-        $request_obj->message = $inputs['message'];
-        $request_obj->email = $inputs['email'];
+        $request_obj->language = isset($inputs['language']) ? $inputs['language'] : null;
+        $request_obj->message = isset($inputs['message']) ? $inputs['message'] : null;
+        $request_obj->email = isset($inputs['email']) ? $inputs['email'] : null;
 
         if(Auth::check())
         {
             $request_obj->user_id = Auth::User()->id;
-            if(empty($inputs['email']))
+            if(empty($request_obj->email))
             {
                 $request_obj->email = Auth::User()->email;
             }
