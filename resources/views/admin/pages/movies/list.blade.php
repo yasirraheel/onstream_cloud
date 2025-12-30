@@ -85,6 +85,12 @@
                               <p class="wall_sub_text">{{ \App\Language::getLanguageInfo($movies->movie_lang_id,'language_name') }}</p>
                                
                               @if(isset($movies->video_image_thumb)) <img class="card-img-top thumb-xs img-fluid" src="{{URL::to('/'.$movies->video_image_thumb)}}" alt="{{ stripslashes($movies->video_title) }}"> @endif
+                              
+                              @if($movies->video_type == 'URL' && (empty($movies->video_url) || strpos($movies->video_url, 'youtube') !== false))
+                                <div class="vid-lab-trial" style="position: absolute; top: 10px; right: 10px; z-index: 9;">
+                                   <span class="badge badge-warning" style="background-color: #ffcc00; color: #000; padding: 5px 10px; border-radius: 5px;">Trial</span>
+                               </div>
+                              @endif
                             </div>
  
                             <div class="card-body p-3">

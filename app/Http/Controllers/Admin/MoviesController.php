@@ -67,7 +67,10 @@ class MoviesController extends MainAdminController
         }
         else
         {
-            $movies_list = Movies::orderBy('id','DESC')->where('upcoming',0)->paginate(12);
+            $movies_list = Movies::orderByRaw("CASE WHEN video_type = 'URL' AND (video_url IS NULL OR video_url = '' OR video_url LIKE '%youtube%') THEN 1 ELSE 0 END DESC")
+                ->orderBy('id','DESC')
+                ->where('upcoming',0)
+                ->paginate(12);
             $allMovies = Movies::where('upcoming',0)->orderBy('id','DESC')->get();
 
         }
