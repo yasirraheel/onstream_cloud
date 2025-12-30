@@ -574,6 +574,10 @@
                         </div>
                     </div>
 
+                    <div class="text-center" style="margin-bottom: 20px;">
+                        <button id="load-more-btn" class="btn btn-primary" style="display: none; background: linear-gradient(135deg, #ff8508, #fd0575); border: none; padding: 10px 30px; border-radius: 25px; font-weight: bold; box-shadow: 0 4px 15px rgba(255, 133, 8, 0.4);">Load More</button>
+                    </div>
+
                     <div class="col-xs-12" style="display: none;">
                         @include('_particles.pagination', ['paginator' => $movies_list])
                     </div>
@@ -1288,17 +1292,21 @@
     var lastPage = {{ $movies_list->lastPage() }};
     var loading = false;
 
-    $(window).scroll(function() {
-        if($(window).scrollTop() + $(window).height() >= $(document).height() - 500) {
-            if (page < lastPage && !loading) {
-                loading = true;
-                page++;
-                loadMoreData(page);
-            }
+    // Initial button state
+    if (page < lastPage) {
+        $('#load-more-btn').show();
+    }
+
+    $('#load-more-btn').click(function() {
+        if (page < lastPage && !loading) {
+            loading = true;
+            page++;
+            loadMoreData(page);
         }
     });
 
     function loadMoreData(page){
+        $('#load-more-btn').hide();
         $('#loader').show();
         $.ajax(
             {
@@ -1311,20 +1319,27 @@
             })
             .done(function(data)
             {
-                if(data.html == " "){
+                $('#loader').hide();
+                if(data.html == " " || data.html == ""){
                     // $('.ajax-load').html("No more records found");
-                    $('#loader').hide();
                     return;
                 }
-                $('#loader').hide();
+
                 $("#movies-container").append(data);
                 loading = false;
+
+                if (page < lastPage) {
+                    $('#load-more-btn').show();
+                } else {
+                    $('#load-more-btn').hide();
+                }
             })
             .fail(function(jqXHR, ajaxOptions, thrownError)
             {
                   // alert('server not responding...');
                   $('#loader').hide();
                   loading = false;
+                  $('#load-more-btn').show(); // Allow retry
             });
     }
 </script>
