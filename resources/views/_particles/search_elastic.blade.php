@@ -137,6 +137,10 @@
   </div>
   </div>
   @endif
+
+  <div class="section section-padding bg-image tv_show gray_bg" style="text-align: center; padding-bottom: 20px;">
+      <p style="color: #fff; font-size: 16px;">Can't find what you're looking for? <a href="{{ URL::to('movies_request') }}" style="color: #ffcc00; font-weight: bold; text-decoration: underline;">Request Movie</a></p>
+  </div>
       
  <script type="text/javascript">
 // Video Carousel
