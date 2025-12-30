@@ -15,6 +15,7 @@
                             </div>
                             <div class="col-sm-6">
                                 <a href="{{URL::to('admin/search_history/clear')}}" class="btn btn-danger btn-md waves-effect waves-light m-b-20 pull-right" onclick="return confirm('Are you sure you want to delete all history?')" data-toggle="tooltip" title="Clear All History"><i class="fa fa-trash"></i> Clear All History</a>
+                                <a href="{{URL::to('admin/search_history/analytics')}}" class="btn btn-info btn-md waves-effect waves-light m-b-20 pull-right m-r-10" data-toggle="tooltip" title="Analytics"><i class="fa fa-bar-chart-o"></i> Analytics</a>
                             </div>
                         </div>
 

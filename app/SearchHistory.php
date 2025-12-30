@@ -8,7 +8,7 @@ class SearchHistory extends Model
 {
     protected $table = 'search_history';
 
-    protected $fillable = ['keyword', 'user_id', 'ip_address'];
+    protected $fillable = ['keyword', 'user_id', 'ip_address', 'country', 'country_code'];
 
     public function user()
     {

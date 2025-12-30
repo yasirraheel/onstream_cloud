@@ -167,6 +167,33 @@ class IndexController extends Controller
         return file_exists(base_path('/public/.lic'));
     }
 
+    private function get_location_info($ip)
+    {
+        if ($ip == '127.0.0.1' || $ip == '::1') {
+            return ['country' => 'Localhost', 'country_code' => 'LO'];
+        }
+
+        try {
+            // Using ip-api.com (Free, no key required for basic usage)
+            // Timeout set to 2 seconds to avoid blocking
+            $response = \Illuminate\Support\Facades\Http::timeout(2)->get("http://ip-api.com/json/{$ip}");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if ($data['status'] === 'success') {
+                    return [
+                        'country' => $data['country'],
+                        'country_code' => $data['countryCode']
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            // Silently fail if API is down or times out
+        }
+
+        return ['country' => null, 'country_code' => null];
+    }
+
     public function search_elastic()
     {
         $keyword = $_GET['s'];
@@ -190,17 +217,23 @@ class IndexController extends Controller
                     $last_search->updated_at = now();
                     $last_search->save();
                 } else {
+                    $location = $this->get_location_info($ip_address);
                     SearchHistory::create([
                         'keyword' => $keyword,
                         'user_id' => $user_id,
-                        'ip_address' => $ip_address
+                        'ip_address' => $ip_address,
+                        'country' => $location['country'],
+                        'country_code' => $location['country_code']
                     ]);
                 }
             } else {
+                $location = $this->get_location_info($ip_address);
                 SearchHistory::create([
                     'keyword' => $keyword,
                     'user_id' => $user_id,
-                    'ip_address' => $ip_address
+                    'ip_address' => $ip_address,
+                    'country' => $location['country'],
+                    'country_code' => $location['country_code']
                 ]);
             }
         }
@@ -270,17 +303,23 @@ class IndexController extends Controller
                     $last_search->updated_at = now();
                     $last_search->save();
                 } else {
+                    $location = $this->get_location_info($ip_address);
                     SearchHistory::create([
                         'keyword' => $keyword,
                         'user_id' => $user_id,
-                        'ip_address' => $ip_address
+                        'ip_address' => $ip_address,
+                        'country' => $location['country'],
+                        'country_code' => $location['country_code']
                     ]);
                 }
             } else {
+                $location = $this->get_location_info($ip_address);
                 SearchHistory::create([
                     'keyword' => $keyword,
                     'user_id' => $user_id,
-                    'ip_address' => $ip_address
+                    'ip_address' => $ip_address,
+                    'country' => $location['country'],
+                    'country_code' => $location['country_code']
                 ]);
             }
         }

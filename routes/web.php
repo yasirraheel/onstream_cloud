@@ -151,6 +151,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
 
     // Search History
     Route::get('search_history', 'SearchHistoryController@index');
+    Route::get('search_history/analytics', 'SearchHistoryController@analytics');
     Route::get('search_history/delete/{id}', 'SearchHistoryController@delete');
     Route::get('search_history/clear', 'SearchHistoryController@clear_all');
 
