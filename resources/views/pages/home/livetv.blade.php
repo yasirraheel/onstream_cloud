@@ -32,7 +32,7 @@
         @foreach(explode(",",$home_section->tv_ids) as $tv_data)
          <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
             <div class="single-video">
-                <a href="{{ URL::to('livetv/details/'.App\LiveTV::getLiveTvInfo($tv_data,'channel_slug').'/'.$tv_data) }}" title="{{App\LiveTV::getLiveTvInfo($tv_data,'channel_name')}}">
+                <a href="{{ URL::to('livetv/details/'.(App\LiveTV::getLiveTvInfo($tv_data,'channel_slug')?:'channel').'/'.$tv_data) }}" title="{{App\LiveTV::getLiveTvInfo($tv_data,'channel_name')}}">
                    <div class="video-img">       
                       @if(App\LiveTV::getLiveTvInfo($tv_data,'channel_access')=="Paid")
                       <div class="vid-lab-premium"><img src="{{ URL::asset('site_assets/images/ic-premium.png') }}" alt="ic-premium" title="ic-premium"></div> 

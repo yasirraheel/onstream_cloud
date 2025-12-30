@@ -60,7 +60,7 @@
          @foreach($sports_video_list as $sports_video)    
          <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 col-6">
           <div class="single-video">
-            <a href="{{ URL::to('sports/details/'.$sports_video->video_slug.'/'.$sports_video->id) }}" title="{{$sports_video->video_title}}">
+            <a href="{{ URL::to('sports/details/'.($sports_video->video_slug?:'sport').'/'.$sports_video->id) }}" title="{{$sports_video->video_title}}">
                <div class="video-img">          
                 
                 @if($sports_video->video_access=="Paid")       

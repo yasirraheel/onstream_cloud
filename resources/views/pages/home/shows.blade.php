@@ -32,7 +32,7 @@
         @foreach(explode(",",$home_section->show_ids) as $show_data)
          <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
             <div class="single-video">
-                    <a href="{{ URL::to('shows/details/'.App\Series::getSeriesInfo($show_data,'series_slug').'/'.$show_data) }}" title="{{App\Series::getSeriesInfo($show_data,'series_name')}}">
+                    <a href="{{ URL::to('shows/details/'.(App\Series::getSeriesInfo($show_data,'series_slug')?:'show').'/'.$show_data) }}" title="{{App\Series::getSeriesInfo($show_data,'series_name')}}">
                      <div class="video-img"> 
                              
                       <div class="vid-lab-premium"><img src="{{ URL::asset('site_assets/images/ic-premium.png') }}" alt="ic-premium" title="ic-premium"></div> 

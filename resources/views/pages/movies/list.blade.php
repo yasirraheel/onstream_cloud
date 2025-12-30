@@ -66,12 +66,12 @@
         <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 col-6">
           <div class="single-video">
             @if(Auth::check())
-                <a href="{{ URL::to('movies/details/'.$movies_data->video_slug.'/'.$movies_data->id) }}" title="{{$movies_data->video_title}}">
+                <a href="{{ URL::to('movies/details/'.($movies_data->video_slug?:'movie').'/'.$movies_data->id) }}" title="{{$movies_data->video_title}}">
             @else
                @if($movies_data->video_access=='Paid')
-                <a href="{{ URL::to('movies/details/'.$movies_data->video_slug.'/'.$movies_data->id) }}" title="{{$movies_data->video_title}}" data-toggle="modal" data-target="#loginAlertModal" title="{{$movies_data->video_title}}">
+                <a href="{{ URL::to('movies/details/'.($movies_data->video_slug?:'movie').'/'.$movies_data->id) }}" title="{{$movies_data->video_title}}" data-toggle="modal" data-target="#loginAlertModal" title="{{$movies_data->video_title}}">
                @else
-                <a href="{{ URL::to('movies/details/'.$movies_data->video_slug.'/'.$movies_data->id) }}" title="{{$movies_data->video_title}}">
+                <a href="{{ URL::to('movies/details/'.($movies_data->video_slug?:'movie').'/'.$movies_data->id) }}" title="{{$movies_data->video_title}}">
                @endif
             @endif
                <div class="video-img">

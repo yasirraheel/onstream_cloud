@@ -35,7 +35,7 @@
                             @foreach ($recently_watched as $i => $watched_videos)
                                 <div class="single-video">
                                     @if ($watched_videos->video_type == 'Movies')
-                                        <a href="{{ URL::to('movies/details/' . recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->video_slug . '/' . recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->id) }}"
+                                        <a href="{{ URL::to('movies/details/' . (recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->video_slug ?: 'movie') . '/' . recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->id) }}"
                                             title="{{ recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->video_title }}">
                                             <div class="video-img">
 
@@ -54,7 +54,7 @@
                                         <?php $episode_series_id = \App\Episodes::getEpisodesInfo($watched_videos->video_id, 'episode_series_id'); ?>
 
                                         <div class="single-video">
-                                            <a href="{{ URL::to('shows/' . \App\Series::getSeriesInfo($episode_series_id, 'series_slug') . '/' . recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->video_slug . '/' . recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->id) }}"
+                                            <a href="{{ URL::to('shows/' . (\App\Series::getSeriesInfo($episode_series_id, 'series_slug') ?: 'show') . '/' . (recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->video_slug ?: 'episode') . '/' . recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->id) }}"
                                                 title="{{ recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->video_title }}">
                                                 <div class="video-img">
 
@@ -71,7 +71,7 @@
 
                                     @if ($watched_videos->video_type == 'Sports')
                                         <div class="single-video">
-                                            <a href="{{ URL::to('sports/details/' . recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->video_slug . '/' . recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->id) }}"
+                                            <a href="{{ URL::to('sports/details/' . (recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->video_slug ?: 'sport') . '/' . recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->id) }}"
                                                 title="{{ recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->video_title }}">
                                                 <div class="video-img">
 
@@ -87,7 +87,7 @@
 
                                     @if ($watched_videos->video_type == 'LiveTV')
                                         <div class="single-video">
-                                            <a href="{{ URL::to('livetv/details/' . recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->channel_slug . '/' . recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->id) }}"
+                                            <a href="{{ URL::to('livetv/details/' . (recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->channel_slug ?: 'channel') . '/' . recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->id) }}"
                                                 title="{{ recently_watched_info($watched_videos->video_type, $watched_videos->video_id)->channel_name }}">
                                                 <div class="video-img">
 
@@ -517,7 +517,7 @@
 
                                 @foreach ($upcoming_movies as $movies_data)
                                     <div class="single-video">
-                                        <a href="{{ URL::to('movies/details/' . $movies_data->video_slug . '/' . $movies_data->id) }}"
+                                        <a href="{{ URL::to('movies/details/' . ($movies_data->video_slug ? $movies_data->video_slug : 'movie') . '/' . $movies_data->id) }}"
                                             title="{{ $movies_data->video_title }}">
                                             <div class="video-img">
                                                 @if ($movies_data->video_access == 'Paid')
@@ -550,42 +550,39 @@
         <!-- End Upcoming Section -->
     @endif
 
-    @if (getcong('menu_shows'))
-        <!-- Start Upcoming Section -->
-        @if ($upcoming_series->count() > 0)
+    @if (getcong('menu_movies'))
+        <!-- Start Latest Movies Video Section -->
+        <div class="view-all-video-area view-movie-list-item vfx-item-ptb">
+            <div class="container-fluid">
+                <div class="vfx-item-section">
+                    <h3>{{ trans('words.latest_movies') }}</h3>
+                </div>
+                <div class="row" id="movies-container">
+                    @include('pages.includes.movies_list')
+                </div>
 
-            <!-- Start Latest Shows Video Section -->
-            <div class="view-all-video-area view-movie-list-item vfx-item-ptb">
-                <div class="container-fluid">
-                    <div class="vfx-item-section">
-                        <h3>{{ trans('All Movies') }}</h3>
+                <!-- Loader -->
+                <div id="loader" class="text-center" style="display: none; padding: 20px;">
+                    <div class="spinner-border text-light" role="status">
+                        <span class="sr-only">Loading...</span>
                     </div>
-                    <div class="row" id="movies-container">
-                       @include('pages.includes.movies_list')
-                    </div>
-
-                    <!-- Loader -->
-                    <div id="loader" class="text-center" style="display: none; padding: 20px;">
-                        <div class="spinner-border text-light" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                        <div class="wave-loader">
-                            <span></span><span></span><span></span><span></span><span></span>
-                        </div>
-                    </div>
-
-                    <div class="text-center" style="margin-bottom: 20px;">
-                        <button id="load-more-btn" class="btn btn-primary" style="display: none; background: linear-gradient(135deg, #ff8508, #fd0575); border: none; padding: 10px 30px; border-radius: 25px; font-weight: bold; box-shadow: 0 4px 15px rgba(255, 133, 8, 0.4);">Load More</button>
-                    </div>
-
-                    <div class="col-xs-12" style="display: none;">
-                        @include('_particles.pagination', ['paginator' => $movies_list])
+                    <div class="wave-loader">
+                        <span></span><span></span><span></span><span></span><span></span>
                     </div>
                 </div>
+
+                <div class="text-center" style="margin-bottom: 20px;">
+                    <button id="load-more-btn" class="btn btn-primary"
+                        style="display: none; background: linear-gradient(135deg, #ff8508, #fd0575); border: none; padding: 10px 30px; border-radius: 25px; font-weight: bold; box-shadow: 0 4px 15px rgba(255, 133, 8, 0.4);">Load
+                        More</button>
+                </div>
+
+                <div class="col-xs-12" style="display: none;">
+                    @include('_particles.pagination', ['paginator' => $movies_list])
+                </div>
             </div>
-            <!-- End Latest Shows Video Section -->
-        @endif
-        <!-- End Upcoming Section -->
+        </div>
+        <!-- End Latest Movies Video Section -->
     @endif
 
 <style>
@@ -654,7 +651,7 @@
 
                                     @foreach (explode(',', $sections_data->movie_ids) as $movie_data)
                                         <div class="single-video">
-                                            <a href="{{ URL::to('movies/details/' . App\Movies::getMoviesInfo($movie_data, 'video_slug') . '/' . App\Movies::getMoviesInfo($movie_data, 'id')) }}"
+                                            <a href="{{ URL::to('movies/details/' . (App\Movies::getMoviesInfo($movie_data, 'video_slug') ?: 'movie') . '/' . App\Movies::getMoviesInfo($movie_data, 'id')) }}"
                                                 title="{{ App\Movies::getMoviesInfo($movie_data, 'video_title') }}">
                                                 <div class="video-img">
                                                     @if (App\Movies::getMoviesInfo($movie_data, 'video_access') == 'Paid')
@@ -703,7 +700,7 @@
                                 <div class="video-shows-carousel owl-carousel">
                                     @foreach (explode(',', $sections_data->show_ids) as $show_data)
                                         <div class="single-video">
-                                            <a href="{{ URL::to('shows/details/' . App\Series::getSeriesInfo($show_data, 'series_slug') . '/' . $show_data) }}"
+                                            <a href="{{ URL::to('shows/details/' . (App\Series::getSeriesInfo($show_data, 'series_slug') ?: 'show') . '/' . $show_data) }}"
                                                 title="{{ App\Series::getSeriesInfo($show_data, 'series_name') }}">
                                                 <div class="video-img">
                                                     @if (App\Series::getSeriesInfo($show_data, 'series_access') == 'Paid')
@@ -753,7 +750,7 @@
                                 <div class="tv-season-video-carousel owl-carousel">
                                     @foreach (explode(',', $sections_data->sport_ids) as $sport_data)
                                         <div class="single-video">
-                                            <a href="{{ URL::to('sports/details/' . App\Sports::getSportsInfo($sport_data, 'video_slug') . '/' . $sport_data) }}"
+                                            <a href="{{ URL::to('sports/details/' . (App\Sports::getSportsInfo($sport_data, 'video_slug') ?: 'sport') . '/' . $sport_data) }}"
                                                 title="{{ App\Sports::getSportsInfo($sport_data, 'video_title') }}">
                                                 <div class="video-img">
                                                     @if (App\Sports::getSportsInfo($sport_data, 'video_access') == 'Paid')
@@ -803,7 +800,7 @@
                                 <div class="tv-season-video-carousel owl-carousel">
                                     @foreach (explode(',', $sections_data->tv_ids) as $tv_data)
                                         <div class="single-video">
-                                            <a href="{{ URL::to('livetv/details/' . App\LiveTV::getLiveTvInfo($tv_data, 'channel_slug') . '/' . $tv_data) }}"
+                                            <a href="{{ URL::to('livetv/details/' . (App\LiveTV::getLiveTvInfo($tv_data, 'channel_slug') ?: 'channel') . '/' . $tv_data) }}"
                                                 title="{{ App\LiveTV::getLiveTvInfo($tv_data, 'channel_name') }}">
                                                 <div class="video-img">
                                                     @if (App\LiveTV::getLiveTvInfo($tv_data, 'channel_access') == 'Paid')

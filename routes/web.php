@@ -248,17 +248,17 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('membership_plan/razorpay/{id}', 'UsersController@membership_plan_razorpay');
     Route::post('razorpay/payment', 'UsersController@razorpay_payment');
 
-    Route::get('movies', 'IndexController@movies');
-    Route::get('movies/{slug}/{id}', 'IndexController@movies_single');
+    Route::get('movies', 'MoviesController@movies');
+    Route::get('movies/details/{slug}/{id}', 'MoviesController@movies_details');
 
-    Route::get('series', 'IndexController@series');
-    Route::get('series/{slug}/{id}', 'IndexController@series_single');
+    Route::get('shows', 'ShowsController@shows');
+    Route::get('shows/details/{slug}/{id}', 'ShowsController@show_details');
 
-    Route::get('sports', 'IndexController@sports');
-    Route::get('sports/{slug}/{id}', 'IndexController@sports_single');
+    Route::get('sports', 'SportsController@sports');
+    Route::get('sports/details/{slug}/{id}', 'SportsController@sports_details');
 
-    Route::get('livetv', 'IndexController@livetv');
-    Route::get('livetv/{slug}/{id}', 'IndexController@livetv_single');
+    Route::get('livetv', 'LiveTvController@live_tv_list');
+    Route::get('livetv/details/{slug}/{id}', 'LiveTvController@live_tv_details');
 
     Route::get('search', 'IndexController@search');
     Route::get('search_elastic', 'IndexController@search_elastic');
@@ -281,8 +281,6 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('watchlist', 'UsersController@watchlist');
     Route::get('watchlist/add', 'UsersController@watchlist_add');
     Route::get('watchlist/remove', 'UsersController@watchlist_remove');
-
-    Route::get('{slug}/{id}', 'IndexController@home_collections');
 
     // Database Update Route
     Route::get('db_update', function() {
@@ -313,5 +311,8 @@ Route::group(['middleware' => ['web']], function() {
             return "Error: " . $e->getMessage();
         }
     });
+
+    // Catch-all route for home collections - MUST be last
+    Route::get('{slug}/{id}', 'IndexController@home_collections');
 
 });

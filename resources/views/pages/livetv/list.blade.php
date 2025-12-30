@@ -60,7 +60,7 @@
          @foreach($live_tv_list as $live_tv_data)    
          <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 col-6">
           <div class="single-video">
-            <a href="{{ URL::to('livetv/details/'.$live_tv_data->channel_slug.'/'.$live_tv_data->id) }}" title="{{$live_tv_data->channel_name}}">
+            <a href="{{ URL::to('livetv/details/'.($live_tv_data->channel_slug?:'channel').'/'.$live_tv_data->id) }}" title="{{$live_tv_data->channel_name}}">
                <div class="video-img">          
                 
                 @if($live_tv_data->channel_access=="Paid")       

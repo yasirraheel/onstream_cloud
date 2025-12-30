@@ -32,7 +32,7 @@
         @foreach(explode(",",$home_section->sport_ids) as $sport_data)
          <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
             <div class="single-video">
-             <a href="{{ URL::to('sports/details/'.App\Sports::getSportsInfo($sport_data,'video_slug').'/'.$sport_data) }}" title="{{App\Sports::getSportsInfo($sport_data,'video_title')}}">
+             <a href="{{ URL::to('sports/details/'.(App\Sports::getSportsInfo($sport_data,'video_slug')?:'sport').'/'.$sport_data) }}" title="{{App\Sports::getSportsInfo($sport_data,'video_title')}}">
                 <div class="video-img">       
                    @if(App\Sports::getSportsInfo($sport_data,'video_access')=="Paid")
                    <div class="vid-lab-premium"><img src="{{ URL::asset('site_assets/images/ic-premium.png') }}" alt="ic-premium" title="ic-premium"></div> 

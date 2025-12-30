@@ -66,7 +66,7 @@
          @foreach($series_list as $series_data)    
          <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
           <div class="single-video">
-            <a href="{{ URL::to('shows/details/'.$series_data->series_slug.'/'.$series_data->id) }}" title="{{$series_data->series_name}}">
+            <a href="{{ URL::to('shows/details/'.($series_data->series_slug?:'show').'/'.$series_data->id) }}" title="{{$series_data->series_name}}">
                <div class="video-img">          
                 
                 @if($series_data->series_access=="Paid")       

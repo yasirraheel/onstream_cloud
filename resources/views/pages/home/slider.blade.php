@@ -13,19 +13,19 @@
 
         @elseif($slider_data->slider_type=="Movies")
 
-        <?php $slider_url= URL::to('movies/details/'.App\Movies::getMoviesInfo($slider_data->slider_post_id,'video_slug').'/'.$slider_data->slider_post_id);?>
+        <?php $slider_url= URL::to('movies/details/'.(App\Movies::getMoviesInfo($slider_data->slider_post_id,'video_slug')?:'movie').'/'.$slider_data->slider_post_id);?>
          
         @elseif($slider_data->slider_type=="Shows")
         
-        <?php $slider_url= URL::to('shows/details/'.App\Series::getSeriesInfo($slider_data->slider_post_id,'series_slug').'/'.$slider_data->slider_post_id);?>
+        <?php $slider_url= URL::to('shows/details/'.(App\Series::getSeriesInfo($slider_data->slider_post_id,'series_slug')?:'show').'/'.$slider_data->slider_post_id);?>
          
         @elseif($slider_data->slider_type=="Sports")
 
-        <?php $slider_url= URL::to('sports/details/'.App\Sports::getSportsInfo($slider_data->slider_post_id,'video_slug').'/'.$slider_data->slider_post_id);?>
+        <?php $slider_url= URL::to('sports/details/'.(App\Sports::getSportsInfo($slider_data->slider_post_id,'video_slug')?:'sport').'/'.$slider_data->slider_post_id);?>
         
         @elseif($slider_data->slider_type=="LiveTV")
 
-        <?php $slider_url= URL::to('livetv/details/'.App\LiveTV::getLiveTvInfo($slider_data->slider_post_id,'channel_slug').'/'.$slider_data->slider_post_id);?>
+        <?php $slider_url= URL::to('livetv/details/'.(App\LiveTV::getLiveTvInfo($slider_data->slider_post_id,'channel_slug')?:'channel').'/'.$slider_data->slider_post_id);?>
  
         @else
           <?php $slider_url='#';?>

@@ -32,7 +32,7 @@
         @foreach(explode(",",$home_section->movie_ids) as $movie_data)
         <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 col-6">
           <div class="single-video">
-            <a href="{{ URL::to('movies/details/'.App\Movies::getMoviesInfo($movie_data,'video_slug').'/'.App\Movies::getMoviesInfo($movie_data,'id')) }}" title="{{App\Movies::getMoviesInfo($movie_data,'video_title')}}">
+            <a href="{{ URL::to('movies/details/'.(App\Movies::getMoviesInfo($movie_data,'video_slug')?:'movie').'/'.App\Movies::getMoviesInfo($movie_data,'id')) }}" title="{{App\Movies::getMoviesInfo($movie_data,'video_title')}}">
                <div class="video-img"> 
                 @if(App\Movies::getMoviesInfo($movie_data,'video_access')=="Paid")       
                 <div class="vid-lab-premium">
