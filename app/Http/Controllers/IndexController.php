@@ -114,6 +114,11 @@ class IndexController extends Controller
 
         //dd($upcoming_movies);exit;
         $movies_list = Movies::where('status',1)->where('upcoming',0)->orderBy('id','DESC')->paginate(30);
+
+        if ($request->ajax()) {
+            return view('pages.includes.movies_list', compact('movies_list'));
+        }
+
         $home_sections = HomeSections::where('status',1)->orderby('id')->get();
 
         return view('pages.index',compact('slider','recently_watched','upcoming_movies','upcoming_series','home_sections','movies_list','ads_products'));
