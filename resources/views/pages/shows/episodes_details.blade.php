@@ -327,11 +327,12 @@
                     
                     $season_image_size = getImageSizeFromURL(URL::to('/'.str_replace(" ", "%20", $season_data->season_poster)));
               
+                    $orientation = "portrait"; // default
                    
-                   if ($season_image_size['width'] > $season_image_size['height']) {
-                        $orientation = "landscape";
-                    } else {
-                        $orientation = "portrait";
+                   if ($season_image_size && isset($season_image_size['width']) && isset($season_image_size['height'])) {
+                        if ($season_image_size['width'] > $season_image_size['height']) {
+                            $orientation = "landscape";
+                        }
                     }
               @endphp
 
