@@ -43,7 +43,7 @@ class IndexController extends Controller
 {
 
 
-    public function index()
+    public function index(Request $request)
     {
 
         if(!$this->alreadyInstalled())

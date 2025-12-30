@@ -560,70 +560,21 @@
                     <div class="vfx-item-section">
                         <h3>{{ trans('All Movies') }}</h3>
                     </div>
-                    <div class="row">
-                       @foreach ($movies_list as $movies_data)
-    <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12 col-6">
-        <div class="single-video">
-            @if (Auth::check())
-                <a href="{{ URL::to('movies/details/' . $movies_data->video_slug . '/' . $movies_data->id) }}"
-                    title="{{ $movies_data->video_title }}">
-            @else
-                @if ($movies_data->video_access == 'Paid')
-                    <a href="{{ URL::to('movies/details/' . $movies_data->video_slug . '/' . $movies_data->id) }}"
-                        title="{{ $movies_data->video_title }}" data-toggle="modal" data-target="#loginAlertModal">
-                @else
-                    <a href="{{ URL::to('movies/details/' . $movies_data->video_slug . '/' . $movies_data->id) }}"
-                        title="{{ $movies_data->video_title }}">
-                @endif
-            @endif
-
-            <div class="video-img">
-                @if ($movies_data->video_access == 'Paid')
-                    <div class="vid-lab-premium">
-                        <img src="{{ URL::asset('site_assets/images/ic-premium.png') }}" alt="premium" title="premium">
+                    <div class="row" id="movies-container">
+                       @include('pages.includes.movies_list')
                     </div>
-                @endif
 
-                {{-- Show "Today" badge if movie was created today --}}
-@php
-              $label = '';
-              if($movies_data->created_at){
-                  $label = \Carbon\Carbon::parse($movies_data->created_at)->format('M d, Y');
-              } elseif($movies_data->updated_at){
-                  $label = \Carbon\Carbon::parse($movies_data->updated_at)->format('M d, Y');
-              }
-              @endphp
-              @if($label)
-              <span class="badge badge-danger today-badge">{{ $label }}</span>
-              @endif
-                <span class="video-item-content">
-                    {{ Str::limit(stripslashes($movies_data->video_title), 20) }}
-                </span>
-
-                <img src="{{ URL::to('/' . $movies_data->video_image_thumb) }}"
-                    alt="{{ stripslashes($movies_data->video_title) }}"
-                    title="{{ stripslashes($movies_data->video_title) }}">
-            </div>
-            </a>
-        </div>
-    </div>
-@endforeach
-<style>
-    .today-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: red;
-    color: white;
-    padding: 5px 10px;
-    font-size: 12px;
-    border-radius: 5px;
-}
-
-</style>
-
+                    <!-- Loader -->
+                    <div id="loader" class="text-center" style="display: none; padding: 20px;">
+                        <div class="spinner-border text-light" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <div class="wave-loader">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
                     </div>
-                    <div class="col-xs-12">
+
+                    <div class="col-xs-12" style="display: none;">
                         @include('_particles.pagination', ['paginator' => $movies_list])
                     </div>
                 </div>
@@ -632,6 +583,48 @@
         @endif
         <!-- End Upcoming Section -->
     @endif
+
+<style>
+    .today-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: red;
+        color: white;
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 5px;
+    }
+
+    /* Wave Loader */
+    .wave-loader {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        height: 40px;
+    }
+    .wave-loader span {
+        display: inline-block;
+        width: 6px;
+        height: 100%;
+        background: linear-gradient(45deg, #ff0015, #ff8c00);
+        animation: wave 1s infinite ease-in-out;
+        border-radius: 10px;
+    }
+    .wave-loader span:nth-child(1) { animation-delay: 0s; }
+    .wave-loader span:nth-child(2) { animation-delay: 0.1s; }
+    .wave-loader span:nth-child(3) { animation-delay: 0.2s; }
+    .wave-loader span:nth-child(4) { animation-delay: 0.3s; }
+    .wave-loader span:nth-child(5) { animation-delay: 0.4s; }
+
+    @keyframes wave {
+        0%, 100% { transform: scaleY(0.4); }
+        50% { transform: scaleY(1); }
+    }
+</style>
+
+
 
     @foreach ($home_sections as $sections_data)
 
@@ -1287,4 +1280,52 @@
     @endif
 
 
+@endsection
+
+@section('scripts')
+<script type="text/javascript">
+    var page = 1;
+    var lastPage = {{ $movies_list->lastPage() }};
+    var loading = false;
+
+    $(window).scroll(function() {
+        if($(window).scrollTop() + $(window).height() >= $(document).height() - 500) {
+            if (page < lastPage && !loading) {
+                loading = true;
+                page++;
+                loadMoreData(page);
+            }
+        }
+    });
+
+    function loadMoreData(page){
+        $('#loader').show();
+        $.ajax(
+            {
+                url: '?page=' + page,
+                type: "get",
+                beforeSend: function()
+                {
+                    // $('#loader').show();
+                }
+            })
+            .done(function(data)
+            {
+                if(data.html == " "){
+                    // $('.ajax-load').html("No more records found");
+                    $('#loader').hide();
+                    return;
+                }
+                $('#loader').hide();
+                $("#movies-container").append(data);
+                loading = false;
+            })
+            .fail(function(jqXHR, ajaxOptions, thrownError)
+            {
+                  // alert('server not responding...');
+                  $('#loader').hide();
+                  loading = false;
+            });
+    }
+</script>
 @endsection

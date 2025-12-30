@@ -336,7 +336,7 @@ $(document).ready(function() {
     {!!stripslashes(getcong('site_footer_code'))!!}
 @endif
 
-
+@yield('scripts')
 
 </body>
 </html>
