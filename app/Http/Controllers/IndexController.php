@@ -171,13 +171,38 @@ class IndexController extends Controller
     {
         $keyword = $_GET['s'];
 
-        // Save search history
-        if (!empty($keyword)) {
-            SearchHistory::create([
-                'keyword' => $keyword,
-                'user_id' => Auth::check() ? Auth::id() : null,
-                'ip_address' => request()->ip()
-            ]);
+        // Save search history with smart update
+        if (!empty($keyword) && strlen($keyword) > 2) {
+            $user_id = Auth::check() ? Auth::id() : null;
+            $ip_address = request()->ip();
+
+            // Check for recent search from same user/ip (last 60 seconds)
+            $last_search = SearchHistory::where('ip_address', $ip_address)
+                ->where('user_id', $user_id)
+                ->where('created_at', '>=', now()->subSeconds(60))
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            if ($last_search) {
+                // If new keyword contains old keyword (typing forward) or old contains new (backspacing)
+                if (strpos($keyword, $last_search->keyword) !== false || strpos($last_search->keyword, $keyword) !== false) {
+                    $last_search->keyword = $keyword;
+                    $last_search->updated_at = now();
+                    $last_search->save();
+                } else {
+                    SearchHistory::create([
+                        'keyword' => $keyword,
+                        'user_id' => $user_id,
+                        'ip_address' => $ip_address
+                    ]);
+                }
+            } else {
+                SearchHistory::create([
+                    'keyword' => $keyword,
+                    'user_id' => $user_id,
+                    'ip_address' => $ip_address
+                ]);
+            }
         }
 
         if(getcong('menu_movies'))
@@ -226,13 +251,38 @@ class IndexController extends Controller
     {
         $keyword = $_GET['s'];
 
-        // Save search history
-        if (!empty($keyword)) {
-            SearchHistory::create([
-                'keyword' => $keyword,
-                'user_id' => Auth::check() ? Auth::id() : null,
-                'ip_address' => request()->ip()
-            ]);
+        // Save search history with smart update
+        if (!empty($keyword) && strlen($keyword) > 2) {
+            $user_id = Auth::check() ? Auth::id() : null;
+            $ip_address = request()->ip();
+
+            // Check for recent search from same user/ip (last 60 seconds)
+            $last_search = SearchHistory::where('ip_address', $ip_address)
+                ->where('user_id', $user_id)
+                ->where('created_at', '>=', now()->subSeconds(60))
+                ->orderBy('id', 'DESC')
+                ->first();
+
+            if ($last_search) {
+                // If new keyword contains old keyword (typing forward) or old contains new (backspacing)
+                if (strpos($keyword, $last_search->keyword) !== false || strpos($last_search->keyword, $keyword) !== false) {
+                    $last_search->keyword = $keyword;
+                    $last_search->updated_at = now();
+                    $last_search->save();
+                } else {
+                    SearchHistory::create([
+                        'keyword' => $keyword,
+                        'user_id' => $user_id,
+                        'ip_address' => $ip_address
+                    ]);
+                }
+            } else {
+                SearchHistory::create([
+                    'keyword' => $keyword,
+                    'user_id' => $user_id,
+                    'ip_address' => $ip_address
+                ]);
+            }
         }
 
         $movies_list = Movies::where('status',1)->where('upcoming',0)->where("video_title", "LIKE","%$keyword%")->orderBy('video_title')->get();
