@@ -434,9 +434,11 @@
 
                     <label class="col-sm-3 col-form-label">{{trans('words.video_url')}} <small id="emailHelp" class="form-text text-muted">(Defualt Player File)</small></label>
                      <div class="col-sm-8">
-                      <select id="api_file_select" class="form-control mb-3" style="display: none;">
-                          <option value="">Select File from API</option>
-                      </select>
+                      <div id="api_file_select_wrapper" style="display: none;" class="mb-3">
+                          <select id="api_file_select" class="form-control select2">
+                              <option value="">Select File from API</option>
+                          </select>
+                      </div>
                       <input type="text" name="video_url" id="video_url_input" value="{{ isset($movie->video_url) ? $movie->video_url : null }}" class="form-control" placeholder="http://example.com/demo.mp4">
                     </div>
 
@@ -700,10 +702,14 @@ function processSelectedFile(filePath, requestingField) {
                             options += '<option value="' + file.direct_link + '">' + file.name + '</option>';
                         });
                         $('#api_file_select').html(options);
+
+                        // Initialize Select2
+                        $('#api_file_select').select2();
+
                         apiFilesFetched = true;
 
                         // Show the dropdown if it was hidden/loading
-                        $('#api_file_select').show();
+                        $('#api_file_select_wrapper').show();
                     } else {
                          $('#api_file_select').html('<option value="">No files found or API error</option>');
                     }
@@ -718,12 +724,12 @@ function processSelectedFile(filePath, requestingField) {
         function checkVideoType() {
             var videoType = $('#video_type').val();
             if (videoType === 'URL') {
-                $('#api_file_select').show();
+                if(apiFilesFetched) {
+                     $('#api_file_select_wrapper').show();
+                }
                 fetchApiFiles();
             } else {
-                 if(apiFilesFetched) {
-                     $('#api_file_select').show();
-                 }
+                $('#api_file_select_wrapper').hide();
             }
         }
 
