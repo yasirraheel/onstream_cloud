@@ -747,51 +747,38 @@ function processSelectedFile(filePath, requestingField) {
                             var movieTitle = "{{ addslashes($movie->video_title) }}";
                             if(movieTitle) {
                                 var firstWord = movieTitle.split(' ')[0];
+
+                                // Set 'Upcoming' to 'No' (0)
+                                $('#upcoming').val('0'); // Set value
+                                // Note: We might NOT want to trigger change here if it causes side effects or if we want to be subtle.
+                                // But usually Select2 or custom styled selects need an update.
+                                // If it's a standard select, .val() is enough for submission, but UI might need refresh.
+                                // Assuming standard bootstrap select or select2.
+                                $('#upcoming').trigger('change');
+
+                                // Set 'Video Type' to 'URL'
+                                if($('#video_type').val() !== 'URL') {
+                                    $('#video_type').val('URL').trigger('change');
+                                }
+
                                 // Open Select2 and set search term
                                 // We need to wait for Select2 to be initialized
                                 setTimeout(function() {
-                                    // Set 'Upcoming' to 'No' (0)
-                                    $('#upcoming').val('0').trigger('change');
-
-                                    // Set 'Video Type' to 'URL'
-                                    // Already handled by checkVideoType() logic if we force it, but let's be explicit
-                                    // If video_type was NOT URL, we need to change it
-                                    if($('#video_type').val() !== 'URL') {
-                                        $('#video_type').val('URL').trigger('change');
-                                    }
-
-                                    // Open select2 and search
-                                    /*
-                                    // This opens the dropdown and searches.
-                                    // However, user might want to just see the list filtered.
-                                    // Programmatically setting the search term in Select2 is tricky without opening it.
-                                    // Common way: open, set search field value, trigger input event.
-                                    */
-
-                                    /*
-                                    $('#api_file_select').select2('open');
-                                    var $search = $('#api_file_select').data('select2').dropdown.$search || $('#api_file_select').data('select2').selection.$search;
-                                    $search.val(firstWord);
-                                    $search.trigger('input');
-                                    */
-
-                                    // Note: Automatically opening the dropdown might be annoying if the user just landed on the page.
-                                    // But the user asked: "first word of movie name should be auto set in movies links coming from api drop down search bar"
-                                    // This implies the dropdown should probably be filtered or pre-filled.
-                                    // Since Select2 searches client-side (based on our options), we can't easily "pre-filter" without opening or simulating a search.
-                                    // Let's try to set the default selection if we find a match? No, user said "search bar".
 
                                     // Let's just open it and search
                                     var select2Instance = $('#api_file_select').data('select2');
                                     if(select2Instance) {
-                                        // We can try to filter the options or just let user do it.
-                                        // Let's stick to the request: "first word ... set in ... search bar"
                                         $('#api_file_select').select2('open');
-                                        var $searchField = $('.select2-search__field');
-                                        if($searchField.length > 0) {
-                                            $searchField.val(firstWord);
-                                            $searchField.trigger('keyup'); // Trigger search
-                                        }
+
+                                        // Wait a tiny bit for the dropdown to render
+                                        setTimeout(function() {
+                                            var $searchField = $('.select2-search__field');
+                                            if($searchField.length > 0) {
+                                                $searchField.val(firstWord);
+                                                $searchField.trigger('keyup'); // Trigger search
+                                                $searchField.trigger('input'); // Trigger input (some versions need this)
+                                            }
+                                        }, 100);
                                     }
 
                                 }, 500);
