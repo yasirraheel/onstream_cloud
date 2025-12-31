@@ -30,6 +30,10 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
 
     Route::get('dashboard', 'DashboardController@index');
     Route::get('analytics', 'AnalyticsController@index');
+
+    Route::get('api_urls', 'ApiUrlController@index');
+    Route::get('api_urls/fetch', 'ApiUrlController@fetch_urls');
+
     Route::get('profile', 'AdminController@profile');
     Route::post('profile', 'AdminController@updateProfile');
     Route::get('verify_purchase', 'AdminController@verify_purchase');
