@@ -744,45 +744,28 @@ function processSelectedFile(filePath, requestingField) {
 
                         // Auto-set search if needed
                         @if(isset($movie) && $movie->upcoming == 1)
-                            var movieTitle = "{{ addslashes($movie->video_title) }}";
-                            if(movieTitle) {
-                                var firstWord = movieTitle.split(' ')[0];
-
-                                // Set 'Upcoming' to 'No' (0)
-                                $('#upcoming').val('0'); // Set value
-                                // Note: We might NOT want to trigger change here if it causes side effects or if we want to be subtle.
-                                // But usually Select2 or custom styled selects need an update.
-                                // If it's a standard select, .val() is enough for submission, but UI might need refresh.
-                                // Assuming standard bootstrap select or select2.
-                                $('#upcoming').trigger('change');
-
-                                // Set 'Video Type' to 'URL'
-                                if($('#video_type').val() !== 'URL') {
-                                    $('#video_type').val('URL').trigger('change');
+                             // Search logic moved here, running only once if we just fetched files
+                             if (!window.upcomingSearchPerformed) {
+                                var movieTitle = "{{ addslashes($movie->video_title) }}";
+                                if(movieTitle) {
+                                    var firstWord = movieTitle.split(' ')[0];
+                                    setTimeout(function() {
+                                        var select2Instance = $('#api_file_select').data('select2');
+                                        if(select2Instance) {
+                                            $('#api_file_select').select2('open');
+                                            setTimeout(function() {
+                                                var $searchField = $('.select2-search__field');
+                                                if($searchField.length > 0) {
+                                                    $searchField.val(firstWord);
+                                                    $searchField.trigger('keyup');
+                                                    $searchField.trigger('input');
+                                                }
+                                            }, 100);
+                                        }
+                                    }, 500);
+                                    window.upcomingSearchPerformed = true;
                                 }
-
-                                // Open Select2 and set search term
-                                // We need to wait for Select2 to be initialized
-                                setTimeout(function() {
-
-                                    // Let's just open it and search
-                                    var select2Instance = $('#api_file_select').data('select2');
-                                    if(select2Instance) {
-                                        $('#api_file_select').select2('open');
-
-                                        // Wait a tiny bit for the dropdown to render
-                                        setTimeout(function() {
-                                            var $searchField = $('.select2-search__field');
-                                            if($searchField.length > 0) {
-                                                $searchField.val(firstWord);
-                                                $searchField.trigger('keyup'); // Trigger search
-                                                $searchField.trigger('input'); // Trigger input (some versions need this)
-                                            }
-                                        }, 100);
-                                    }
-
-                                }, 500);
-                            }
+                             }
                         @endif
 
                     } else {
@@ -795,6 +778,31 @@ function processSelectedFile(filePath, requestingField) {
                 }
             });
         }
+
+        // Global flag to prevent re-running search
+        window.upcomingSearchPerformed = false;
+
+        // Automation for Upcoming Movies - Runs IMMEDIATELY on page load
+        @if(isset($movie) && $movie->upcoming == 1)
+            $(function() {
+                console.log("Upcoming movie automation started");
+
+                // 1. Set Upcoming to No
+                var $upcoming = $('#upcoming');
+                if($upcoming.val() != '0') {
+                    $upcoming.val('0').trigger('change');
+                    console.log("Set upcoming to 0");
+                }
+
+                // 2. Set Video Type to URL
+                var $videoType = $('#video_type');
+                if($videoType.val() !== 'URL') {
+                    $videoType.val('URL').trigger('change');
+                    console.log("Set video_type to URL");
+                }
+                // Note: triggering change on video_type will call checkVideoType() -> fetchApiFiles()
+            });
+        @endif
 
         function checkVideoType() {
             var videoType = $('#video_type').val();
