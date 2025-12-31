@@ -271,6 +271,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('livetv/watch/{slug}/{id}', 'LiveTvController@live_tv_watch');
 
     Route::get('search', 'IndexController@search');
+    Route::get('offers', 'IndexController@offers');
     Route::get('search_elastic', 'IndexController@search_elastic');
 
     Route::get('sitemap.xml', 'IndexController@sitemap');
