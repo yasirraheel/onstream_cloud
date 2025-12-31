@@ -272,6 +272,7 @@ Route::group(['middleware' => ['web']], function() {
 
     Route::get('search', 'IndexController@search');
     Route::get('offers', 'IndexController@offers');
+    Route::post('track-ad-click', 'IndexController@trackAdClick');
     Route::get('search_elastic', 'IndexController@search_elastic');
 
     Route::get('sitemap.xml', 'IndexController@sitemap');
