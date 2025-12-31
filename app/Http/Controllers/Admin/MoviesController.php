@@ -293,10 +293,34 @@ public function addnew(Request $request)
             $movie_obj->upcoming = $inputs['upcoming'];
         }
 
-        if (isset($inputs['pending'])) {
-            $movie_obj->pending = $inputs['pending'];
+        // Handle Pending logic via Save Action Button
+        if (isset($inputs['save_action']) && $inputs['save_action'] == 'pending') {
+            $movie_obj->pending = 1;
+        } elseif (isset($inputs['pending'])) {
+            // Keep existing logic if input is present (e.g. from hidden input or edit)
+            // But if we clicked "Save" (not pending), force pending to 0 unless it was specifically set?
+            // Actually, if we click "Save" we usually imply "Publish" or "Save as is".
+            // If we are editing a pending movie and click "Save", should it remain pending?
+            // The user request implies "Save as Pending" sets it to 1.
+            // If they click "Save", it should probably un-pend it if it was pending, OR respect the dropdown if we had one.
+            // Since we removed the dropdown, "Save" should probably mean "Not Pending" (Publish) or "Keep Current State".
+            // Let's assume "Save" means "Publish" (Pending = 0) to allow workflow: Pending -> Edit -> Save (Publish).
+            // UNLESS we are just editing details.
+            // However, typically "Save as Pending" is the explicit action to pend. "Save" is the explicit action to publish/update.
+            // Let's set pending = 0 if save_action is 'save'.
+
+            if (isset($inputs['save_action']) && $inputs['save_action'] == 'save') {
+                 $movie_obj->pending = 0;
+            } else {
+                 $movie_obj->pending = $inputs['pending'];
+            }
         } else {
-            $movie_obj->pending = 0;
+             // Default fallback
+             if (isset($inputs['save_action']) && $inputs['save_action'] == 'pending') {
+                $movie_obj->pending = 1;
+             } else {
+                $movie_obj->pending = 0;
+             }
         }
 
         if ($inputs['upcoming'] == 0 && $movie_obj->pending == 0) {

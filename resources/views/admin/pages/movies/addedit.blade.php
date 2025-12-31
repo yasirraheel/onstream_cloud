@@ -126,16 +126,9 @@
 
                   </div>
 
-                  <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">Pending</label>
-                    <div class="col-sm-8">
-                      <select class="form-control" name="pending" id="pending">
-                          <option value="0" @if(isset($movie->pending) AND $movie->pending==0) selected @endif>{{trans('words.no')}}</option>
-                          <option value="1" @if(isset($movie->pending) AND $movie->pending==1) selected @endif>{{trans('words.yes')}}</option>
-                      </select>
-                      <small id="emailHelp" class="form-text text-muted">Mark as "Yes" to hide from frontend lists but keep for later content upload.</small>
-                    </div>
-                  </div>
+                  <!-- Pending Dropdown Removed as per request, replaced with button -->
+                  <input type="hidden" name="pending" id="pending" value="{{ isset($movie->pending) ? $movie->pending : '0' }}">
+
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.movie_access')}}</label>
                       <div class="col-sm-8">
@@ -619,7 +612,9 @@
 
                   <div class="form-group">
                   <div class="offset-sm-9 col-sm-9">
-                    <button type="submit" id="add_btn_id" class="btn btn-primary waves-effect waves-light"><i class="fa fa-save"></i> {{trans('words.save')}} </button>
+                    <button type="submit" name="save_action" value="save" id="add_btn_id" class="btn btn-primary waves-effect waves-light"><i class="fa fa-save"></i> {{trans('words.save')}} </button>
+
+                    <button type="submit" name="save_action" value="pending" class="btn btn-warning waves-effect waves-light ml-2"><i class="fa fa-clock-o"></i> Save as Pending </button>
                   </div>
                 </div>
 
