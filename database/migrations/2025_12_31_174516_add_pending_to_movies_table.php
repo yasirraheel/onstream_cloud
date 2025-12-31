@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('movies', function (Blueprint $table) {
+        Schema::table('movie_videos', function (Blueprint $table) {
             $table->boolean('pending')->default(0)->after('upcoming')->comment('0=No, 1=Yes');
             $table->index('pending');
         });
@@ -22,7 +22,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('movies', function (Blueprint $table) {
+        Schema::table('movie_videos', function (Blueprint $table) {
             $table->dropColumn('pending');
         });
     }
