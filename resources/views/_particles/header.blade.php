@@ -1,6 +1,6 @@
 <!-- Start Header -->
 <header>
-  <div style="background-color: #1a1a1a; color: #f5c6cb; padding: 8px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid #333;">
+  <div style="background-color: #1a1a1a; color: #f5c6cb; padding: 8px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 1000;">
       Disclaimer: All videos and pictures on Onstream are from the Internet, and their copyrights belong to the original creators. We only provide webpage services and do not store, record, or upload any content.
   </div>
   <!-- Start Navigation Area -->
