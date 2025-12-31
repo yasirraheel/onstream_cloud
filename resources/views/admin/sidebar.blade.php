@@ -11,11 +11,15 @@
             <li><a href="{{ URL::to('admin/genres') }}" class="waves-effect {{classActivePath('genres')}}"><i class="fa fa-list"></i><span>{{trans('words.genres_text')}}</span></a></li>
 
             @if(getcong('menu_movies'))
-            <li><a href="{{ URL::to('admin/movies') }}" class="waves-effect {{classActivePath('movies')}}"><i class="fa fa-video-camera"></i><span>{{trans('words.movies_text')}}</span></a></li>
-            @endif
-
-            @if(getcong('menu_movies'))
-            <li><a href="{{ URL::to('admin/upcoming_movies') }}" class="waves-effect {{classActivePath('upcoming_movies')}}"><i class="fa fa-video-camera"></i><span>{{trans('Upcoming Movies')}}</span></a></li>
+            <li class="has_sub">
+              <a href="javascript:void(0);" class="waves-effect {{classActivePath('movies')}}"><i class="fa fa-film"></i> <span>{{trans('words.movies_text')}}</span> <span class="menu-arrow"></span></a>
+              <ul class="list-unstyled">
+                <li class="{{classActivePath('movies')}}"><a href="{{ URL::to('admin/movies') }}">{{trans('words.movies_text')}}</a></li>
+                <li class="{{classActivePath('add_movie')}}"><a href="{{ URL::to('admin/movies/add_movie') }}">{{trans('words.add_movie')}}</a></li>
+                <li class="{{classActivePath('upcoming_movies')}}"><a href="{{ URL::to('admin/upcoming_movies') }}">Upcoming Movies</a></li>
+                <li class="{{classActivePath('pending_movies')}}"><a href="{{ URL::to('admin/pending_movies') }}">Pending Movies</a></li>
+              </ul>
+            </li>
             @endif
 
             @if(getcong('menu_shows'))

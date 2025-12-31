@@ -125,6 +125,17 @@
                       </div>
 
                   </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Pending</label>
+                    <div class="col-sm-8">
+                      <select class="form-control" name="pending" id="pending">
+                          <option value="0" @if(isset($movie->pending) AND $movie->pending==0) selected @endif>{{trans('words.no')}}</option>
+                          <option value="1" @if(isset($movie->pending) AND $movie->pending==1) selected @endif>{{trans('words.yes')}}</option>
+                      </select>
+                      <small id="emailHelp" class="form-text text-muted">Mark as "Yes" to hide from frontend lists but keep for later content upload.</small>
+                    </div>
+                  </div>
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.movie_access')}}</label>
                       <div class="col-sm-8">
@@ -338,7 +349,34 @@
                     </div>
                   </div>
 
-                  <div id="hide_when_upcoming" @if(isset($movie->upcoming) AND $movie->upcoming==1) style="display:none;" @endif>
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Toggle video fields based on upcoming or pending status
+        function toggleVideoFields() {
+            var upcoming = $('#upcoming').val();
+            var pending = $('#pending').val();
+
+            if(upcoming == '1' || pending == '1') {
+                $('#hide_when_upcoming').hide();
+            } else {
+                $('#hide_when_upcoming').show();
+            }
+        }
+
+        $('#upcoming').change(function() {
+            toggleVideoFields();
+        });
+
+        $('#pending').change(function() {
+            toggleVideoFields();
+        });
+
+        // Initial check
+        toggleVideoFields();
+    });
+</script>
+
+<div id="hide_when_upcoming" @if((isset($movie->upcoming) AND $movie->upcoming==1) OR (isset($movie->pending) AND $movie->pending==1)) style="display:none;" @endif>
 
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.video_upload_type')}}</label>

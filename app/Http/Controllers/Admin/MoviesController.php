@@ -77,20 +77,22 @@ class MoviesController extends MainAdminController
                       ->orWhere('video_url', '')
                       ->orWhere('video_url', 'LIKE', '%youtube%');
                 })
-                ->where('upcoming', 0);
+                ->where('upcoming', 0)
+                ->where('pending', 0); // Exclude pending
 
             $trial_movies = $trialQuery->orderBy('id', 'DESC')->get();
             $trial_ids = $trial_movies->pluck('id')->toArray();
 
             $movies_list = Movies::whereNotIn('id', $trial_ids)
                 ->where('upcoming', 0)
+                ->where('pending', 0) // Exclude pending
                 ->orderBy('id','DESC')
                 ->paginate(12);
 
-            $allMovies = Movies::where('upcoming',0)->orderBy('id','DESC')->get();
+            $allMovies = Movies::where('upcoming',0)->where('pending', 0)->orderBy('id','DESC')->get(); // Exclude pending
 
         }
- $allMovies = Movies::where('upcoming',0)->orderBy('id','DESC')->get();
+        $allMovies = Movies::where('upcoming',0)->where('pending', 0)->orderBy('id','DESC')->get(); // Exclude pending
         return view('admin.pages.movies.list',compact('page_title','movies_list','language_list','genres_list','allMovies', 'trial_movies'));
     }
     public function upcoming_movies_list(){
@@ -105,8 +107,24 @@ class MoviesController extends MainAdminController
 
          $genres_list = Genres::orderBy('genre_name')->get();
          $page_title = 'Upcoming Movies';
-         $movies_list = Movies::where('upcoming',1)->orderBy('id','DESC')->paginate(12);
-         $allMovies = Movies::where('upcoming',1)->orderBy('id','DESC')->get();
+         $movies_list = Movies::where('upcoming',1)->where('pending', 0)->orderBy('id','DESC')->paginate(12); // Exclude pending
+         $allMovies = Movies::where('upcoming',1)->where('pending', 0)->orderBy('id','DESC')->get(); // Exclude pending
+
+         return view('admin.pages.movies.list',compact('movies_list','page_title','language_list','genres_list','allMovies'));
+    }
+
+    public function pending_movies_list(){
+        if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
+        {
+            \Session::flash('flash_message', trans('words.access_denied'));
+            return redirect('dashboard');
+        }
+         $language_list = Language::orderBy('language_name')->get();
+
+         $genres_list = Genres::orderBy('genre_name')->get();
+         $page_title = 'Pending Movies';
+         $movies_list = Movies::where('pending',1)->orderBy('id','DESC')->paginate(12);
+         $allMovies = Movies::where('pending',1)->orderBy('id','DESC')->get();
 
          return view('admin.pages.movies.list',compact('movies_list','page_title','language_list','genres_list','allMovies'));
     }
@@ -271,8 +289,18 @@ public function addnew(Request $request)
     $movie_obj->seo_keyword = addslashes($inputs['seo_keyword']);
     $movie_obj->trailer_url = $inputs['trailer_url'];
 
-    if ($inputs['upcoming'] == 0) {
-        $movie_obj->video_type = $inputs['video_type'];
+        if (isset($inputs['upcoming'])) {
+            $movie_obj->upcoming = $inputs['upcoming'];
+        }
+
+        if (isset($inputs['pending'])) {
+            $movie_obj->pending = $inputs['pending'];
+        } else {
+            $movie_obj->pending = 0;
+        }
+
+        if ($inputs['upcoming'] == 0 && $movie_obj->pending == 0) {
+            $movie_obj->video_type = $inputs['video_type'];
 
         if (isset($inputs['video_quality'])) {
             $movie_obj->video_quality = $inputs['video_quality'];
