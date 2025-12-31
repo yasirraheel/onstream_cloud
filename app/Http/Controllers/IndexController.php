@@ -808,7 +808,11 @@ class IndexController extends Controller
 
     public function movies_request()
     {
-        return view('pages.movies_request');
+        $requested_movies = MovieRequest::select('movie_name', 'language', 'status')
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        return view('pages.movies_request', compact('requested_movies'));
     }
 
     public function post_movies_request(Request $request)
