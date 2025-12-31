@@ -702,11 +702,22 @@ function processSelectedFile(filePath, requestingField) {
                         var options = '<option value="">Select File from API</option>';
                         $.each(response.data, function(index, file) {
                             var isUsed = usedUrls.includes(file.direct_link);
-                            var disabledAttr = isUsed ? 'disabled' : '';
-                            var styleAttr = isUsed ? 'style="background-color: #f8d7da; color: #721c24;"' : '';
-                            var labelText = file.name + (isUsed ? ' (Already Used)' : '');
+                            file.isUsed = isUsed;
+                            file.labelText = file.name + (isUsed ? ' (Already Used)' : '');
+                        });
 
-                            options += '<option value="' + file.direct_link + '" ' + disabledAttr + ' ' + styleAttr + '>' + labelText + '</option>';
+                        // Sort: Unused first (alphabetical), then Used
+                        response.data.sort(function(a, b) {
+                            if (a.isUsed && !b.isUsed) return 1;
+                            if (!a.isUsed && b.isUsed) return -1;
+                            // If both are used or both are unused, sort alphabetically
+                            return a.name.localeCompare(b.name);
+                        });
+
+                        $.each(response.data, function(index, file) {
+                            var disabledAttr = file.isUsed ? 'disabled' : '';
+                            var styleAttr = file.isUsed ? 'style="background-color: #f8d7da; color: #721c24;"' : '';
+                            options += '<option value="' + file.direct_link + '" ' + disabledAttr + ' ' + styleAttr + '>' + file.labelText + '</option>';
                         });
                         $('#api_file_select').html(options);
 

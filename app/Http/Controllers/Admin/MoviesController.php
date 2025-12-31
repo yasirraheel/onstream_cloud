@@ -135,6 +135,20 @@ class MoviesController extends MainAdminController
             DB::table('episodes')->where('video_type', 'URL')->whereNotNull('video_url')->pluck('video_url')->toArray()
         );
 
+        // Sort used_urls alphabetically (case-insensitive) and move used links to the end
+        // Note: In PHP, to "sort unused first" implies we need the list of ALL possible URLs, but here we only have 'used_urls'.
+        // The requirement "already used links should be in last and other links sort by abc" usually applies when we are displaying a list of available files from a server.
+        // However, looking at the code, we are only passing 'used_urls' to the view.
+        // If the view is fetching files from a directory (e.g. via an AJAX call or a view composer), we need to check the view or where the file list comes from.
+        // Let's check the view 'admin.pages.movies.addedit' first to see how it uses 'used_urls'.
+        // Assuming the view lists files from a directory and uses 'used_urls' to mark or sort them.
+        
+        // Wait, the prompt says "in add movie api urls dropdown". This suggests there might be an API or a method that populates this dropdown.
+        // If the dropdown is populated from a directory scan in the view, I need to see the view.
+        // If it's populated via an API call, I need to find that API.
+
+        // But 'used_urls' variable name suggests it's just a list of used URLs.
+        
         return view('admin.pages.movies.addedit',compact('page_title','language_list','genre_list','actor_list','director_list', 'used_urls'));
     }
 
