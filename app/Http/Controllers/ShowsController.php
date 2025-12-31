@@ -245,6 +245,9 @@ class ShowsController extends Controller
         $video_obj->increment('views');     
         $video_obj->save();
 
+        // Add to new VideoView log
+        add_video_view($v_id, 'Episodes');
+
 
         return view('pages.shows.episodes_details',compact('episode_info','episode_up_next_list','series_info','season_name','season_trailer_url','episode_list','season_list'));
          

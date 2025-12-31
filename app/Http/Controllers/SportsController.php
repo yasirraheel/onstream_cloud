@@ -243,6 +243,9 @@ class SportsController extends Controller
         $video_obj->increment('views');     
         $video_obj->save();
 
+        // Add to new VideoView log
+        add_video_view($v_id, 'Sports');
+
 
         return view('pages.sports.watch',compact('sports_info','related_sports_list')); 
     }

@@ -99,6 +99,63 @@ if (! function_exists('set_tmdb_language')) {
     }
 }
 
+if (! function_exists('add_video_view')) {
+    function add_video_view($video_id, $video_type)
+    {
+        $ip_address = request()->ip();
+        $user_id = Auth::check() ? Auth::id() : null;
+
+        // Prevent duplicate view count from same IP/User within short time (e.g., 5 mins)
+        // Or strictly count every hit if desired, but typical analytics debounce slightly.
+        // For now, let's just log it.
+        
+        $location = get_ip_location_info($ip_address);
+
+        \App\VideoView::create([
+            'video_id' => $video_id,
+            'video_type' => $video_type,
+            'user_id' => $user_id,
+            'ip_address' => $ip_address,
+            'country' => $location['country'],
+            'country_code' => $location['country_code']
+        ]);
+    }
+}
+
+if (! function_exists('get_ip_location_info')) {
+    function get_ip_location_info($ip)
+    {
+        if ($ip == '127.0.0.1' || $ip == '::1') {
+            return ['country' => 'Localhost', 'country_code' => 'LO'];
+        }
+
+        // Check for private IP ranges
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+            return ['country' => 'Private Network', 'country_code' => 'PN'];
+        }
+
+        try {
+            // Using ip-api.com (Free, no key required for basic usage)
+            // Timeout set to 2 seconds to avoid blocking
+            $response = \Illuminate\Support\Facades\Http::timeout(2)->get("http://ip-api.com/json/{$ip}");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if (isset($data['status']) && $data['status'] === 'success') {
+                    return [
+                        'country' => $data['country'],
+                        'country_code' => $data['countryCode']
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            // Silently fail if API is down or times out
+        }
+
+        return ['country' => null, 'country_code' => null];
+    }
+}
+
 if (! function_exists('getcong_app')) {
 
     function getcong_app($key)

@@ -5,7 +5,7 @@
 <div class="content-page">
       <div class="content">
         <div class="container-fluid">
-          
+
           <div class="row">
             <div class="col-12">
               <div class="card-box table-responsive">
@@ -18,7 +18,7 @@
                 <br>
 
                 <div class="row">
-                    
+
                     <!-- Total Views -->
                     <div class="col-xl-3 col-md-6">
                         <div class="card-box widget-user">
@@ -33,8 +33,8 @@
                     <div class="col-xl-3 col-md-6">
                         <div class="card-box widget-user">
                             <div class="text-center">
-                                <h2 class="text-pink" data-plugin="counterup">N/A</h2>
-                                <h5 style="color: #f9f9f9;">Today's Views *</h5>
+                                <h2 class="text-pink" data-plugin="counterup">{{ $today_views }}</h2>
+                                <h5 style="color: #f9f9f9;">Today's Views</h5>
                             </div>
                         </div>
                     </div>
@@ -43,8 +43,8 @@
                     <div class="col-xl-3 col-md-6">
                         <div class="card-box widget-user">
                             <div class="text-center">
-                                <h2 class="text-warning" data-plugin="counterup">N/A</h2>
-                                <h5 style="color: #f9f9f9;">Yesterday's Views *</h5>
+                                <h2 class="text-warning" data-plugin="counterup">{{ $yesterday_views }}</h2>
+                                <h5 style="color: #f9f9f9;">Yesterday's Views</h5>
                             </div>
                         </div>
                     </div>
@@ -53,22 +53,22 @@
                     <div class="col-xl-3 col-md-6">
                         <div class="card-box widget-user">
                             <div class="text-center">
-                                <h2 class="text-success" data-plugin="counterup">N/A</h2>
-                                <h5 style="color: #f9f9f9;">Last 30 Days Views *</h5>
+                                <h2 class="text-success" data-plugin="counterup">{{ $last_30_days_views }}</h2>
+                                <h5 style="color: #f9f9f9;">Last 30 Days Views</h5>
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
-                
+
                 <div class="row">
                     <div class="col-12">
-                        <p class="text-muted">* Time-based analytics (Today, Yesterday, Last 30 Days) require timestamp data which is currently not available in the history.</p>
+                        <p class="text-muted">Analytics are based on the new Video Views tracking system.</p>
                     </div>
                 </div>
 
                 <div class="row">
-                    
+
                     <!-- Top 10 Videos -->
                     <div class="col-lg-6">
                         <div class="card-box">

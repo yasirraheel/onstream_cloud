@@ -245,6 +245,9 @@ class LiveTvController extends Controller
         $video_obj->increment('views');     
         $video_obj->save();
 
+        // Add to new VideoView log
+        add_video_view($v_id, 'LiveTV');
+
         return view('pages.livetv.watch',compact('tv_info','related_livetv_list')); 
     }
 

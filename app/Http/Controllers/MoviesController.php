@@ -222,6 +222,9 @@ class MoviesController extends Controller
             $video_obj = Movies::findOrFail($v_id);
             $video_obj->increment('views');
             $video_obj->save();
+            
+            // Add to new VideoView log
+            add_video_view($v_id, 'Movies');
 
             // Mark this movie as viewed in the session
             session()->put("viewed_$v_id", true);
