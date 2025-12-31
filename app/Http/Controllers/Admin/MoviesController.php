@@ -18,6 +18,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
+use App\ApiUrl;
+
 class MoviesController extends MainAdminController
 {
 	public function __construct()
@@ -130,26 +132,21 @@ class MoviesController extends MainAdminController
         $actor_list = ActorDirector::where('ad_type','actor')->orderBy('ad_name')->get();
         $director_list = ActorDirector::where('ad_type','director')->orderBy('ad_name')->get();
 
-        $used_urls = array_merge(
-            Movies::where('video_type', 'URL')->whereNotNull('video_url')->pluck('video_url')->toArray(),
-            DB::table('episodes')->where('video_type', 'URL')->whereNotNull('video_url')->pluck('video_url')->toArray()
-        );
+        // Fetch URLs from ApiUrl table instead of scanning entire DB
+        $api_urls_data = ApiUrl::orderBy('is_used', 'asc') // Available first
+            ->orderBy('movie_name', 'asc')
+            ->get();
 
-        // Sort used_urls alphabetically (case-insensitive) and move used links to the end
-        // Note: In PHP, to "sort unused first" implies we need the list of ALL possible URLs, but here we only have 'used_urls'.
-        // The requirement "already used links should be in last and other links sort by abc" usually applies when we are displaying a list of available files from a server.
-        // However, looking at the code, we are only passing 'used_urls' to the view.
-        // If the view is fetching files from a directory (e.g. via an AJAX call or a view composer), we need to check the view or where the file list comes from.
-        // Let's check the view 'admin.pages.movies.addedit' first to see how it uses 'used_urls'.
-        // Assuming the view lists files from a directory and uses 'used_urls' to mark or sort them.
-        
-        // Wait, the prompt says "in add movie api urls dropdown". This suggests there might be an API or a method that populates this dropdown.
-        // If the dropdown is populated from a directory scan in the view, I need to see the view.
-        // If it's populated via an API call, I need to find that API.
+        // Prepare list for dropdown: available first, then used
+        // Note: The view logic currently uses $used_urls array to mark items.
+        // We will pass the full $api_urls collection to the view and handle it there.
 
-        // But 'used_urls' variable name suggests it's just a list of used URLs.
-        
-        return view('admin.pages.movies.addedit',compact('page_title','language_list','genre_list','actor_list','director_list', 'used_urls'));
+        // We still need 'used_urls' for backward compatibility or we can deprecate it if view is updated.
+        // Let's keep it but populated from ApiUrl table for consistency?
+        // No, 'used_urls' was used to check against external API. Now we use local table.
+        // We can just pass $api_urls.
+
+        return view('admin.pages.movies.addedit',compact('page_title','language_list','genre_list','actor_list','director_list', 'api_urls_data'));
     }
 
 public function addnew(Request $request)
@@ -356,12 +353,12 @@ public function addnew(Request $request)
 
           $movie = Movies::findOrFail($movie_id);
 
-          $used_urls = array_merge(
-            Movies::where('video_type', 'URL')->whereNotNull('video_url')->pluck('video_url')->toArray(),
-            DB::table('episodes')->where('video_type', 'URL')->whereNotNull('video_url')->pluck('video_url')->toArray()
-          );
+          // Fetch URLs from ApiUrl table
+          $api_urls_data = ApiUrl::orderBy('is_used', 'asc') // Available first
+            ->orderBy('movie_name', 'asc')
+            ->get();
 
-          return view('admin.pages.movies.addedit',compact('page_title','movie','language_list','genre_list','actor_list','director_list', 'used_urls'));
+          return view('admin.pages.movies.addedit',compact('page_title','movie','language_list','genre_list','actor_list','director_list', 'api_urls_data'));
 
     }
 

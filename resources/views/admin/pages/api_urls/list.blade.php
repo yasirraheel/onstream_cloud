@@ -5,7 +5,7 @@
 <div class="content-page">
       <div class="content">
         <div class="container-fluid">
-          
+
           <div class="row">
             <div class="col-12">
               <div class="card-box table-responsive">
@@ -57,7 +57,7 @@
                         <div class="alert alert-info">
                             <strong>Note:</strong> Used URLs are displayed at the bottom of the list.
                         </div>
-                        
+
                         <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
@@ -70,11 +70,11 @@
                             </thead>
                             <tbody>
                                 @foreach($api_urls as $i => $url_data)
-                                <tr style="{{ $url_data->is_used ? 'background-color: #f8d7da;' : '' }}">
+                                <tr style="{{ $url_data->is_used ? 'background-color: #f8d7da; color: #721c24;' : '' }}">
                                     <td>{{ $i+1 }}</td>
                                     <td>{{ $url_data->movie_name }}</td>
                                     <td>
-                                        <input type="text" value="{{ $url_data->url }}" class="form-control" readonly style="background: transparent; border: none; width: 100%;">
+                                        <input type="text" value="{{ $url_data->url }}" class="form-control" readonly style="background: transparent; border: none; width: 100%; color: inherit;">
                                     </td>
                                     <td>
                                         @if($url_data->is_used)

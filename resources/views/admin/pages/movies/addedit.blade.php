@@ -681,106 +681,91 @@ function processSelectedFile(filePath, requestingField) {
 
 @section('extra_scripts')
 <script type="text/javascript">
-    var usedUrls = @json($used_urls ?? []);
 
     $(document).ready(function() {
         var apiFilesFetched = false;
-        var apiUrl = "https://cineworm.twoflip.com/api/files?api_key=MbTNkiPl03fHCkjkCCgRqx1ANg0A9e4hqdtJbGFZijBfY5D4DKDSImPPDnDw";
 
-        function fetchApiFiles() {
+        function loadLocalApiFiles() {
             if (apiFilesFetched) return;
 
-            // Show loading state in dropdown
-            $('#api_file_select').html('<option value="">Loading files...</option>');
+            // Files are already passed to the view in $api_urls_data
+            var apiData = @json($api_urls_data ?? []);
 
-            $.ajax({
-                url: apiUrl,
-                type: 'GET',
-                dataType: 'json',
-                success: function(response) {
-                    if (response.status === 'success' && response.data) {
-                        var options = '<option value="">Select File from API</option>';
-                        $.each(response.data, function(index, file) {
-                            var isUsed = usedUrls.includes(file.direct_link);
-                            file.isUsed = isUsed;
-                            file.labelText = file.name + (isUsed ? ' (Already Used)' : '');
-                        });
+            if (apiData.length > 0) {
+                var options = '<option value="">Select File from API</option>';
 
-                        // Sort: Unused first (alphabetical), then Used
-                        response.data.sort(function(a, b) {
-                            if (a.isUsed && !b.isUsed) return 1;
-                            if (!a.isUsed && b.isUsed) return -1;
-                            // If both are used or both are unused, sort alphabetically
-                            return a.name.localeCompare(b.name);
-                        });
+                // Sort handled in controller (Available first, then by name)
 
-                        $.each(response.data, function(index, file) {
-                            var disabledAttr = file.isUsed ? 'disabled' : '';
-                            var styleAttr = file.isUsed ? 'style="background-color: #f8d7da; color: #721c24;"' : '';
-                            options += '<option value="' + file.direct_link + '" ' + disabledAttr + ' ' + styleAttr + '>' + file.labelText + '</option>';
-                        });
-                        $('#api_file_select').html(options);
+                $.each(apiData, function(index, file) {
+                    var isUsed = file.is_used == 1;
+                    var labelText = file.movie_name + (isUsed ? ' (Already Used)' : '');
 
-                        // Initialize Select2
-                        $('#api_file_select').select2({
-                            templateResult: function(data) {
-                                if (!data.element) {
-                                    return data.text;
-                                }
-                                var $element = $(data.element);
-                                var $result = $('<span></span>');
-                                $result.text(data.text);
-                                if ($element.attr('style')) {
-                                    $result.attr('style', $element.attr('style'));
-                                }
-                                return $result;
-                            }
-                        });
+                    var disabledAttr = isUsed ? 'disabled' : '';
+                    // Improved contrast styling
+                    var styleAttr = isUsed ? 'style="background-color: #f8d7da; color: #721c24;"' : '';
 
-                        apiFilesFetched = true;
+                    options += '<option value="' + file.url + '" ' + disabledAttr + ' ' + styleAttr + '>' + labelText + '</option>';
+                });
 
-                        // Show the dropdown if it was hidden/loading
-                        $('#api_file_select_wrapper').show();
+                $('#api_file_select').html(options);
 
-                        // Auto-set search if needed
-                        @if(isset($movie) && $movie->upcoming == 1)
-                             // Search logic moved here, running only once if we just fetched files
-                             if (!window.upcomingSearchPerformed) {
-                                var movieTitle = "{{ addslashes($movie->video_title) }}";
-                                if(movieTitle) {
-                                    var firstWord = movieTitle.split(' ')[0];
-                                    setTimeout(function() {
-                                        var select2Instance = $('#api_file_select').data('select2');
-                                        if(select2Instance) {
-                                            $('#api_file_select').select2('open');
-                                            setTimeout(function() {
-                                                var $searchField = $('.select2-search__field');
-                                                if($searchField.length > 0) {
-                                                    $searchField.val(firstWord);
-                                                    $searchField.trigger('keyup');
-                                                    $searchField.trigger('input');
-                                                }
-                                            }, 100);
-                                        }
-                                    }, 500);
-                                    window.upcomingSearchPerformed = true;
-                                }
-                             }
-                        @endif
-
-                    } else {
-                         $('#api_file_select').html('<option value="">No files found or API error</option>');
+                // Initialize Select2
+                $('#api_file_select').select2({
+                    templateResult: function(data) {
+                        if (!data.element) {
+                            return data.text;
+                        }
+                        var $element = $(data.element);
+                        var $result = $('<span></span>');
+                        $result.text(data.text);
+                        if ($element.attr('style')) {
+                            $result.attr('style', $element.attr('style'));
+                        }
+                        return $result;
                     }
-                },
-                error: function(error) {
-                    console.error('Error fetching API files:', error);
-                    $('#api_file_select').html('<option value="">Error fetching files</option>');
-                }
-            });
+                });
+
+                apiFilesFetched = true;
+
+                // Show the dropdown
+                $('#api_file_select_wrapper').show();
+
+                // Auto-set search if needed
+                @if(isset($movie) && $movie->upcoming == 1)
+                     if (!window.upcomingSearchPerformed) {
+                        var movieTitle = "{{ addslashes($movie->video_title) }}";
+                        if(movieTitle) {
+                            var firstWord = movieTitle.split(' ')[0];
+                            setTimeout(function() {
+                                var select2Instance = $('#api_file_select').data('select2');
+                                if(select2Instance) {
+                                    $('#api_file_select').select2('open');
+                                    setTimeout(function() {
+                                        var $searchField = $('.select2-search__field');
+                                        if($searchField.length > 0) {
+                                            $searchField.val(firstWord);
+                                            $searchField.trigger('keyup');
+                                            $searchField.trigger('input');
+                                        }
+                                    }, 100);
+                                }
+                            }, 500);
+                            window.upcomingSearchPerformed = true;
+                        }
+                     }
+                @endif
+
+            } else {
+                 $('#api_file_select').html('<option value="">No files found in local database</option>');
+            }
         }
 
         // Global flag to prevent re-running search
         window.upcomingSearchPerformed = false;
+
+        // Load files immediately or on interaction
+        // Since data is local now, we can load it immediately
+        loadLocalApiFiles();
 
         // Automation for Upcoming Movies - Runs IMMEDIATELY on page load
         @if(isset($movie) && $movie->upcoming == 1)
