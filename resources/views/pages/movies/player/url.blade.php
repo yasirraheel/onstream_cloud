@@ -6,19 +6,22 @@
 @if(strtolower($extension) == 'mkv')
     <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
 
-    <!-- Responsive container 16:9 -->
-    <div style="width: 100%; position: relative; padding-top: 56.25%; background: #000;">
-        <video id="my-video" class="video-js vjs-big-play-centered vjs-fill" controls preload="auto"
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-            poster="{{URL::to('/'.$movies_info->video_image)}}" data-setup='{"fluid": true}'>
-            <!-- Try multiple types to maximize compatibility -->
-            <source src="{{$video_url}}" type="video/mp4" />
-            <source src="{{$video_url}}" type="video/webm" />
-            <source src="{{$video_url}}" type="video/x-matroska" />
-            <p class="vjs-no-js">
-                To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.
-            </p>
-        </video>
+    <!-- Container matching EVP player max dimensions -->
+    <div style="max-width: 1325px; margin: auto;">
+        <!-- Responsive container 16:9 -->
+        <div style="width: 100%; position: relative; padding-top: 56.25%; background: #000;">
+            <video id="my-video" class="video-js vjs-big-play-centered vjs-fill" controls preload="auto"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+                poster="{{URL::to('/'.$movies_info->video_image)}}" data-setup='{"fluid": true}'>
+                <!-- Try multiple types to maximize compatibility -->
+                <source src="{{$video_url}}" type="video/mp4" />
+                <source src="{{$video_url}}" type="video/webm" />
+                <source src="{{$video_url}}" type="video/x-matroska" />
+                <p class="vjs-no-js">
+                    To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.
+                </p>
+            </video>
+        </div>
     </div>
 
     <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
