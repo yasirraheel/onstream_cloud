@@ -52,8 +52,8 @@ class ApiUrlController extends MainAdminController
         }
 
         $api_key = "MbTNkiPl03fHCkjkCCgRqx1ANg0A9e4hqdtJbGFZijBfY5D4DKDSImPPDnDw";
-        // Increase per_page limit to fetch more results (default might be 50)
-        $api_endpoint = "https://cineworm.twoflip.com/api/files?api_key=" . $api_key . "&per_page=1000";
+        // Use limit=all to fetch all results as per API documentation
+        $api_endpoint = "https://cineworm.twoflip.com/api/files?api_key=" . $api_key . "&limit=all";
 
         try {
             $response = Http::get($api_endpoint);
