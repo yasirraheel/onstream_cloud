@@ -769,11 +769,16 @@ function processSelectedFile(filePath, requestingField) {
                         if(movieTitle) {
                             var firstWord = movieTitle.split(' ')[0];
                             setTimeout(function() {
-                                var select2Instance = $('#api_file_select').data('select2');
+                                // Target ONLY the select2 container associated with #api_file_select
+                                var $apiSelect = $('#api_file_select');
+                                var select2Instance = $apiSelect.data('select2');
+
                                 if(select2Instance) {
-                                    $('#api_file_select').select2('open');
+                                    $apiSelect.select2('open');
                                     setTimeout(function() {
-                                        var $searchField = $('.select2-search__field');
+                                        // Find the search field specifically within the opened dropdown for api_file_select
+                                        // Select2 attaches the dropdown to the body, so we look for the one currently active/open
+                                        var $searchField = $('.select2-container--open .select2-search__field');
                                         if($searchField.length > 0) {
                                             $searchField.val(firstWord);
                                             $searchField.trigger('keyup');
