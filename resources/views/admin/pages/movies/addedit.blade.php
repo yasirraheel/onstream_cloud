@@ -610,13 +610,12 @@
 
                   </div>
 
-                  <div class="form-group">
-                  <div class="offset-sm-9 col-sm-9">
-                    <button type="submit" name="save_action" value="save" id="add_btn_id" class="btn btn-primary waves-effect waves-light"><i class="fa fa-save"></i> {{trans('words.save')}} </button>
-
-                    <button type="submit" name="save_action" value="pending" class="btn btn-warning waves-effect waves-light ml-2"><i class="fa fa-clock-o"></i> Save as Pending </button>
+                  <div class="form-group row">
+                    <div class="col-sm-9 offset-sm-3">
+                      <button type="submit" name="save_action" value="save" id="add_btn_id" class="btn btn-primary waves-effect waves-light"><i class="fa fa-save"></i> {{trans('words.save')}} </button>
+                      <button type="submit" name="save_action" value="pending" class="btn btn-warning waves-effect waves-light ml-2"><i class="fa fa-clock-o"></i> Save as Pending </button>
+                    </div>
                   </div>
-                </div>
 
                 </div>
               </div>
