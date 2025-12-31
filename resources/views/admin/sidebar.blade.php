@@ -12,7 +12,7 @@
 
             @if(getcong('menu_movies'))
             <li class="has_sub">
-              <a href="javascript:void(0);" class="waves-effect {{classActivePath('movies')}}"><i class="fa fa-film"></i> <span>{{trans('words.movies_text')}}</span> <span class="menu-arrow"></span></a>
+              <a href="javascript:void(0);" class="waves-effect {{classActivePath('movies')}} {{classActivePath('upcoming_movies')}} {{classActivePath('pending_movies')}}"><i class="fa fa-film"></i> <span>{{trans('words.movies_text')}}</span> <span class="menu-arrow"></span></a>
               <ul class="list-unstyled">
                 <li class="{{classActivePath('movies')}}"><a href="{{ URL::to('admin/movies') }}">{{trans('words.movies_text')}}</a></li>
                 <li class="{{classActivePath('add_movie')}}"><a href="{{ URL::to('admin/movies/add_movie') }}">{{trans('words.add_movie')}}</a></li>
