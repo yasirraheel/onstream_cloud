@@ -1,8 +1,20 @@
 <!-- Start Header -->
-<div style="background-color: #1a1a1a; color: #f5c6cb; padding: 8px 10px; text-align: center; font-size: 13px; border-bottom: 1px solid #333; position: fixed; top: 0; left: 0; right: 0; z-index: 99999;">
+<style>
+  /* Push the fixed header down when it becomes sticky/pinned */
+  .header-section.pin-style.pin, .header-section.pin-style.pin-start {
+      top: 40px !important;
+  }
+  /* Ensure the mobile menu or other fixed elements also respect the offset if needed */
+  @media (max-width: 991px) {
+      .header-section.pin-style.pin, .header-section.pin-style.pin-start {
+          top: 40px !important;
+      }
+  }
+</style>
+<div style="background-color: #1a1a1a; color: #f5c6cb; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 13px; border-bottom: 1px solid #333; position: fixed; top: 0; left: 0; right: 0; z-index: 99999;">
     Disclaimer: All videos and pictures on Onstream are from the Internet, and their copyrights belong to the original creators. We only provide webpage services and do not store, record, or upload any content.
 </div>
-<header style="margin-top: 36px;">
+<header style="margin-top: 40px;">
   <!-- Start Navigation Area -->
   <div class="main-menu">
     <nav class="header-section pin-style">
