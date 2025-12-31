@@ -1,4 +1,7 @@
 <!-- Start Header -->
+<div style="background-color: #f8d7da; color: #721c24; padding: 5px 10px; text-align: center; font-size: 12px; border-bottom: 1px solid #f5c6cb;">
+    Disclaimer: All videos and pictures on Onstream are from the Internet, and their copyrights belong to the original creators. We only provide webpage services and do not store, record, or upload any content.
+</div>
 <header>
   <!-- Start Navigation Area -->
   <div class="main-menu"> 
