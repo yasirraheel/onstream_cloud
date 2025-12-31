@@ -23,6 +23,9 @@
         </div>
         <div class="copyright-text">
           <p>{{stripslashes(getcong('site_copyright'))}}</p>
+          <p style="margin-top: 10px; font-size: 12px; color: #999; line-height: 1.5;">
+            Disclaimer: All videos and pictures on Onstream are from the Internet, and their copyrights belong to the original creators. We only provide webpage services and do not store, record, or upload any content.
+          </p>
         </div>
       </div>
       </div>
