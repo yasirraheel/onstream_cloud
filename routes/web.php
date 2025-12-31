@@ -29,6 +29,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::get('logout', 'IndexController@logout');
 
     Route::get('dashboard', 'DashboardController@index');
+    Route::get('analytics', 'AnalyticsController@index');
     Route::get('profile', 'AdminController@profile');
     Route::post('profile', 'AdminController@updateProfile');
     Route::get('verify_purchase', 'AdminController@verify_purchase');
