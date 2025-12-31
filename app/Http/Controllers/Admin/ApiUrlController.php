@@ -52,7 +52,8 @@ class ApiUrlController extends MainAdminController
         }
 
         $api_key = "MbTNkiPl03fHCkjkCCgRqx1ANg0A9e4hqdtJbGFZijBfY5D4DKDSImPPDnDw";
-        $api_endpoint = "https://cineworm.twoflip.com/api/files?api_key=" . $api_key;
+        // Increase per_page limit to fetch more results (default might be 50)
+        $api_endpoint = "https://cineworm.twoflip.com/api/files?api_key=" . $api_key . "&per_page=1000";
 
         try {
             $response = Http::get($api_endpoint);
@@ -60,8 +61,21 @@ class ApiUrlController extends MainAdminController
             if ($response->successful()) {
                 $data = $response->json();
 
-                if (isset($data['status']) && $data['status'] == 'success' && isset($data['data'])) {
-                    
+                // Handle both paginated and non-paginated responses
+                // If data is directly in 'data', use it. If it's inside 'data.data' (Laravel pagination), use that.
+                $items = [];
+                if (isset($data['status']) && $data['status'] == 'success') {
+                    if (isset($data['data']['data']) && is_array($data['data']['data'])) {
+                        // Paginated response structure
+                        $items = $data['data']['data'];
+                    } elseif (isset($data['data']) && is_array($data['data'])) {
+                        // Standard array response
+                        $items = $data['data'];
+                    }
+                }
+
+                if (!empty($items)) {
+
                     $count_added = 0;
                     $count_updated = 0;
 
@@ -69,11 +83,11 @@ class ApiUrlController extends MainAdminController
                     // Note: This check might be heavy if tables are huge, but necessary for accuracy
                     $movie_urls = Movies::pluck('video_url')->toArray();
                     // $episode_urls = Episodes::pluck('video_url')->toArray(); // If needed
-                    
-                    // Combine used URLs (simplified check against Movies for now as primary use case)
-                    $all_used_urls_in_system = $movie_urls; 
 
-                    foreach ($data['data'] as $item) {
+                    // Combine used URLs (simplified check against Movies for now as primary use case)
+                    $all_used_urls_in_system = $movie_urls;
+
+                    foreach ($items as $item) {
                         $url = $item['direct_link'] ?? '';
                         $name = $item['name'] ?? '';
 
@@ -88,10 +102,10 @@ class ApiUrlController extends MainAdminController
                         if ($existing_entry) {
                             // Update status if changed or name
                             $existing_entry->movie_name = $name;
-                            // Only update status to used if system says it's used, 
+                            // Only update status to used if system says it's used,
                             // or keep existing used status if we trust our local table more?
                             // Let's trust the system check.
-                            $existing_entry->is_used = $is_used_system; 
+                            $existing_entry->is_used = $is_used_system;
                             $existing_entry->save();
                             $count_updated++;
                         } else {
@@ -107,7 +121,7 @@ class ApiUrlController extends MainAdminController
 
                     \Session::flash('flash_message', "URLs Fetched Successfully! Added: $count_added, Updated: $count_updated");
                 } else {
-                    \Session::flash('error_flash_message', 'API returned invalid data.');
+                    \Session::flash('error_flash_message', 'API returned no data or invalid structure.');
                 }
             } else {
                 \Session::flash('error_flash_message', 'Failed to connect to API.');
