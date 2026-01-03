@@ -108,6 +108,7 @@ class GdUrlController extends MainAdminController
             $count_updated = 0;
             $total_folders = count($folder_ids);
             $processed_folders = 0;
+            $errors = [];
 
             // Get all existing Used URLs from our database (Movies, Episodes) to check status
             $movie_urls = Movies::pluck('video_url')->toArray();
@@ -118,11 +119,15 @@ class GdUrlController extends MainAdminController
 
                 $api_endpoint = "https://www.googleapis.com/drive/v3/files?q='{$folder_id}'+in+parents&key={$api_key}&fields=files(id,name,size,mimeType,webContentLink,webViewLink)";
                 
-                $response = Http::get($api_endpoint);
+                $response = Http::timeout(30)->get($api_endpoint);
 
                 if ($response->successful()) {
                     $data = $response->json();
                     $files = $data['files'] ?? [];
+
+                    if (empty($files)) {
+                        $errors[] = "Folder ID: {$folder_id} - No files found or folder is empty.";
+                    }
 
                     foreach ($files as $file) {
                         $file_id = $file['id'] ?? '';
@@ -171,13 +176,25 @@ class GdUrlController extends MainAdminController
                         }
                     }
                     $processed_folders++;
+                } else {
+                    $error_data = $response->json();
+                    $error_message = $error_data['error']['message'] ?? 'Unknown error';
+                    $errors[] = "Folder ID: {$folder_id} - API Error: {$error_message}";
                 }
             }
 
             if ($processed_folders > 0) {
-                \Session::flash('flash_message', "Google Drive URLs Fetched Successfully! Processed {$processed_folders} folder(s). Added: {$count_added}, Updated: {$count_updated}");
+                $message = "Google Drive URLs Fetched Successfully! Processed {$processed_folders} folder(s). Added: {$count_added}, Updated: {$count_updated}";
+                if (!empty($errors)) {
+                    $message .= " | Errors: " . implode(' | ', $errors);
+                }
+                \Session::flash('flash_message', $message);
             } else {
-                \Session::flash('error_flash_message', 'Failed to fetch files from any folder.');
+                $error_msg = 'Failed to fetch files from any folder.';
+                if (!empty($errors)) {
+                    $error_msg .= ' Details: ' . implode(' | ', $errors);
+                }
+                \Session::flash('error_flash_message', $error_msg);
             }
         } catch (\Exception $e) {
             \Session::flash('error_flash_message', 'Error: ' . $e->getMessage());
