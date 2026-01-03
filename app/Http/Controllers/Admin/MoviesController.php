@@ -170,13 +170,21 @@ class MoviesController extends MainAdminController
 
 public function addnew(Request $request)
 {
+    $video_embed_code = ''; // Initialize variable
+    
     if ($request->video_type == 'Embed') {
         if (stripos($request->video_embed_code, '<iframe') !== false) {
             $video_embed_code = $request->video_embed_code;
         } else {
             $video_url = $request->video_embed_code;
+            
+            // Log for debugging
+            \Log::info('Processing GD URL:', ['url' => $video_url]);
+            
             preg_match('/\/d\/(.*?)\//', $video_url, $matches);
             $file_id = $matches[1] ?? '';
+            
+            \Log::info('Extracted file ID:', ['file_id' => $file_id, 'matches' => $matches]);
 
             if ($file_id) {
                 $video_embed_url = "https://drive.google.com/file/d/{$file_id}/preview";
@@ -188,8 +196,10 @@ public function addnew(Request $request)
         allowfullscreen>
     </iframe>
 </div>";
+                \Log::info('Generated embed code successfully');
             } else {
-                $video_embed_code = 'Invalid Google Drive URL provided.';
+                $video_embed_code = $request->video_embed_code; // Keep original if not Google Drive format
+                \Log::warning('Failed to extract file ID from URL');
             }
         }
     }
