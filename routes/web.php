@@ -182,6 +182,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     // Country Restrictions
     Route::get('country-restrictions', 'CountryRestrictionController@index');
     Route::post('country-restrictions/update', 'CountryRestrictionController@update');
+    Route::get('country-restrictions/message', 'CountryRestrictionController@message');
+    Route::post('country-restrictions/message/update', 'CountryRestrictionController@update_message');
 
     Route::get('ads', 'AdManagementController@ads_list');
 

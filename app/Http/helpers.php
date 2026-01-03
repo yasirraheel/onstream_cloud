@@ -1231,3 +1231,77 @@ if (! function_exists('get_season_trailer')) {
         return isset($trailer_id)?$trailer_id:'';
     }
 }
+
+if (! function_exists('get_user_ip')) {
+    function get_user_ip()
+    {
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+        return $ip;
+    }
+}
+
+if (! function_exists('get_user_country')) {
+    function get_user_country()
+    {
+        $ip = get_user_ip();
+        
+        // Don't check for localhost/private IPs
+        if ($ip == '127.0.0.1' || $ip == '::1' || strpos($ip, '192.168.') === 0 || strpos($ip, '10.') === 0) {
+            return null;
+        }
+        
+        try {
+            $response = @file_get_contents("http://ip-api.com/json/{$ip}?fields=countryCode");
+            if ($response) {
+                $data = json_decode($response);
+                if (isset($data->countryCode)) {
+                    return $data->countryCode;
+                }
+            }
+        } catch (Exception $e) {
+            return null;
+        }
+        
+        return null;
+    }
+}
+
+if (! function_exists('is_country_blocked')) {
+    function is_country_blocked()
+    {
+        $country_code = get_user_country();
+        
+        if (!$country_code) {
+            return false;
+        }
+        
+        return \App\CountryRestriction::isCountryBlocked($country_code);
+    }
+}
+
+if (! function_exists('get_restriction_message')) {
+    function get_restriction_message()
+    {
+        $message = Settings::get('country_restriction_message');
+        
+        if (empty($message)) {
+            return '<div style="text-align: center; padding: 60px 20px;">
+                        <i class="fa fa-ban" style="font-size: 80px; color: #e74c3c; margin-bottom: 20px;"></i>
+                        <h2 style="color: #fff; margin-bottom: 15px;">Access Restricted</h2>
+                        <p style="color: #ccc; font-size: 18px; line-height: 1.6;">
+                            We apologize, but our content is not available in your region.<br>
+                            This restriction is due to licensing and copyright agreements.
+                        </p>
+                    </div>';
+        }
+        
+        return $message;
+    }
+}
+

@@ -16,6 +16,7 @@
               </div>
               <div class="col-sm-6">
                   <div class="text-right">
+                    <a href="{{ URL::to('admin/country-restrictions/message') }}" class="btn btn-info btn-sm" style="margin-right: 10px;"><i class="fa fa-edit"></i> Edit Restriction Message</a>
                     <span class="badge badge-danger" style="font-size: 14px; padding: 8px 12px;">Blocked: {{ $blocked_count }}</span>
                     <span class="badge badge-success" style="font-size: 14px; padding: 8px 12px; margin-left: 10px;">Allowed: {{ $total_count - $blocked_count }}</span>
                   </div>

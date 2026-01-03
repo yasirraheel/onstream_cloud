@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\CountryRestriction;
+use App\Settings;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Session;
@@ -41,6 +42,25 @@ class CountryRestrictionController extends MainAdminController
         }
         
         Session::flash('flash_message', 'Country restrictions updated successfully!');
+        
+        return redirect()->back();
+    }
+
+    public function message()
+    {
+        $page_title = 'Restriction Message';
+        $message = Settings::get('country_restriction_message');
+        
+        return view('admin.pages.country_restrictions.message', compact('page_title', 'message'));
+    }
+
+    public function update_message(Request $request)
+    {
+        $data = Settings::findOrFail(1);
+        $data->country_restriction_message = $request->input('country_restriction_message');
+        $data->save();
+        
+        Session::flash('flash_message', 'Restriction message updated successfully!');
         
         return redirect()->back();
     }

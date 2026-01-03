@@ -50,7 +50,16 @@
   <div class="container-fluid bg-dark video-player-base"> 
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12">
-        <div class="video-posts-video">  
+        <div class="video-posts-video" style="position: relative;">  
+        
+        @if(is_country_blocked())
+        <!-- Country Restriction Overlay -->
+        <div id="country-restriction-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+          <div style="max-width: 600px; padding: 40px;">
+            {!! get_restriction_message() !!}
+          </div>
+        </div>
+        @endif
         
         @if($episode_info->video_url!="")
 
