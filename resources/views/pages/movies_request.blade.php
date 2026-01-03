@@ -115,8 +115,10 @@
   </div>
 </div>
 
+@endsection
+
 <!-- Announcement Popup Modal -->
-@if(count($announcements) > 0)
+@if(isset($announcements) && count($announcements) > 0)
   @foreach($announcements as $announcement)
     @if($announcement->show_as_popup == 1)
     <div class="modal fade" id="announcementModal{{ $announcement->id }}" tabindex="-1" role="dialog" aria-labelledby="announcementModalLabel{{ $announcement->id }}" aria-hidden="true">
@@ -143,54 +145,75 @@
   @endforeach
 @endif
 
-@endsection
-
 @section('scripts')
 <script type="text/javascript">
-jQuery(document).ready(function($) {
-    console.log('Announcement script loaded');
-    console.log('Announcements count:', {{ count($announcements) }});
+(function() {
+    'use strict';
     
-    // Show popup announcements
-    @if(count($announcements) > 0)
+    console.log('Announcement script loaded');
+    
+    @if(isset($announcements) && count($announcements) > 0)
+      console.log('Total announcements:', {{ count($announcements) }});
+      
       @foreach($announcements as $announcement)
         @if($announcement->show_as_popup == 1)
-          console.log('Popup announcement found:', '{{ $announcement->title }}');
-          // Check if user has already seen this announcement
-          var seenKey = 'announcement_seen_{{ $announcement->id }}';
-          var hasSeen = sessionStorage.getItem(seenKey);
-          console.log('Has seen announcement {{ $announcement->id }}:', hasSeen);
-          
-          if(!hasSeen) {
-            // Show modal after a short delay
-            setTimeout(function() {
-              console.log('Showing modal for announcement {{ $announcement->id }}');
-              $('#announcementModal{{ $announcement->id }}').modal('show');
-            }, 1000);
-            
-            // Mark as seen in session
-            sessionStorage.setItem(seenKey, 'true');
-            
-            // Track view count
-            $.ajax({
-              url: '{{ url("announcement/track-view") }}',
-              type: 'POST',
-              data: {
-                _token: '{{ csrf_token() }}',
-                announcement_id: {{ $announcement->id }}
-              },
-              success: function(response) {
-                console.log('View tracked successfully');
-              },
-              error: function(xhr, status, error) {
-                console.log('Error tracking view:', error);
+          (function() {
+              var announcementId = {{ $announcement->id }};
+              var modalId = 'announcementModal' + announcementId;
+              var seenKey = 'announcement_seen_' + announcementId;
+              
+              console.log('Processing popup announcement:', '{{ addslashes($announcement->title) }}', 'ID:', announcementId);
+              console.log('Modal ID:', modalId);
+              console.log('Checking if modal exists:', $('#' + modalId).length);
+              
+              var hasSeen = sessionStorage.getItem(seenKey);
+              console.log('Has seen announcement', announcementId, ':', hasSeen);
+              
+              if(!hasSeen) {
+                  // Wait for page to fully load
+                  $(window).on('load', function() {
+                      setTimeout(function() {
+                          console.log('Attempting to show modal:', modalId);
+                          var $modal = $('#' + modalId);
+                          
+                          if($modal.length) {
+                              console.log('Modal found, showing...');
+                              $modal.modal({
+                                  backdrop: 'static',
+                                  keyboard: false
+                              });
+                              $modal.modal('show');
+                              
+                              // Mark as seen
+                              sessionStorage.setItem(seenKey, 'true');
+                              
+                              // Track view count
+                              $.ajax({
+                                  url: '{{ url("announcement/track-view") }}',
+                                  type: 'POST',
+                                  data: {
+                                      _token: '{{ csrf_token() }}',
+                                      announcement_id: announcementId
+                                  },
+                                  success: function(response) {
+                                      console.log('View tracked successfully for announcement', announcementId);
+                                  },
+                                  error: function(xhr, status, error) {
+                                      console.log('Error tracking view:', error);
+                                  }
+                              });
+                          } else {
+                              console.error('Modal not found:', modalId);
+                          }
+                      }, 1500);
+                  });
               }
-            });
-          }
+          })();
         @endif
       @endforeach
+    @else
+      console.log('No announcements to display');
     @endif
-});
+})();
 </script>
-
 @endsection

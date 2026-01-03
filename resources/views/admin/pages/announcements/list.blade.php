@@ -7,7 +7,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-12">
-          <div class="card-box table-responsive" style="background-color: #1a2234; color: #fff;">
+          <div class="card-box table-responsive">
 
             <div class="row">
               <div class="col-sm-6">
@@ -29,8 +29,8 @@
               </div>
             @endif
 
-              <table class="table table-striped">
-                <thead class="thead-dark">
+              <table class="table table-bordered">
+                <thead>
                   <tr>
                     <th>Title</th>
                     <th>Message</th>
