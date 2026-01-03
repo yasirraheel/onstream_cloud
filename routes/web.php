@@ -283,7 +283,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('sitemap_sports.xml', 'IndexController@sitemap_sports');
     Route::get('sitemap_livetv.xml', 'IndexController@sitemap_livetv');
 
-    Route::get('page/{slug}', 'IndexController@pages');
+    Route::get('page/{slug}', 'PagesController@get_page');
+    Route::post('contact_send', 'PagesController@contact_send');
 
     Route::get('movies_request', 'IndexController@movies_request');
     Route::post('movies_request', 'IndexController@post_movies_request');
