@@ -53,3 +53,12 @@
 </div>
 
 @endsection
+
+@section("scripts")
+<script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+<script>
+  CKEDITOR.replace('country_restriction_message', {
+    height: 400
+  });
+</script>
+@endsection
