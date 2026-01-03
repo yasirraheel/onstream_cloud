@@ -31,6 +31,11 @@
                 <div class="row">
                   <div class="col-md-6">
                     <h4 class="m-t-0 header-title">{{ $page_title }}</h4>
+                    @if($last_fetch)
+                      <p class="text-muted"><i class="fa fa-clock-o"></i> Last Sync: {{ \Carbon\Carbon::parse($last_fetch)->diffForHumans() }} ({{ \Carbon\Carbon::parse($last_fetch)->format('M d, Y h:i A') }})</p>
+                    @else
+                      <p class="text-muted"><i class="fa fa-clock-o"></i> Last Sync: Never</p>
+                    @endif
                   </div>
                   <div class="col-md-6 text-right">
                     <a href="{{ URL::to('admin/gd_urls/fetch') }}" class="btn btn-success btn-md waves-effect waves-light m-b-20" onclick="return confirm('This will fetch latest files from Google Drive. Continue?')">

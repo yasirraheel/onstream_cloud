@@ -160,6 +160,10 @@ class FetchGdUrls extends Command
                 $message .= " | Errors: " . implode(' | ', $errors);
             }
             
+            // Update last fetch timestamp
+            $settings->gd_last_fetch_at = now();
+            $settings->save();
+            
             $this->info($message);
             \Log::info('GD Fetch Cron: ' . $message);
             

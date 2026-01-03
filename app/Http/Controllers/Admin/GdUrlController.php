@@ -81,8 +81,12 @@ class GdUrlController extends MainAdminController
         
         // Count distinct folders
         $total_folders = GdUrl::distinct('folder_id')->count('folder_id');
+        
+        // Get last fetch time
+        $settings = Settings::findOrFail('1');
+        $last_fetch = $settings->gd_last_fetch_at;
 
-        return view('admin.pages.gd_urls.list', compact('page_title', 'gd_urls', 'total_urls', 'used_urls_count', 'available_urls_count', 'total_size_gb', 'total_folders'));
+        return view('admin.pages.gd_urls.list', compact('page_title', 'gd_urls', 'total_urls', 'used_urls_count', 'available_urls_count', 'total_size_gb', 'total_folders', 'last_fetch'));
     }
 
     public function fetch_urls()
@@ -211,6 +215,10 @@ class GdUrlController extends MainAdminController
             }
 
             if ($processed_folders > 0) {
+                // Update last fetch timestamp
+                $settings->gd_last_fetch_at = now();
+                $settings->save();
+                
                 $message = "Google Drive URLs Fetched Successfully! Processed {$processed_folders} folder(s). Added: {$count_added}, Updated: {$count_updated}";
                 if (!empty($errors)) {
                     $message .= " | Errors: " . implode(' | ', $errors);
