@@ -1301,7 +1301,10 @@ if (! function_exists('get_restriction_message')) {
                     </div>';
         }
         
-        return stripslashes($message);
+        // Remove all backslashes and clean up
+        $message = str_replace('\\', '', $message);
+        
+        return $message;
     }
 }
 
