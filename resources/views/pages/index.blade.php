@@ -1287,7 +1287,7 @@
 @if(isset($announcements) && count($announcements) > 0)
   @foreach($announcements as $announcement)
     @if($announcement->show_as_popup == 1)
-    <div class="modal fade" id="announcementModal{{ $announcement->id }}" tabindex="-1" role="dialog" aria-labelledby="announcementModalLabel{{ $announcement->id }}" aria-hidden="true">
+    <div class="modal fade" id="announcementModal{{ $announcement->id }}" tabindex="-1" role="dialog" aria-labelledby="announcementModalLabel{{ $announcement->id }}" aria-hidden="true" style="display:none;">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content" style="background-color: #1a1a1a; border: 2px solid #ffc107; border-radius: 10px;">
           <div class="modal-header" style="border-bottom: 1px solid rgba(255,193,7,0.3);">
@@ -1313,43 +1313,26 @@
 
 @section('scripts')
 <script type="text/javascript">
-(function() {
-    'use strict';
-    
     @if(isset($announcements) && count($announcements) > 0)
       @foreach($announcements as $announcement)
         @if($announcement->show_as_popup == 1)
           (function() {
-              var announcementId = {{ $announcement->id }};
-              var modalId = 'announcementModal' + announcementId;
-              var seenKey = 'announcement_seen_' + announcementId;
+              var seenKey = 'announcement_seen_{{ $announcement->id }}';
               
-              var hasSeen = sessionStorage.getItem(seenKey);
-              
-              if(!hasSeen) {
-                  $(document).ready(function() {
-                      setTimeout(function() {
-                          var $modal = $('#' + modalId);
-                          
-                          if($modal.length) {
-                              $modal.modal('show');
-                              
-                              // Mark as seen when modal is hidden/closed
-                              $modal.on('hidden.bs.modal', function() {
-                                  sessionStorage.setItem(seenKey, 'true');
-                              });
-                              
-                              $.ajax({
-                                  url: '{{ url("announcement/track-view") }}',
-                                  type: 'POST',
-                                  data: {
-                                      _token: '{{ csrf_token() }}',
-                                      announcement_id: announcementId
-                                  }
-                              });
-                          }
-                      }, 2000);
-                  });
+              if(!sessionStorage.getItem(seenKey)) {
+                  // Show announcement popup immediately (before offer popup at 5s)
+                  setTimeout(function() {
+                      $('#announcementModal{{ $announcement->id }}').modal('show');
+                      
+                      $('#announcementModal{{ $announcement->id }}').on('hidden.bs.modal', function() {
+                          sessionStorage.setItem(seenKey, 'true');
+                      });
+                      
+                      $.post('{{ url("announcement/track-view") }}', {
+                          _token: '{{ csrf_token() }}',
+                          announcement_id: {{ $announcement->id }}
+                      });
+                  }, 500);
               }
           })();
         @endif
@@ -1410,6 +1393,5 @@
                   $('#load-more-btn').show(); // Allow retry
             });
     }
-})();
 </script>
 @endsection

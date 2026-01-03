@@ -121,7 +121,7 @@
 @if(isset($announcements) && count($announcements) > 0)
   @foreach($announcements as $announcement)
     @if($announcement->show_as_popup == 1)
-    <div class="modal fade" id="announcementModal{{ $announcement->id }}" tabindex="-1" role="dialog" aria-labelledby="announcementModalLabel{{ $announcement->id }}" aria-hidden="true">
+    <div class="modal fade" id="announcementModal{{ $announcement->id }}" tabindex="-1" role="dialog" aria-labelledby="announcementModalLabel{{ $announcement->id }}" aria-hidden="true" style="display:none;">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content" style="background-color: #1a1a1a; border: 2px solid #ffc107; border-radius: 10px;">
           <div class="modal-header" style="border-bottom: 1px solid rgba(255,193,7,0.3);">
@@ -204,7 +204,7 @@
                           } else {
                               console.error('Modal not found:', modalId);
                           }
-                      }, 2000);
+                      }, 500);
                   });
               }
           })();
