@@ -93,6 +93,15 @@ class GdUrlController extends MainAdminController
         $folder_ids = array_map('trim', explode(',', $folder_ids_string));
         $api_key = $settings->gd_api_key ?? env('GOOGLE_DRIVE_API_KEY', '');
 
+        // Debug logging
+        \Log::info('GD Fetch Debug:', [
+            'api_key_from_db' => $settings->gd_api_key,
+            'folder_ids_from_db' => $settings->gd_folder_ids,
+            'api_key_used' => substr($api_key, 0, 10) . '...',
+            'folder_ids_count' => count($folder_ids),
+            'folder_ids' => $folder_ids
+        ]);
+
         if (empty($api_key)) {
             \Session::flash('error_flash_message', 'Google Drive API Key is not configured. Please configure it in Google Drive Settings.');
             return redirect()->back();
