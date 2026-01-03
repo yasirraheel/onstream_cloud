@@ -851,7 +851,6 @@ function processSelectedFile(filePath, requestingField) {
         // Load files immediately or on interaction
         // Since data is local now, we can load it immediately
         loadLocalApiFiles();
-        loadLocalGdFiles(); // Also load GD files immediately
 
         // Automation for Upcoming Movies - Runs IMMEDIATELY on page load
         @if(isset($movie) && $movie->upcoming == 1)
@@ -913,32 +912,10 @@ function processSelectedFile(filePath, requestingField) {
         });
 
         // Populate embed code on GD file selection
-        $('#gd_file_select').on('change', function() {
+        $('#gd_file_select').change(function() {
             var selectedLink = $(this).val();
-            console.log('GD file selected:', selectedLink);
             if (selectedLink) {
-                var $embedField = $('#video_embed_code');
-                $embedField.val(''); // Clear first
-                setTimeout(function() {
-                    $embedField.val(selectedLink);
-                    $embedField.focus(); // Focus to ensure it's updated
-                    console.log('Video embed code updated to:', selectedLink);
-                }, 50);
-            }
-        });
-
-        // Also handle select2 selection event
-        $('#gd_file_select').on('select2:select', function(e) {
-            var selectedLink = e.params.data.id;
-            console.log('GD file selected via select2:', selectedLink);
-            if (selectedLink) {
-                var $embedField = $('#video_embed_code');
-                $embedField.val(''); // Clear first
-                setTimeout(function() {
-                    $embedField.val(selectedLink);
-                    $embedField.focus(); // Focus to ensure it's updated
-                    console.log('Video embed code updated via select2 to:', selectedLink);
-                }, 50);
+                $('#video_embed_code').val(selectedLink);
             }
         });
     });
