@@ -967,10 +967,22 @@ function processSelectedFile(filePath, requestingField) {
         });
 
         // Populate embed code on GD file selection
-        $('#gd_file_select').change(function() {
+        $('#gd_file_select').on('change', function() {
             var selectedLink = $(this).val();
+            console.log('GD file selected:', selectedLink);
             if (selectedLink) {
                 $('#video_embed_code').val(selectedLink);
+                console.log('Video embed code updated');
+            }
+        });
+
+        // Also handle select2 selection event
+        $('#gd_file_select').on('select2:select', function(e) {
+            var selectedLink = e.params.data.id;
+            console.log('GD file selected via select2:', selectedLink);
+            if (selectedLink) {
+                $('#video_embed_code').val(selectedLink);
+                console.log('Video embed code updated via select2');
             }
         });
     });
