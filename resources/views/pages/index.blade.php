@@ -1407,5 +1407,6 @@
                   $('#load-more-btn').show(); // Allow retry
             });
     }
+})();
 </script>
 @endsection
