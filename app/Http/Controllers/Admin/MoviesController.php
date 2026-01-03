@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 use App\ApiUrl;
+use App\GdUrl;
 
 class MoviesController extends MainAdminController
 {
