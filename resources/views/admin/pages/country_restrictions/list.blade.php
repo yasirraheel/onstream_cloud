@@ -36,16 +36,24 @@
             {!! Form::open(array('url' => 'admin/country-restrictions/update','class'=>'form-horizontal','name'=>'country_form','id'=>'country_form','role'=>'form')) !!}
 
             <div class="row mb-3">
-              <div class="col-12">
+              <div class="col-md-6">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="searchCountry" placeholder="Search countries..." onkeyup="filterCountries()">
+                  <span class="input-group-btn">
+                    <button class="btn btn-secondary" type="button"><i class="fa fa-search"></i></button>
+                  </span>
+                </div>
+              </div>
+              <div class="col-md-6 text-right">
                 <button type="button" class="btn btn-danger btn-sm" onclick="selectAll()"><i class="fa fa-ban"></i> Block All</button>
                 <button type="button" class="btn btn-success btn-sm" onclick="deselectAll()"><i class="fa fa-check"></i> Allow All</button>
-                <button type="submit" class="btn btn-primary btn-sm pull-right"><i class="fa fa-save"></i> Save Changes</button>
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-save"></i> Save Changes</button>
               </div>
             </div>
 
-            <div class="row">
+            <div class="row" id="countriesList">
               @foreach($countries as $country)
-              <div class="col-md-3 col-sm-4 col-6 mb-3">
+              <div class="col-md-3 col-sm-4 col-6 mb-3 country-item" data-country="{{ strtolower($country->country_name) }}">
                 <div class="checkbox checkbox-danger">
                   <input type="checkbox" 
                          id="country_{{ $country->country_code }}" 
@@ -79,11 +87,26 @@
 
 <script>
 function selectAll() {
-  $('input[name="blocked_countries[]"]').prop('checked', true);
+  $('.country-item:visible input[name="blocked_countries[]"]').prop('checked', true);
 }
 
 function deselectAll() {
-  $('input[name="blocked_countries[]"]').prop('checked', false);
+  $('.country-item:visible input[name="blocked_countries[]"]').prop('checked', false);
+}
+
+function filterCountries() {
+  var input = document.getElementById('searchCountry');
+  var filter = input.value.toLowerCase();
+  var items = document.getElementsByClassName('country-item');
+  
+  for (var i = 0; i < items.length; i++) {
+    var countryName = items[i].getAttribute('data-country');
+    if (countryName.indexOf(filter) > -1) {
+      items[i].style.display = '';
+    } else {
+      items[i].style.display = 'none';
+    }
+  }
 }
 </script>
 
