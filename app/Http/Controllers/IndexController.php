@@ -136,6 +136,10 @@ class IndexController extends Controller
     {
         $home_section = HomeSections::where('id',$id)->where('status',1)->first();
 
+        if(!$home_section) {
+            abort(404);
+        }
+
         //echo $home_section->post_type;exit;
 
         if($home_section->post_type=="Movie")
