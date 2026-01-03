@@ -851,6 +851,7 @@ function processSelectedFile(filePath, requestingField) {
         // Load files immediately or on interaction
         // Since data is local now, we can load it immediately
         loadLocalApiFiles();
+        loadLocalGdFiles(); // Also load GD files immediately
 
         // Automation for Upcoming Movies - Runs IMMEDIATELY on page load
         @if(isset($movie) && $movie->upcoming == 1)
