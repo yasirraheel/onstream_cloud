@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         //
         Commands\TaskCron::class,
+        Commands\FetchGdUrls::class,
     ];
 
     /**
@@ -28,6 +29,9 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
         $schedule->command('task:cron')->everyMinute();
+        
+        // Fetch Google Drive URLs daily at 2:00 AM
+        $schedule->command('gd:fetch')->dailyAt('02:00');
     }
 
     /**
