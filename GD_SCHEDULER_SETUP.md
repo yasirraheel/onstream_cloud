@@ -64,7 +64,28 @@ Add this cron job to your server (runs every minute to check scheduled tasks):
    - Day: `*`
    - Month: `*`
    - Weekday: `*`
-   - Command: `cd /home/username/public_html && php artisan schedule:run >> /dev/null 2>&1`
+   - Command (use one of these formats):
+
+**Option 1 (Recommended):**
+```bash
+* * * * * cd /home/u559276167/domains/onstream.cloud/public_html && /usr/bin/php artisan schedule:run >> /dev/null 2>&1
+```
+
+**Option 2:**
+```bash
+* * * * * /usr/bin/php /home/u559276167/domains/onstream.cloud/public_html/artisan schedule:run >> /dev/null 2>&1
+```
+
+**For cPanel File Manager path:**
+If your Laravel project is in `public_html`, use:
+```bash
+* * * * * cd /home/u559276167/public_html && /usr/bin/php artisan schedule:run >> /dev/null 2>&1
+```
+
+**Important Notes:**
+- Replace `/home/u559276167/domains/onstream.cloud/public_html` with your actual full project path
+- Replace `/usr/bin/php` with the correct PHP path (check with `which php` in SSH)
+- Common PHP paths: `/usr/bin/php`, `/usr/local/bin/php`, `/opt/cpanel/ea-php83/root/usr/bin/php`
 
 ## What It Does
 1. Reads API key and folder IDs from settings table
