@@ -1283,8 +1283,76 @@
 
 @endsection
 
+<!-- Announcement Popup Modal -->
+@if(isset($announcements) && count($announcements) > 0)
+  @foreach($announcements as $announcement)
+    @if($announcement->show_as_popup == 1)
+    <div class="modal fade" id="announcementModal{{ $announcement->id }}" tabindex="-1" role="dialog" aria-labelledby="announcementModalLabel{{ $announcement->id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1a1a1a; border: 2px solid #ffc107; border-radius: 10px;">
+          <div class="modal-header" style="border-bottom: 1px solid rgba(255,193,7,0.3);">
+            <h5 class="modal-title" id="announcementModalLabel{{ $announcement->id }}" style="color: #ffc107;">
+              <i class="fa fa-bullhorn"></i> {{ $announcement->title }}
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff; opacity: 0.8;">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" style="color: #fff;">
+            <p>{{ $announcement->message }}</p>
+          </div>
+          <div class="modal-footer" style="border-top: 1px solid rgba(255,193,7,0.3);">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color: #333; border: 1px solid #ffc107;">{{ __('words.close') }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    @endif
+  @endforeach
+@endif
+
 @section('scripts')
 <script type="text/javascript">
+(function() {
+    'use strict';
+    
+    @if(isset($announcements) && count($announcements) > 0)
+      @foreach($announcements as $announcement)
+        @if($announcement->show_as_popup == 1)
+          (function() {
+              var announcementId = {{ $announcement->id }};
+              var modalId = 'announcementModal' + announcementId;
+              var seenKey = 'announcement_seen_' + announcementId;
+              
+              var hasSeen = sessionStorage.getItem(seenKey);
+              
+              if(!hasSeen) {
+                  $(window).on('load', function() {
+                      setTimeout(function() {
+                          var $modal = $('#' + modalId);
+                          
+                          if($modal.length) {
+                              $modal.modal('show');
+                              
+                              sessionStorage.setItem(seenKey, 'true');
+                              
+                              $.ajax({
+                                  url: '{{ url("announcement/track-view") }}',
+                                  type: 'POST',
+                                  data: {
+                                      _token: '{{ csrf_token() }}',
+                                      announcement_id: announcementId
+                                  }
+                              });
+                          }
+                      }, 1500);
+                  });
+              }
+          })();
+        @endif
+      @endforeach
+    @endif
+    
     var page = 1;
     var lastPage = {{ $movies_list->lastPage() }};
     var loading = false;

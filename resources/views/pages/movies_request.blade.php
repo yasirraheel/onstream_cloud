@@ -178,10 +178,6 @@
                           
                           if($modal.length) {
                               console.log('Modal found, showing...');
-                              $modal.modal({
-                                  backdrop: 'static',
-                                  keyboard: false
-                              });
                               $modal.modal('show');
                               
                               // Mark as seen
