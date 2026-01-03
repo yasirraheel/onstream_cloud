@@ -48,6 +48,13 @@
       <div class="col-lg-12 col-md-12 col-sm-12">
         <div class="video-posts-video" style="position: relative;">
 
+        @if(is_country_blocked())
+          <div style="text-align: center;padding: 70px 30px;background: #101011;border-radius: 10px;margin-top: 15px;min-height: 280px; display: flex; align-items: center; justify-content: center;">
+            <div style="max-width: 600px; width: 100%;">
+              {!! get_restriction_message() !!}
+            </div>
+          </div>
+        @else
         @if($sports_info->video_url!="")
 
           @if($sports_info->video_type=="Embed")
@@ -74,14 +81,7 @@
         line-height: 6;">NO Source  URL Set</div>
 
         @endif
-
-        @if(is_country_blocked())
-        <!-- Country Restriction Overlay -->
-        <div id="country-restriction-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.98); z-index: 999999; display: flex; align-items: center; justify-content: center;">
-          <div style="max-width: 600px; padding: 40px; width: 100%;">
-            {!! get_restriction_message() !!}
-          </div>
-        </div>
+        @endif
       </div>
     </div>
   </div>
