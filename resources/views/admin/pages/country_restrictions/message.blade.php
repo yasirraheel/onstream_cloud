@@ -32,8 +32,8 @@
             <div class="form-group row">
               <label class="col-sm-3 col-form-label">Restriction Message</label>
               <div class="col-sm-9">
-                <textarea name="country_restriction_message" id="country_restriction_message" class="form-control" rows="15">{{ isset($message) ? $message : '' }}</textarea>
-                <small class="form-text text-muted">Enter HTML code for the message displayed to users from blocked countries</small>
+                <textarea name="country_restriction_message" id="elm1" class="form-control">{{ isset($message) ? $message : '' }}</textarea>
+                <small class="form-text text-muted">This message will be displayed to users from blocked countries when they try to watch content</small>
               </div>
             </div>
 
@@ -52,13 +52,4 @@
   </div>
 </div>
 
-@endsection
-
-@section("scripts")
-<script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
-<script>
-  CKEDITOR.replace('country_restriction_message', {
-    height: 400
-  });
-</script>
 @endsection
