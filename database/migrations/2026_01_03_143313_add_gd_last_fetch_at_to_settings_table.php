@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('settings', function (Blueprint $table) {
-            $table->text('gd_api_key')->nullable()->after('tmdb_api_language');
-            $table->text('gd_folder_ids')->nullable()->after('gd_api_key');
+            $table->timestamp('gd_last_fetch_at')->nullable()->after('gd_folder_ids');
         });
     }
 
@@ -23,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('settings', function (Blueprint $table) {
-            $table->dropColumn(['gd_api_key', 'gd_folder_ids']);
+            $table->dropColumn('gd_last_fetch_at');
         });
     }
 };
