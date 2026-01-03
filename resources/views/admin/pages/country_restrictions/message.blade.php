@@ -32,7 +32,7 @@
             <div class="form-group row">
               <label class="col-sm-3 col-form-label">Restriction Message</label>
               <div class="col-sm-9">
-                <textarea name="country_restriction_message" id="elm1" class="form-control">{{ isset($message) ? $message : '' }}</textarea>
+                <textarea name="country_restriction_message" id="elm1" class="form-control">{{ isset($message) ? stripslashes($message) : '' }}</textarea>
                 <small class="form-text text-muted">This message will be displayed to users from blocked countries when they try to watch content</small>
               </div>
             </div>
