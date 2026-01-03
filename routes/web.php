@@ -46,6 +46,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     // GD URLs Module
     Route::get('gd_urls', 'GdUrlController@index');
     Route::get('gd_urls/fetch', 'GdUrlController@fetch_urls');
+    Route::get('gd_urls/settings', 'GdUrlController@settings');
+    Route::post('gd_urls/settings', 'GdUrlController@update_settings');
 
     Route::get('language', 'LanguageController@languag_list');
     Route::get('language/add_language', 'LanguageController@addLanguage');

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\GdUrl;
 use App\Movies;
 use App\Episodes;
+use App\Settings;
 use Illuminate\Support\Facades\Http;
 
 class GdUrlController extends MainAdminController
@@ -17,6 +18,40 @@ class GdUrlController extends MainAdminController
         $this->middleware('auth');
         parent::__construct();
         check_verify_purchase();
+    }
+
+    public function settings()
+    {
+        if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
+        {
+            \Session::flash('flash_message', trans('words.access_denied'));
+            return redirect('dashboard');
+        }
+
+        $page_title = "Google Drive Settings";
+        $settings = Settings::findOrFail('1');
+        
+        return view('admin.pages.gd_urls.settings', compact('page_title', 'settings'));
+    }
+
+    public function update_settings(Request $request)
+    {
+        if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
+        {
+            \Session::flash('flash_message', trans('words.access_denied'));
+            return redirect('dashboard');
+        }
+
+        $settings = Settings::findOrFail('1');
+        $inputs = $request->all();
+        
+        $settings->gd_api_key = $inputs['gd_api_key'];
+        $settings->gd_folder_ids = $inputs['gd_folder_ids'];
+        
+        $settings->save();
+        
+        \Session::flash('flash_message', trans('words.successfully_updated'));
+        return redirect()->back();
     }
 
     public function index()
@@ -51,18 +86,20 @@ class GdUrlController extends MainAdminController
             return redirect('dashboard');
         }
 
-        // Google Drive folder IDs from .env (comma-separated)
-        $folder_ids_string = env('GOOGLE_DRIVE_FOLDER_IDS', '1J03UKvMPr2EEgAgkfSy9RIHjQblUwG10');
+        $settings = Settings::findOrFail('1');
+        
+        // Google Drive folder IDs from settings (comma-separated)
+        $folder_ids_string = $settings->gd_folder_ids ?? env('GOOGLE_DRIVE_FOLDER_IDS', '1J03UKvMPr2EEgAgkfSy9RIHjQblUwG10');
         $folder_ids = array_map('trim', explode(',', $folder_ids_string));
-        $api_key = env('GOOGLE_DRIVE_API_KEY', ''); // You'll need to set this in .env
+        $api_key = $settings->gd_api_key ?? env('GOOGLE_DRIVE_API_KEY', '');
 
         if (empty($api_key)) {
-            \Session::flash('error_flash_message', 'Google Drive API Key is not configured. Please set GOOGLE_DRIVE_API_KEY in your .env file.');
+            \Session::flash('error_flash_message', 'Google Drive API Key is not configured. Please configure it in Google Drive Settings.');
             return redirect()->back();
         }
 
         if (empty($folder_ids)) {
-            \Session::flash('error_flash_message', 'No Google Drive folder IDs configured. Please set GOOGLE_DRIVE_FOLDER_IDS in your .env file.');
+            \Session::flash('error_flash_message', 'No Google Drive folder IDs configured. Please configure them in Google Drive Settings.');
             return redirect()->back();
         }
 

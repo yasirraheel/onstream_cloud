@@ -12,6 +12,7 @@
               <ul class="list-unstyled">
                 <li class="{{classActivePath('api_urls')}}"><a href="{{ URL::to('admin/api_urls') }}">API URLs Module</a></li>
                 <li class="{{classActivePath('gd_urls')}}"><a href="{{ URL::to('admin/gd_urls') }}">GD URLs</a></li>
+                <li><a href="{{ URL::to('admin/gd_urls/settings') }}">GD Settings</a></li>
               </ul>
             </li>
             
