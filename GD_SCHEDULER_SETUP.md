@@ -41,6 +41,35 @@ $schedule->command('gd:fetch')->weeklyOn(1, '8:00');
 
 ## Server Setup
 
+### Option 1: URL-Based Cron (Easiest for Shared Hosting)
+
+**Step 1:** Set your CRON_TOKEN in `.env` file:
+```env
+CRON_TOKEN=your_random_secure_token_here
+```
+
+**Step 2:** Use a cron service to call this URL every minute:
+```
+https://onstream.cloud/cron/run?token=your_random_secure_token_here
+```
+
+**Recommended Services:**
+- [cron-job.org](https://cron-job.org) - Free, reliable
+- [EasyCron](https://www.easycron.com) - Free tier available
+- [cPanel Cron with wget/curl](#cpanel-wget-method)
+
+**cPanel Setup with wget:**
+```bash
+* * * * * wget -q -O- "https://onstream.cloud/cron/run?token=your_random_secure_token_here" > /dev/null 2>&1
+```
+
+**cPanel Setup with curl:**
+```bash
+* * * * * curl -s "https://onstream.cloud/cron/run?token=your_random_secure_token_here" > /dev/null 2>&1
+```
+
+### Option 2: Traditional Server Cron
+
 ### For Linux/cPanel
 Add this cron job to your server (runs every minute to check scheduled tasks):
 ```
