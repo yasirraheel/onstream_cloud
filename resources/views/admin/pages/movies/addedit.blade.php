@@ -847,10 +847,65 @@ function processSelectedFile(filePath, requestingField) {
 
         // Global flag to prevent re-running search
         window.upcomingSearchPerformed = false;
+        window.editModeSearchPerformed = false;
 
         // Load files immediately or on interaction
         // Since data is local now, we can load it immediately
         loadLocalApiFiles();
+
+        // Automation for Edit Mode - Runs IMMEDIATELY on page load when editing
+        @if(isset($movie) && isset($movie->id))
+            $(function() {
+                console.log("Edit mode automation started");
+
+                // 1. Set Video Access to Free
+                var $videoAccess = $('input[name="video_access"][value="Free"]');
+                if($videoAccess.length && !$videoAccess.is(':checked')) {
+                    $videoAccess.prop('checked', true).trigger('change');
+                    console.log("Set video_access to Free");
+                }
+
+                // 2. Set Video Type to Embed
+                var $videoType = $('#video_type');
+                if($videoType.val() !== 'Embed') {
+                    $videoType.val('Embed').trigger('change');
+                    console.log("Set video_type to Embed");
+                }
+
+                // 3. Auto-search in GD URLs dropdown with first word of title
+                setTimeout(function() {
+                    if (!window.editModeSearchPerformed) {
+                        var movieTitle = "{{ isset($movie) ? addslashes($movie->video_title) : '' }}";
+                        if(movieTitle) {
+                            var firstWord = movieTitle.split(' ')[0];
+                            
+                            // Load GD files if not loaded
+                            if (!gdFilesFetched) {
+                                loadLocalGdFiles();
+                            }
+                            
+                            setTimeout(function() {
+                                var $gdSelect = $('#gd_file_select');
+                                var select2Instance = $gdSelect.data('select2');
+
+                                if(select2Instance) {
+                                    $gdSelect.select2('open');
+                                    setTimeout(function() {
+                                        var $searchField = $('.select2-container--open .select2-search__field');
+                                        if($searchField.length > 0) {
+                                            $searchField.val(firstWord);
+                                            $searchField.trigger('keyup');
+                                            $searchField.trigger('input');
+                                        }
+                                    }, 100);
+                                }
+                            }, 500);
+                            window.editModeSearchPerformed = true;
+                        }
+                    }
+                }, 800);
+            });
+        @endif
 
         // Automation for Upcoming Movies - Runs IMMEDIATELY on page load
         @if(isset($movie) && $movie->upcoming == 1)
