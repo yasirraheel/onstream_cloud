@@ -158,6 +158,9 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::get('transactions', 'TransactionsController@transactions_list');
     Route::post('transactions/export', 'TransactionsController@transactions_export');
 
+    // Analytics
+    Route::get('analytics', 'AnalyticsController@index');
+
     // Search History
     Route::get('search_history', 'SearchHistoryController@index');
     Route::get('search_history/analytics', 'SearchHistoryController@analytics');
