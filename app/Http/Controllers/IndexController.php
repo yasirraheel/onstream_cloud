@@ -129,12 +129,7 @@ class IndexController extends Controller
 
         $home_sections = HomeSections::where('status',1)->orderby('id')->get();
 
-        // Fetch active announcements
-        $announcements = Announcement::where('is_active', 1)
-            ->orderBy('id', 'DESC')
-            ->get();
-
-        return view('pages.index',compact('slider','recently_watched','upcoming_movies','upcoming_series','home_sections','movies_list','ads_products','announcements'));
+        return view('pages.index',compact('slider','recently_watched','upcoming_movies','upcoming_series','home_sections','movies_list','ads_products'));
 
     }
 
