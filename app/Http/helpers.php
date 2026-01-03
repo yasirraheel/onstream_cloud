@@ -1301,7 +1301,10 @@ if (! function_exists('get_restriction_message')) {
                     </div>';
         }
         
-        return stripslashes($message);
+        // Clean up the message - remove \r\n artifacts
+        $message = str_replace(['\r\n', '\r', '\n', 'rn'], '', stripslashes($message));
+        
+        return $message;
     }
 }
 
