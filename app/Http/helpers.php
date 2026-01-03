@@ -1301,7 +1301,7 @@ if (! function_exists('get_restriction_message')) {
                     </div>';
         }
         
-        return $message;
+        return stripslashes($message);
     }
 }
 
