@@ -172,6 +172,13 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::get('movie_requests/delete/{id}', 'MovieRequestController@delete');
     Route::get('movie_requests/status/{id}/{status}', 'MovieRequestController@status');
 
+    // Announcements
+    Route::get('announcements', 'AnnouncementController@index');
+    Route::get('announcements/add', 'AnnouncementController@add');
+    Route::get('announcements/edit/{id}', 'AnnouncementController@edit');
+    Route::post('announcements/add_edit', 'AnnouncementController@addnew');
+    Route::get('announcements/delete/{id}', 'AnnouncementController@delete');
+
     Route::get('ads', 'AdManagementController@ads_list');
 
     Route::get('pages', 'PagesController@pages_list');
@@ -291,6 +298,7 @@ Route::group(['middleware' => ['web']], function() {
 
     Route::get('movies_request', 'IndexController@movies_request');
     Route::post('movies_request', 'IndexController@post_movies_request');
+    Route::post('announcement/track-view', 'IndexController@track_announcement_view');
 
     Route::get('google_login', 'IndexController@google_login');
     Route::get('facebook_login', 'IndexController@facebook_login');

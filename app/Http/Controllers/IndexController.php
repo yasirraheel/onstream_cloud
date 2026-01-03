@@ -41,6 +41,7 @@ AbstractDeviceParser::setVersionTruncation(AbstractDeviceParser::VERSION_TRUNCAT
 
 use App\SearchHistory;
 use App\MovieRequest;
+use App\Announcement;
 
 class IndexController extends Controller
 {
@@ -816,7 +817,12 @@ class IndexController extends Controller
             ->orderBy('id', 'DESC')
             ->get();
 
-        return view('pages.movies_request', compact('requested_movies'));
+        // Fetch active announcements
+        $announcements = Announcement::where('is_active', 1)
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        return view('pages.movies_request', compact('requested_movies', 'announcements'));
     }
 
     public function post_movies_request(Request $request)
@@ -856,6 +862,21 @@ class IndexController extends Controller
         Session::flash('flash_message', 'Your movie request has been submitted successfully!');
 
         return redirect()->back();
+    }
+
+    public function track_announcement_view(Request $request)
+    {
+        $announcement_id = $request->input('announcement_id');
+        
+        if($announcement_id) {
+            $announcement = Announcement::find($announcement_id);
+            if($announcement) {
+                $announcement->incrementViewCount();
+                return response()->json(['success' => true]);
+            }
+        }
+        
+        return response()->json(['success' => false]);
     }
 
 }

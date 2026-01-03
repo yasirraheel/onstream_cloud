@@ -386,6 +386,8 @@ return [
     'login_alert_msg1' => 'You don\'t have access to premimum content kindly purchase subscription to watch this content or',
     'login_alert_msg2' => 'with premium account.',
     'close' => 'Close',
+    'announcements' => 'Announcements',
+    'views' => 'Views',
     'pay_with_razorpay' => 'Pay with Razorpay',
     'no_search_found' => 'No Search Found',
     'stripe_publishable_key' => 'Stripe Publishable key',

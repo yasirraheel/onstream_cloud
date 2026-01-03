@@ -27,6 +27,22 @@
 <div class="vfx-item-ptb vfx-item-info">
   <div class="container-fluid">
     <div class="row justify-content-center align-items-start">
+      
+      <!-- Announcements Section -->
+      @if(count($announcements) > 0)
+      <div class="col-12 mb-4">
+        @foreach($announcements as $announcement)
+        <div class="alert" style="background-color: rgba(255,193,7,0.1); border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+          <h5 style="color: #ffc107; margin-bottom: 10px;">
+            <i class="fa fa-bullhorn"></i> {{ $announcement->title }}
+          </h5>
+          <p style="margin: 0; color: #fff;">{{ $announcement->message }}</p>
+          <small style="color: rgba(255,255,255,0.6);">{{ __('words.views') }}: {{ $announcement->view_count }}</small>
+        </div>
+        @endforeach
+      </div>
+      @endif
+
       <!-- Request Form -->
       <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
         <div class="login-item-block">
@@ -99,5 +115,64 @@
     </div>
   </div>
 </div>
+
+<!-- Announcement Popup Modal -->
+@if(count($announcements) > 0)
+  @foreach($announcements as $announcement)
+    @if($announcement->show_as_popup == 1)
+    <div class="modal fade" id="announcementModal{{ $announcement->id }}" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="background-color: #1a1a1a; border: 2px solid #ffc107; border-radius: 10px;">
+          <div class="modal-header" style="border-bottom: 1px solid rgba(255,193,7,0.3);">
+            <h5 class="modal-title" style="color: #ffc107;">
+              <i class="fa fa-bullhorn"></i> {{ $announcement->title }}
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" style="color: #fff; opacity: 0.8;">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" style="color: #fff;">
+            <p>{{ $announcement->message }}</p>
+          </div>
+          <div class="modal-footer" style="border-top: 1px solid rgba(255,193,7,0.3);">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color: #333; border: 1px solid #ffc107;">{{ __('words.close') }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    @endif
+  @endforeach
+@endif
+
+<script>
+$(document).ready(function() {
+    // Show popup announcements
+    @if(count($announcements) > 0)
+      @foreach($announcements as $announcement)
+        @if($announcement->show_as_popup == 1)
+          // Check if user has already seen this announcement
+          var seenKey = 'announcement_seen_{{ $announcement->id }}';
+          if(!sessionStorage.getItem(seenKey)) {
+            // Show modal
+            $('#announcementModal{{ $announcement->id }}').modal('show');
+            
+            // Mark as seen in session
+            sessionStorage.setItem(seenKey, 'true');
+            
+            // Track view count
+            $.ajax({
+              url: '{{ url("announcement/track-view") }}',
+              type: 'POST',
+              data: {
+                _token: '{{ csrf_token() }}',
+                announcement_id: {{ $announcement->id }}
+              }
+            });
+          }
+        @endif
+      @endforeach
+    @endif
+});
+</script>
 
 @endsection
