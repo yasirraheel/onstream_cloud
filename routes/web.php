@@ -29,11 +29,6 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::get('logout', 'IndexController@logout');
 
     Route::get('dashboard', 'DashboardController@index');
-    Route::get('analytics', 'AnalyticsController@index');
-
-    Route::get('api_urls', 'ApiUrlController@index');
-    Route::get('api_urls/fetch', 'ApiUrlController@fetch_urls');
-
     Route::get('profile', 'AdminController@profile');
     Route::post('profile', 'AdminController@updateProfile');
     Route::get('verify_purchase', 'AdminController@verify_purchase');
@@ -44,6 +39,13 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::get('find_imdb_show', 'ImportImdbShowController@find_imdb_show');
     Route::get('find_imdb_episode', 'ImportImdbShowController@find_imdb_episode');
 
+    // API URLs Module
+    Route::get('api_urls', 'ApiUrlController@index');
+    Route::get('api_urls/fetch', 'ApiUrlController@fetch_urls');
+
+    // GD URLs Module
+    Route::get('gd_urls', 'GdUrlController@index');
+    Route::get('gd_urls/fetch', 'GdUrlController@fetch_urls');
 
     Route::get('language', 'LanguageController@languag_list');
     Route::get('language/add_language', 'LanguageController@addLanguage');
@@ -59,7 +61,6 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
 
     Route::get('movies', 'MoviesController@movies_list');
     Route::get('upcoming_movies', 'MoviesController@upcoming_movies_list');
-    Route::get('pending_movies', 'MoviesController@pending_movies_list');
     Route::get('movies/add_movie', 'MoviesController@addMovie');
     Route::get('movies/edit_movie/{id}', 'MoviesController@editMovie');
     Route::post('movies/add_edit_movie', 'MoviesController@addnew');
@@ -271,8 +272,6 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('livetv/watch/{slug}/{id}', 'LiveTvController@live_tv_watch');
 
     Route::get('search', 'IndexController@search');
-    Route::get('offers', 'IndexController@offers');
-    Route::post('track-ad-click', 'IndexController@trackAdClick');
     Route::get('search_elastic', 'IndexController@search_elastic');
 
     Route::get('sitemap.xml', 'IndexController@sitemap');

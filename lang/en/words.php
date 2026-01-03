@@ -642,4 +642,23 @@ return [
     'store_id' => 'Store ID',
     'store_password' => 'Store Password',
     'pending_order_exists' => 'A pending order already exists. Please complete it before placing a new one.',
+    
+    // GD URLs Module
+    'gd_urls' => 'GD URLs',
+    'gd_urls_module' => 'GD URLs Module',
+    'fetch_from_google_drive' => 'Fetch/Sync Files from Google Drive',
+    'google_drive_files' => 'Google Drive Files',
+    'total_files' => 'Total Files',
+    'available_files' => 'Available Files',
+    'used_files' => 'Used Files',
+    'file_name' => 'File Name',
+    'file_size' => 'File Size',
+    'mime_type' => 'MIME Type',
+    'gd_files_fetched' => 'Google Drive URLs Fetched Successfully!',
+    'no_files_found' => 'No files found in the Google Drive folder.',
+    'api_key_not_configured' => 'Google Drive API Key is not configured.',
+    
+    // API URLs Module
+    'api_urls' => 'API URLs',
+    'api_urls_module' => 'API URLs Module',
  ];
