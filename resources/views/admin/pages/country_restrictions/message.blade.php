@@ -32,7 +32,7 @@
             <div class="form-group row">
               <label class="col-sm-3 col-form-label">Restriction Message</label>
               <div class="col-sm-9">
-                <textarea name="country_restriction_message" id="country_restriction_message" class="form-control">{{ $message }}</textarea>
+                <textarea name="country_restriction_message" id="elm1" class="form-control">{{ $message }}</textarea>
                 <small class="form-text text-muted">This message will be displayed to users from blocked countries when they try to watch content</small>
               </div>
             </div>
@@ -52,15 +52,4 @@
   </div>
 </div>
 
-@endsection
-
-@section("scripts")
-<script src="{{ URL::asset('admin_assets/plugins/ckeditor/ckeditor.js') }}"></script>
-<script>
-  CKEDITOR.replace('country_restriction_message', {
-    height: 400,
-    removePlugins: 'image',
-    allowedContent: true
-  });
-</script>
 @endsection
