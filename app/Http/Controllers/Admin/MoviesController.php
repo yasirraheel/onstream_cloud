@@ -410,7 +410,12 @@ public function addnew(Request $request)
             ->orderBy('movie_name', 'asc')
             ->get();
 
-          return view('admin.pages.movies.addedit',compact('page_title','movie','language_list','genre_list','actor_list','director_list', 'api_urls_data'));
+          // Fetch GD URLs for Embed dropdown
+          $gd_urls_data = GdUrl::orderBy('is_used', 'asc') // Available first
+            ->orderBy('file_name', 'asc')
+            ->get();
+
+          return view('admin.pages.movies.addedit',compact('page_title','movie','language_list','genre_list','actor_list','director_list', 'api_urls_data', 'gd_urls_data'));
 
     }
 

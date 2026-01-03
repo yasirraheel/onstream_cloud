@@ -495,8 +495,13 @@
 
                   <div class="form-group row" id="embed_id" @if(isset($movie->video_type) AND $movie->video_type!="Embed") style="display:none;" @endif @if(!isset($movie->id)) style="display:none;" @endif>
                     <label class="col-sm-3 col-form-label">{{trans('words.video_embed_code')}}</label>
-                     <div class="col-sm-8 mb-3">
-                       <textarea class="form-control" name="video_embed_code">{{ isset($movie->video_url) ? $movie->video_url : null }}</textarea>
+                     <div class="col-sm-8">
+                      <div id="gd_file_select_wrapper" style="display: none;" class="mb-3">
+                          <select id="gd_file_select" class="form-control select2">
+                              <option value="">Select File from Google Drive</option>
+                          </select>
+                      </div>
+                      <textarea class="form-control" name="video_embed_code" id="video_embed_code">{{ isset($movie->video_url) ? $movie->video_url : null }}</textarea>
                     </div>
                   </div>
 
@@ -716,6 +721,49 @@ function processSelectedFile(filePath, requestingField) {
 
     $(document).ready(function() {
         var apiFilesFetched = false;
+        var gdFilesFetched = false;
+
+        function loadLocalGdFiles() {
+            if (gdFilesFetched) return;
+
+            var gdData = @json($gd_urls_data ?? []);
+
+            if (gdData.length > 0) {
+                var options = '<option value="">Select File from Google Drive</option>';
+
+                $.each(gdData, function(index, file) {
+                    var isUsed = file.is_used == 1;
+                    var labelText = file.file_name + (isUsed ? ' (Already Used)' : '');
+
+                    var disabledAttr = isUsed ? 'disabled' : '';
+                    var styleAttr = isUsed ? 'style="background-color: #f8d7da; color: #721c24;"' : '';
+
+                    options += '<option value="' + file.url + '" ' + disabledAttr + ' ' + styleAttr + '>' + labelText + '</option>';
+                });
+
+                $('#gd_file_select').html(options);
+
+                $('#gd_file_select').select2({
+                    templateResult: function(data) {
+                        if (!data.element) {
+                            return data.text;
+                        }
+                        var $element = $(data.element);
+                        var $result = $('<span></span>');
+                        $result.text(data.text);
+                        if ($element.attr('style')) {
+                            $result.attr('style', $element.attr('style'));
+                        }
+                        return $result;
+                    }
+                });
+
+                gdFilesFetched = true;
+                $('#gd_file_select_wrapper').show();
+            } else {
+                $('#gd_file_select').html('<option value="">No files found in Google Drive</option>');
+            }
+        }
 
         function loadLocalApiFiles() {
             if (apiFilesFetched) return;
@@ -832,9 +880,18 @@ function processSelectedFile(filePath, requestingField) {
                 if(apiFilesFetched) {
                      $('#api_file_select_wrapper').show();
                 }
+                $('#gd_file_select_wrapper').hide();
                 fetchApiFiles();
+            } else if (videoType === 'Embed') {
+                if(gdFilesFetched) {
+                     $('#gd_file_select_wrapper').show();
+                } else {
+                    loadLocalGdFiles();
+                }
+                $('#api_file_select_wrapper').hide();
             } else {
                 $('#api_file_select_wrapper').hide();
+                $('#gd_file_select_wrapper').hide();
             }
         }
 
@@ -851,6 +908,14 @@ function processSelectedFile(filePath, requestingField) {
             var selectedLink = $(this).val();
             if (selectedLink) {
                 $('#video_url_input').val(selectedLink);
+            }
+        });
+
+        // Populate embed code on GD file selection
+        $('#gd_file_select').change(function() {
+            var selectedLink = $(this).val();
+            if (selectedLink) {
+                $('#video_embed_code').val(selectedLink);
             }
         });
     });
