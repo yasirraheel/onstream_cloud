@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('settings', function (Blueprint $table) {
-            $table->text('country_restriction_message')->nullable()->after('api_url_status');
+            $table->text('country_restriction_message')->nullable();
         });
     }
 
