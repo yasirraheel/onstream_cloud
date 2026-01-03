@@ -21,7 +21,7 @@ class CountryRestriction extends Model
         $restriction = self::where('country_code', $countryCode)
             ->where('is_blocked', 1)
             ->first();
-        
+
         return $restriction ? true : false;
     }
 

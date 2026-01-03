@@ -42,9 +42,9 @@ class FetchGdUrls extends Command
     public function handle()
     {
         $this->info('Starting Google Drive URL fetch...');
-        
+
         $settings = Settings::findOrFail('1');
-        
+
         $folder_ids_string = $settings->gd_folder_ids ?? env('GOOGLE_DRIVE_FOLDER_IDS', '');
         $folder_ids = array_map('trim', explode(',', $folder_ids_string));
         $api_key = $settings->gd_api_key ?? env('GOOGLE_DRIVE_API_KEY', '');
@@ -82,11 +82,11 @@ class FetchGdUrls extends Command
                 // Loop through all pages to get ALL files from the folder
                 do {
                     $api_endpoint = "https://www.googleapis.com/drive/v3/files?q='{$folder_id}'+in+parents&key={$api_key}&pageSize=1000&fields=nextPageToken,files(id,name,size,mimeType,webContentLink,webViewLink)";
-                    
+
                     if ($pageToken) {
                         $api_endpoint .= "&pageToken={$pageToken}";
                     }
-                    
+
                     $response = Http::timeout(60)->get($api_endpoint);
 
                     if ($response->successful()) {
@@ -104,7 +104,7 @@ class FetchGdUrls extends Command
                             $file_name = $file['name'] ?? '';
                             $file_size = $file['size'] ?? 0;
                             $mime_type = $file['mimeType'] ?? '';
-                            
+
                             // Generate Google Drive URL in format that works with embed player
                             $url = "https://drive.google.com/file/d/{$file_id}/view";
 
@@ -141,7 +141,7 @@ class FetchGdUrls extends Command
                             }
                             $folder_files_count++;
                         }
-                        
+
                         if ($folder_files_count > 0 && !$pageToken) {
                             $processed_folders++;
                         }
@@ -159,14 +159,14 @@ class FetchGdUrls extends Command
             if (!empty($errors)) {
                 $message .= " | Errors: " . implode(' | ', $errors);
             }
-            
+
             // Update last fetch timestamp
             $settings->gd_last_fetch_at = now();
             $settings->save();
-            
+
             $this->info($message);
             \Log::info('GD Fetch Cron: ' . $message);
-            
+
             return 0;
         } catch (\Exception $e) {
             $this->error('Error: ' . $e->getMessage());

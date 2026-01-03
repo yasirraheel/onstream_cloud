@@ -6,7 +6,7 @@
           <ul>
             <li><a href="{{ URL::to('admin/dashboard') }}" class="waves-effect {{classActivePath('dashboard')}}"><i class="fa fa-dashboard"></i><span>{{trans('words.dashboard_text')}}</span></a></li>
             <li><a href="{{ URL::to('admin/analytics') }}" class="waves-effect {{classActivePath('analytics')}}"><i class="fa fa-bar-chart-o"></i><span>Analytics</span></a></li>
-            
+
             <li class="has_sub">
               <a href="javascript:void(0);" class="waves-effect {{classActivePath('api_urls')}} {{classActivePath('gd_urls')}}"><i class="fa fa-link"></i> <span>API URLs</span> <span class="menu-arrow"></span></a>
               <ul class="list-unstyled">
@@ -15,7 +15,7 @@
                 <li><a href="{{ URL::to('admin/gd_urls/settings') }}">GD Settings</a></li>
               </ul>
             </li>
-            
+
             <li><a href="{{ URL::to('admin/language') }}" class="waves-effect {{classActivePath('language')}}"><i class="fa fa-language"></i><span>{{trans('words.language_text')}}</span></a></li>
             <li><a href="{{ URL::to('admin/genres') }}" class="waves-effect {{classActivePath('genres')}}"><i class="fa fa-list"></i><span>{{trans('words.genres_text')}}</span></a></li>
 

@@ -30,7 +30,7 @@ class GdUrlController extends MainAdminController
 
         $page_title = "Google Drive Settings";
         $settings = Settings::findOrFail('1');
-        
+
         return view('admin.pages.gd_urls.settings', compact('page_title', 'settings'));
     }
 
@@ -44,12 +44,12 @@ class GdUrlController extends MainAdminController
 
         $settings = Settings::findOrFail('1');
         $inputs = $request->all();
-        
+
         $settings->gd_api_key = $inputs['gd_api_key'];
         $settings->gd_folder_ids = $inputs['gd_folder_ids'];
-        
+
         $settings->save();
-        
+
         \Session::flash('flash_message', trans('words.successfully_updated'));
         return redirect()->back();
     }
@@ -74,14 +74,14 @@ class GdUrlController extends MainAdminController
         $total_urls = $gd_urls->count();
         $used_urls_count = $gd_urls->where('is_used', 1)->count();
         $available_urls_count = $total_urls - $used_urls_count;
-        
+
         // Calculate total storage in GB
         $total_size_bytes = $gd_urls->sum('file_size');
         $total_size_gb = number_format($total_size_bytes / (1024 * 1024 * 1024), 2);
-        
+
         // Count distinct folders
         $total_folders = GdUrl::distinct('folder_id')->count('folder_id');
-        
+
         // Get last fetch time
         $settings = Settings::findOrFail('1');
         $last_fetch = $settings->gd_last_fetch_at;
@@ -98,7 +98,7 @@ class GdUrlController extends MainAdminController
         }
 
         $settings = Settings::findOrFail('1');
-        
+
         // Google Drive folder IDs from settings (comma-separated)
         $folder_ids_string = $settings->gd_folder_ids ?? env('GOOGLE_DRIVE_FOLDER_IDS', '1J03UKvMPr2EEgAgkfSy9RIHjQblUwG10');
         $folder_ids = array_map('trim', explode(',', $folder_ids_string));
@@ -143,11 +143,11 @@ class GdUrlController extends MainAdminController
                 // Loop through all pages to get ALL files from the folder
                 do {
                     $api_endpoint = "https://www.googleapis.com/drive/v3/files?q='{$folder_id}'+in+parents&key={$api_key}&pageSize=1000&fields=nextPageToken,files(id,name,size,mimeType,webContentLink,webViewLink)";
-                    
+
                     if ($pageToken) {
                         $api_endpoint .= "&pageToken={$pageToken}";
                     }
-                    
+
                     $response = Http::timeout(60)->get($api_endpoint);
 
                     if ($response->successful()) {
@@ -164,7 +164,7 @@ class GdUrlController extends MainAdminController
                             $file_name = $file['name'] ?? '';
                             $file_size = $file['size'] ?? 0;
                             $mime_type = $file['mimeType'] ?? '';
-                            
+
                             // Generate Google Drive URL in format that works with embed player
                             $url = "https://drive.google.com/file/d/{$file_id}/view";
 
@@ -201,7 +201,7 @@ class GdUrlController extends MainAdminController
                             }
                             $folder_files_count++;
                         }
-                        
+
                         if ($folder_files_count > 0 && !$pageToken) {
                             $processed_folders++;
                         }
@@ -218,7 +218,7 @@ class GdUrlController extends MainAdminController
                 // Update last fetch timestamp
                 $settings->gd_last_fetch_at = now();
                 $settings->save();
-                
+
                 $message = "Google Drive URLs Fetched Successfully! Processed {$processed_folders} folder(s). Added: {$count_added}, Updated: {$count_updated}";
                 if (!empty($errors)) {
                     $message .= " | Errors: " . implode(' | ', $errors);

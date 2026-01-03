@@ -867,7 +867,7 @@ class IndexController extends Controller
     public function track_announcement_view(Request $request)
     {
         $announcement_id = $request->input('announcement_id');
-        
+
         if($announcement_id) {
             $announcement = Announcement::find($announcement_id);
             if($announcement) {
@@ -875,7 +875,7 @@ class IndexController extends Controller
                 return response()->json(['success' => true]);
             }
         }
-        
+
         return response()->json(['success' => false]);
     }
 

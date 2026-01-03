@@ -56,9 +56,9 @@
               @foreach($countries as $country)
               <div class="col-md-3 col-sm-4 col-6 mb-3 country-item" data-country="{{ strtolower($country->country_name) }}">
                 <div class="checkbox checkbox-danger">
-                  <input type="checkbox" 
-                         id="country_{{ $country->country_code }}" 
-                         name="blocked_countries[]" 
+                  <input type="checkbox"
+                         id="country_{{ $country->country_code }}"
+                         name="blocked_countries[]"
                          value="{{ $country->country_code }}"
                          @if($country->is_blocked) checked @endif>
                   <label for="country_{{ $country->country_code }}">
@@ -99,7 +99,7 @@ function filterCountries() {
   var input = document.getElementById('searchCountry');
   var filter = input.value.toLowerCase();
   var items = document.getElementsByClassName('country-item');
-  
+
   for (var i = 0; i < items.length; i++) {
     var countryName = items[i].getAttribute('data-country');
     if (countryName.indexOf(filter) > -1) {

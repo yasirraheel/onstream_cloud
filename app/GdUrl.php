@@ -9,8 +9,8 @@ class GdUrl extends Model
     protected $table = 'gd_urls';
 
     protected $fillable = [
-        'file_name', 
-        'url', 
+        'file_name',
+        'url',
         'file_id',
         'folder_id',
         'file_size',

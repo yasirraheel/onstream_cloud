@@ -27,7 +27,7 @@
 <div class="vfx-item-ptb vfx-item-info">
   <div class="container-fluid">
     <div class="row justify-content-center align-items-start">
-      
+
       <!-- Announcements Section -->
       @if(count($announcements) > 0)
       <div class="col-12 mb-4">
@@ -149,43 +149,43 @@
 <script type="text/javascript">
 (function() {
     'use strict';
-    
+
     console.log('Announcement script loaded');
-    
+
     @if(isset($announcements) && count($announcements) > 0)
       console.log('Total announcements:', {{ count($announcements) }});
-      
+
       @foreach($announcements as $announcement)
         @if($announcement->show_as_popup == 1)
           (function() {
               var announcementId = {{ $announcement->id }};
               var modalId = 'announcementModal' + announcementId;
               var seenKey = 'announcement_seen_' + announcementId;
-              
+
               console.log('Processing popup announcement:', '{{ addslashes($announcement->title) }}', 'ID:', announcementId);
               console.log('Modal ID:', modalId);
               console.log('Checking if modal exists:', $('#' + modalId).length);
-              
+
               var hasSeen = sessionStorage.getItem(seenKey);
               console.log('Has seen announcement', announcementId, ':', hasSeen);
-              
+
               if(!hasSeen) {
                   // Wait for page to fully load
                   $(document).ready(function() {
                       setTimeout(function() {
                           console.log('Attempting to show modal:', modalId);
                           var $modal = $('#' + modalId);
-                          
+
                           if($modal.length) {
                               console.log('Modal found, showing...');
                               $modal.modal('show');
-                              
+
                               // Mark as seen when modal is hidden/closed
                               $modal.on('hidden.bs.modal', function() {
                                   sessionStorage.setItem(seenKey, 'true');
                                   console.log('Modal closed, marked as seen');
                               });
-                              
+
                               // Track view count
                               $.ajax({
                                   url: '{{ url("announcement/track-view") }}',

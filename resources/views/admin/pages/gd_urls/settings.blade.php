@@ -13,7 +13,7 @@
 
                         <form action="{{ URL::to('admin/gd_urls/settings') }}" method="POST">
                             @csrf
-                            
+
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Google Drive API Key <span class="text-danger">*</span></label>
                                 <div class="col-sm-8">

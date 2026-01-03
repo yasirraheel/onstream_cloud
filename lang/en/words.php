@@ -644,7 +644,7 @@ return [
     'store_id' => 'Store ID',
     'store_password' => 'Store Password',
     'pending_order_exists' => 'A pending order already exists. Please complete it before placing a new one.',
-    
+
     // GD URLs Module
     'gd_urls' => 'GD URLs',
     'gd_urls_module' => 'GD URLs Module',
@@ -659,7 +659,7 @@ return [
     'gd_files_fetched' => 'Google Drive URLs Fetched Successfully!',
     'no_files_found' => 'No files found in the Google Drive folder.',
     'api_key_not_configured' => 'Google Drive API Key is not configured.',
-    
+
     // API URLs Module
     'api_urls' => 'API URLs',
     'api_urls_module' => 'API URLs Module',

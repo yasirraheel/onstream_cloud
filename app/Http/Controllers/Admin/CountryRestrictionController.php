@@ -13,44 +13,45 @@ class CountryRestrictionController extends MainAdminController
     public function index()
     {
         $page_title = 'Country Restrictions';
-        
+
         // Get all countries or initialize if empty
         $countries = CountryRestriction::orderBy('is_blocked', 'desc')->orderBy('country_name')->get();
-        
+
         // If no countries exist, populate with default list
         if ($countries->isEmpty()) {
             $this->populateCountries();
             $countries = CountryRestriction::orderBy('is_blocked', 'desc')->orderBy('country_name')->get();
         }
-        
+
         $blocked_count = CountryRestriction::where('is_blocked', 1)->count();
         $total_count = $countries->count();
-        
+
         return view('admin.pages.country_restrictions.list', compact('page_title', 'countries', 'blocked_count', 'total_count'));
     }
 
     public function update(Request $request)
     {
         $blocked_countries = $request->input('blocked_countries', []);
-        
+
         // Reset all countries to not blocked
         CountryRestriction::query()->update(['is_blocked' => 0]);
-        
+
         // Set selected countries as blocked
         if (!empty($blocked_countries)) {
             CountryRestriction::whereIn('country_code', $blocked_countries)->update(['is_blocked' => 1]);
         }
-        
+
         Session::flash('flash_message', 'Country restrictions updated successfully!');
-        
+
         return redirect()->back();
     }
 
     public function message()
     {
         $page_title = 'Restriction Message';
-        $message = Settings::get('country_restriction_message');
-        
+        $settings = Settings::findOrFail(1);
+        $message = $settings->country_restriction_message;
+
         return view('admin.pages.country_restrictions.message', compact('page_title', 'message'));
     }
 
@@ -59,9 +60,9 @@ class CountryRestrictionController extends MainAdminController
         $data = Settings::findOrFail(1);
         $data->country_restriction_message = $request->input('country_restriction_message');
         $data->save();
-        
+
         Session::flash('flash_message', 'Restriction message updated successfully!');
-        
+
         return redirect()->back();
     }
 

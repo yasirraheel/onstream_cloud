@@ -352,15 +352,15 @@ Route::group(['middleware' => ['web']], function() {
 Route::get('/cron/run', function() {
     $token = request('token');
     $expected_token = env('CRON_TOKEN', 'change_this_secret_token_123');
-    
+
     if ($token !== $expected_token) {
         return response()->json(['error' => 'Unauthorized'], 401);
     }
-    
+
     try {
         \Artisan::call('schedule:run');
         $output = \Artisan::output();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Scheduler executed successfully',

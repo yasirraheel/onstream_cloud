@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('mime_type')->nullable(); // File MIME type
             $table->boolean('is_used')->default(0); // 0 = Available, 1 = Used
             $table->timestamps();
-            
+
             // Add indexes for faster searching
             $table->index('is_used');
             $table->index('file_id');

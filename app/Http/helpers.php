@@ -108,7 +108,7 @@ if (! function_exists('add_video_view')) {
         // Prevent duplicate view count from same IP/User within short time (e.g., 5 mins)
         // Or strictly count every hit if desired, but typical analytics debounce slightly.
         // For now, let's just log it.
-        
+
         $location = get_ip_location_info($ip_address);
 
         \App\VideoView::create([
@@ -1250,12 +1250,12 @@ if (! function_exists('get_user_country')) {
     function get_user_country()
     {
         $ip = get_user_ip();
-        
+
         // Don't check for localhost/private IPs
         if ($ip == '127.0.0.1' || $ip == '::1' || strpos($ip, '192.168.') === 0 || strpos($ip, '10.') === 0) {
             return null;
         }
-        
+
         try {
             $response = @file_get_contents("http://ip-api.com/json/{$ip}?fields=countryCode");
             if ($response) {
@@ -1267,7 +1267,7 @@ if (! function_exists('get_user_country')) {
         } catch (Exception $e) {
             return null;
         }
-        
+
         return null;
     }
 }
@@ -1276,11 +1276,11 @@ if (! function_exists('is_country_blocked')) {
     function is_country_blocked()
     {
         $country_code = get_user_country();
-        
+
         if (!$country_code) {
             return false;
         }
-        
+
         return \App\CountryRestriction::isCountryBlocked($country_code);
     }
 }
@@ -1288,8 +1288,9 @@ if (! function_exists('is_country_blocked')) {
 if (! function_exists('get_restriction_message')) {
     function get_restriction_message()
     {
-        $message = Settings::get('country_restriction_message');
-        
+        $settings = Settings::find(1);
+        $message = $settings ? $settings->country_restriction_message : null;
+
         if (empty($message)) {
             return '<div style="text-align: center; padding: 60px 20px;">
                         <i class="fa fa-ban" style="font-size: 80px; color: #e74c3c; margin-bottom: 20px;"></i>
@@ -1300,10 +1301,10 @@ if (! function_exists('get_restriction_message')) {
                         </p>
                     </div>';
         }
-        
+
         // Remove all backslashes and clean up
         $message = str_replace('\\', '', $message);
-        
+
         return $message;
     }
 }
