@@ -171,7 +171,7 @@
               
               if(!hasSeen) {
                   // Wait for page to fully load
-                  $(window).on('load', function() {
+                  $(document).ready(function() {
                       setTimeout(function() {
                           console.log('Attempting to show modal:', modalId);
                           var $modal = $('#' + modalId);
@@ -180,8 +180,11 @@
                               console.log('Modal found, showing...');
                               $modal.modal('show');
                               
-                              // Mark as seen
-                              sessionStorage.setItem(seenKey, 'true');
+                              // Mark as seen when modal is hidden/closed
+                              $modal.on('hidden.bs.modal', function() {
+                                  sessionStorage.setItem(seenKey, 'true');
+                                  console.log('Modal closed, marked as seen');
+                              });
                               
                               // Track view count
                               $.ajax({
@@ -201,7 +204,7 @@
                           } else {
                               console.error('Modal not found:', modalId);
                           }
-                      }, 1500);
+                      }, 2000);
                   });
               }
           })();

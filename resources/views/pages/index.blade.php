@@ -1327,14 +1327,17 @@
               var hasSeen = sessionStorage.getItem(seenKey);
               
               if(!hasSeen) {
-                  $(window).on('load', function() {
+                  $(document).ready(function() {
                       setTimeout(function() {
                           var $modal = $('#' + modalId);
                           
                           if($modal.length) {
                               $modal.modal('show');
                               
-                              sessionStorage.setItem(seenKey, 'true');
+                              // Mark as seen when modal is hidden/closed
+                              $modal.on('hidden.bs.modal', function() {
+                                  sessionStorage.setItem(seenKey, 'true');
+                              });
                               
                               $.ajax({
                                   url: '{{ url("announcement/track-view") }}',
@@ -1345,7 +1348,7 @@
                                   }
                               });
                           }
-                      }, 1500);
+                      }, 2000);
                   });
               }
           })();
