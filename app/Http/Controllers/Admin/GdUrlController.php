@@ -126,70 +126,86 @@ class GdUrlController extends MainAdminController
             foreach ($folder_ids as $folder_id) {
                 if (empty($folder_id)) continue;
 
-                $api_endpoint = "https://www.googleapis.com/drive/v3/files?q='{$folder_id}'+in+parents&key={$api_key}&fields=files(id,name,size,mimeType,webContentLink,webViewLink)";
-                
-                $response = Http::timeout(30)->get($api_endpoint);
+                $pageToken = null;
+                $folder_files_count = 0;
 
-                if ($response->successful()) {
-                    $data = $response->json();
-                    $files = $data['files'] ?? [];
-
-                    if (empty($files)) {
-                        $errors[] = "Folder ID: {$folder_id} - No files found or folder is empty.";
+                // Loop through all pages to get ALL files from the folder
+                do {
+                    $api_endpoint = "https://www.googleapis.com/drive/v3/files?q='{$folder_id}'+in+parents&key={$api_key}&pageSize=1000&fields=nextPageToken,files(id,name,size,mimeType,webContentLink,webViewLink)";
+                    
+                    if ($pageToken) {
+                        $api_endpoint .= "&pageToken={$pageToken}";
                     }
+                    
+                    $response = Http::timeout(60)->get($api_endpoint);
 
-                    foreach ($files as $file) {
-                        $file_id = $file['id'] ?? '';
-                        $file_name = $file['name'] ?? '';
-                        $file_size = $file['size'] ?? 0;
-                        $mime_type = $file['mimeType'] ?? '';
-                        
-                        // Generate direct download link
-                        $url = "https://drive.google.com/uc?export=download&id={$file_id}";
-                        
-                        // Alternative: use webViewLink or webContentLink if available
-                        if (isset($file['webContentLink'])) {
-                            $url = $file['webContentLink'];
+                    if ($response->successful()) {
+                        $data = $response->json();
+                        $files = $data['files'] ?? [];
+                        $pageToken = $data['nextPageToken'] ?? null;
+
+                        if (empty($files) && $folder_files_count == 0) {
+                            $errors[] = "Folder ID: {$folder_id} - No files found or folder is empty.";
                         }
 
-                        if (empty($file_id)) continue;
+                        foreach ($files as $file) {
+                            $file_id = $file['id'] ?? '';
+                            $file_name = $file['name'] ?? '';
+                            $file_size = $file['size'] ?? 0;
+                            $mime_type = $file['mimeType'] ?? '';
+                            
+                            // Generate direct download link
+                            $url = "https://drive.google.com/uc?export=download&id={$file_id}";
+                            
+                            // Alternative: use webViewLink or webContentLink if available
+                            if (isset($file['webContentLink'])) {
+                                $url = $file['webContentLink'];
+                            }
 
-                        // Check if URL is used in system
-                        $is_used_system = in_array($url, $all_used_urls_in_system) ? 1 : 0;
+                            if (empty($file_id)) continue;
 
-                        // Check if file exists in GdUrl table by file_id
-                        $existing_entry = GdUrl::where('file_id', $file_id)->first();
+                            // Check if URL is used in system
+                            $is_used_system = in_array($url, $all_used_urls_in_system) ? 1 : 0;
 
-                        if ($existing_entry) {
-                            // Update existing entry
-                            $existing_entry->file_name = $file_name;
-                            $existing_entry->url = $url;
-                            $existing_entry->folder_id = $folder_id;
-                            $existing_entry->file_size = $file_size;
-                            $existing_entry->mime_type = $mime_type;
-                            $existing_entry->is_used = $is_used_system;
-                            $existing_entry->save();
-                            $count_updated++;
-                        } else {
-                            // Create new entry
-                            GdUrl::create([
-                                'file_name' => $file_name,
-                                'url' => $url,
-                                'file_id' => $file_id,
-                                'folder_id' => $folder_id,
-                                'file_size' => $file_size,
-                                'mime_type' => $mime_type,
-                                'is_used' => $is_used_system
-                            ]);
-                            $count_added++;
+                            // Check if file exists in GdUrl table by file_id
+                            $existing_entry = GdUrl::where('file_id', $file_id)->first();
+
+                            if ($existing_entry) {
+                                // Update existing entry
+                                $existing_entry->file_name = $file_name;
+                                $existing_entry->url = $url;
+                                $existing_entry->folder_id = $folder_id;
+                                $existing_entry->file_size = $file_size;
+                                $existing_entry->mime_type = $mime_type;
+                                $existing_entry->is_used = $is_used_system;
+                                $existing_entry->save();
+                                $count_updated++;
+                            } else {
+                                // Create new entry
+                                GdUrl::create([
+                                    'file_name' => $file_name,
+                                    'url' => $url,
+                                    'file_id' => $file_id,
+                                    'folder_id' => $folder_id,
+                                    'file_size' => $file_size,
+                                    'mime_type' => $mime_type,
+                                    'is_used' => $is_used_system
+                                ]);
+                                $count_added++;
+                            }
+                            $folder_files_count++;
                         }
+                        
+                        if ($folder_files_count > 0 && !$pageToken) {
+                            $processed_folders++;
+                        }
+                    } else {
+                        $error_data = $response->json();
+                        $error_message = $error_data['error']['message'] ?? 'Unknown error';
+                        $errors[] = "Folder ID: {$folder_id} - API Error: {$error_message}";
+                        break; // Stop pagination on error
                     }
-                    $processed_folders++;
-                } else {
-                    $error_data = $response->json();
-                    $error_message = $error_data['error']['message'] ?? 'Unknown error';
-                    $errors[] = "Folder ID: {$folder_id} - API Error: {$error_message}";
-                }
+                } while ($pageToken); // Continue while there are more pages
             }
 
             if ($processed_folders > 0) {
