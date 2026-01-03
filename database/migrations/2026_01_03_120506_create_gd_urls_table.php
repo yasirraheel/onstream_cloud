@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('file_name')->nullable();
             $table->text('url');
             $table->string('file_id')->nullable(); // Google Drive file ID
-            $table->string('folder_id')->nullable(); // Google Drive folder ID
             $table->bigInteger('file_size')->nullable(); // File size in bytes
             $table->string('mime_type')->nullable(); // File MIME type
             $table->boolean('is_used')->default(0); // 0 = Available, 1 = Used
@@ -25,7 +24,6 @@ return new class extends Migration
             // Add indexes for faster searching
             $table->index('is_used');
             $table->index('file_id');
-            $table->index('folder_id');
         });
     }
 
