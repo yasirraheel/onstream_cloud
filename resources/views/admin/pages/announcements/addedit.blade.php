@@ -7,7 +7,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
-          <div class="card-box table-responsive">
+          <div class="card-box table-responsive" style="background-color: #1a2234; color: #fff;">
 
             <div class="row">
               <div class="col-6">

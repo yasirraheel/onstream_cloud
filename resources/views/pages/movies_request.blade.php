@@ -145,20 +145,28 @@
 
 @endsection
 
-@section('footer_extra')
+@section('scripts')
 <script type="text/javascript">
 jQuery(document).ready(function($) {
+    console.log('Announcement script loaded');
+    console.log('Announcements count:', {{ count($announcements) }});
+    
     // Show popup announcements
     @if(count($announcements) > 0)
       @foreach($announcements as $announcement)
         @if($announcement->show_as_popup == 1)
+          console.log('Popup announcement found:', '{{ $announcement->title }}');
           // Check if user has already seen this announcement
           var seenKey = 'announcement_seen_{{ $announcement->id }}';
-          if(!sessionStorage.getItem(seenKey)) {
+          var hasSeen = sessionStorage.getItem(seenKey);
+          console.log('Has seen announcement {{ $announcement->id }}:', hasSeen);
+          
+          if(!hasSeen) {
             // Show modal after a short delay
             setTimeout(function() {
+              console.log('Showing modal for announcement {{ $announcement->id }}');
               $('#announcementModal{{ $announcement->id }}').modal('show');
-            }, 500);
+            }, 1000);
             
             // Mark as seen in session
             sessionStorage.setItem(seenKey, 'true');
@@ -170,6 +178,12 @@ jQuery(document).ready(function($) {
               data: {
                 _token: '{{ csrf_token() }}',
                 announcement_id: {{ $announcement->id }}
+              },
+              success: function(response) {
+                console.log('View tracked successfully');
+              },
+              error: function(xhr, status, error) {
+                console.log('Error tracking view:', error);
               }
             });
           }
