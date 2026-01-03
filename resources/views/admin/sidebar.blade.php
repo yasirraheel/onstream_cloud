@@ -97,6 +97,7 @@
             <li><a href="{{ URL::to('admin/search_history') }}" class="waves-effect {{classActivePath('search_history')}}"><i class="fa fa-history"></i><span>Search History</span></a></li>
             <li><a href="{{ URL::to('admin/movie_requests') }}" class="waves-effect {{classActivePath('movie_requests')}}"><i class="fa fa-ticket"></i><span>Movie Requests</span></a></li>
             <li><a href="{{ URL::to('admin/announcements') }}" class="waves-effect {{classActivePath('announcements')}}"><i class="fa fa-bullhorn"></i><span>Announcements</span></a></li>
+            <li><a href="{{ URL::to('admin/country-restrictions') }}" class="waves-effect {{classActivePath('country-restrictions')}}"><i class="fa fa-globe"></i><span>Country Restrictions</span></a></li>
             <li><a href="{{ URL::to('admin/ads') }}" class="waves-effect {{classActivePath('ads')}}"><i class="fa fa-newspaper-o"></i><span>Ad Management</span></a></li>
             <li class="has_sub">
               <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-edit"></i><span>{{trans('words.pages')}}</span><span class="menu-arrow"></span></a>

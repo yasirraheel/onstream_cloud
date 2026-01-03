@@ -179,6 +179,10 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::post('announcements/add_edit', 'AnnouncementController@addnew');
     Route::get('announcements/delete/{id}', 'AnnouncementController@delete');
 
+    // Country Restrictions
+    Route::get('country-restrictions', 'CountryRestrictionController@index');
+    Route::post('country-restrictions/update', 'CountryRestrictionController@update');
+
     Route::get('ads', 'AdManagementController@ads_list');
 
     Route::get('pages', 'PagesController@pages_list');
