@@ -971,8 +971,13 @@ function processSelectedFile(filePath, requestingField) {
             var selectedLink = $(this).val();
             console.log('GD file selected:', selectedLink);
             if (selectedLink) {
-                $('#video_embed_code').val(selectedLink);
-                console.log('Video embed code updated');
+                var $embedField = $('#video_embed_code');
+                $embedField.val(''); // Clear first
+                setTimeout(function() {
+                    $embedField.val(selectedLink);
+                    $embedField.focus(); // Focus to ensure it's updated
+                    console.log('Video embed code updated to:', selectedLink);
+                }, 50);
             }
         });
 
@@ -981,8 +986,13 @@ function processSelectedFile(filePath, requestingField) {
             var selectedLink = e.params.data.id;
             console.log('GD file selected via select2:', selectedLink);
             if (selectedLink) {
-                $('#video_embed_code').val(selectedLink);
-                console.log('Video embed code updated via select2');
+                var $embedField = $('#video_embed_code');
+                $embedField.val(''); // Clear first
+                setTimeout(function() {
+                    $embedField.val(selectedLink);
+                    $embedField.focus(); // Focus to ensure it's updated
+                    console.log('Video embed code updated via select2 to:', selectedLink);
+                }, 50);
             }
         });
     });
