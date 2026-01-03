@@ -161,13 +161,8 @@ class GdUrlController extends MainAdminController
                             $file_size = $file['size'] ?? 0;
                             $mime_type = $file['mimeType'] ?? '';
                             
-                            // Generate direct download link
-                            $url = "https://drive.google.com/uc?export=download&id={$file_id}";
-                            
-                            // Alternative: use webViewLink or webContentLink if available
-                            if (isset($file['webContentLink'])) {
-                                $url = $file['webContentLink'];
-                            }
+                            // Generate Google Drive URL in format that works with embed player
+                            $url = "https://drive.google.com/file/d/{$file_id}/view";
 
                             if (empty($file_id)) continue;
 
