@@ -42,7 +42,7 @@
 
                 <div class="row">
                     <!-- Summary Stats -->
-                    <div class="col-xl-4 col-md-6">
+                    <div class="col-xl-3 col-md-6">
                         <div class="card-box widget-user bg-primary text-white">
                             <div class="text-center">
                                 <h2 class="text-white" data-plugin="counterup">{{ $total_urls }}</h2>
@@ -51,7 +51,7 @@
                         </div>
                     </div>
 
-                    <div class="col-xl-4 col-md-6">
+                    <div class="col-xl-3 col-md-6">
                         <div class="card-box widget-user bg-success text-white">
                             <div class="text-center">
                                 <h2 class="text-white" data-plugin="counterup">{{ $available_urls_count }}</h2>
@@ -60,11 +60,31 @@
                         </div>
                     </div>
 
-                    <div class="col-xl-4 col-md-6">
+                    <div class="col-xl-3 col-md-6">
                         <div class="card-box widget-user bg-danger text-white">
                             <div class="text-center">
                                 <h2 class="text-white" data-plugin="counterup">{{ $used_urls_count }}</h2>
                                 <h5>Used Files</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card-box widget-user bg-info text-white">
+                            <div class="text-center">
+                                <h2 class="text-white">{{ $total_size_gb }} GB</h2>
+                                <h5>Total Storage</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-12 col-md-12">
+                        <div class="card-box widget-user bg-purple text-white">
+                            <div class="text-center">
+                                <h2 class="text-white" data-plugin="counterup">{{ $total_folders }}</h2>
+                                <h5>Total Folders Synced</h5>
                             </div>
                         </div>
                     </div>

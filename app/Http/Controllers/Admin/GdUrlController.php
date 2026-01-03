@@ -74,8 +74,15 @@ class GdUrlController extends MainAdminController
         $total_urls = $gd_urls->count();
         $used_urls_count = $gd_urls->where('is_used', 1)->count();
         $available_urls_count = $total_urls - $used_urls_count;
+        
+        // Calculate total storage in GB
+        $total_size_bytes = $gd_urls->sum('file_size');
+        $total_size_gb = number_format($total_size_bytes / (1024 * 1024 * 1024), 2);
+        
+        // Count distinct folders
+        $total_folders = GdUrl::distinct('folder_id')->count('folder_id');
 
-        return view('admin.pages.gd_urls.list', compact('page_title', 'gd_urls', 'total_urls', 'used_urls_count', 'available_urls_count'));
+        return view('admin.pages.gd_urls.list', compact('page_title', 'gd_urls', 'total_urls', 'used_urls_count', 'available_urls_count', 'total_size_gb', 'total_folders'));
     }
 
     public function fetch_urls()
