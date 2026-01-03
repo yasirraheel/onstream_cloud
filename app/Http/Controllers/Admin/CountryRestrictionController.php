@@ -14,12 +14,12 @@ class CountryRestrictionController extends MainAdminController
         $page_title = 'Country Restrictions';
         
         // Get all countries or initialize if empty
-        $countries = CountryRestriction::orderBy('country_name')->get();
+        $countries = CountryRestriction::orderBy('is_blocked', 'desc')->orderBy('country_name')->get();
         
         // If no countries exist, populate with default list
         if ($countries->isEmpty()) {
             $this->populateCountries();
-            $countries = CountryRestriction::orderBy('country_name')->get();
+            $countries = CountryRestriction::orderBy('is_blocked', 'desc')->orderBy('country_name')->get();
         }
         
         $blocked_count = CountryRestriction::where('is_blocked', 1)->count();
