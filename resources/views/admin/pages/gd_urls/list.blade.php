@@ -63,6 +63,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>File Name</th>
+                                    <th>Folder ID</th>
                                     <th>URL</th>
                                     <th>File Size</th>
                                     <th>MIME Type</th>
@@ -75,6 +76,7 @@
                                 <tr style="{{ $url_data->is_used ? 'background-color: #f8d7da; color: #721c24;' : '' }}">
                                     <td>{{ $i+1 }}</td>
                                     <td>{{ $url_data->file_name }}</td>
+                                    <td><span class="badge badge-info">{{ $url_data->folder_id ?? 'N/A' }}</span></td>
                                     <td>
                                         <input type="text" value="{{ $url_data->url }}" class="form-control" readonly style="background: transparent; border: none; width: 100%; color: inherit;">
                                     </td>

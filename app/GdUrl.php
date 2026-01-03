@@ -12,6 +12,7 @@ class GdUrl extends Model
         'file_name', 
         'url', 
         'file_id',
+        'folder_id',
         'file_size',
         'mime_type',
         'is_used'

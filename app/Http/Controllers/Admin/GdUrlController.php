@@ -51,8 +51,9 @@ class GdUrlController extends MainAdminController
             return redirect('dashboard');
         }
 
-        // Google Drive folder ID extracted from the URL
-        $folder_id = "1J03UKvMPr2EEgAgkfSy9RIHjQblUwG10";
+        // Google Drive folder IDs from .env (comma-separated)
+        $folder_ids_string = env('GOOGLE_DRIVE_FOLDER_IDS', '1J03UKvMPr2EEgAgkfSy9RIHjQblUwG10');
+        $folder_ids = array_map('trim', explode(',', $folder_ids_string));
         $api_key = env('GOOGLE_DRIVE_API_KEY', ''); // You'll need to set this in .env
 
         if (empty($api_key)) {
@@ -60,22 +61,31 @@ class GdUrlController extends MainAdminController
             return redirect()->back();
         }
 
+        if (empty($folder_ids)) {
+            \Session::flash('error_flash_message', 'No Google Drive folder IDs configured. Please set GOOGLE_DRIVE_FOLDER_IDS in your .env file.');
+            return redirect()->back();
+        }
+
         try {
-            $api_endpoint = "https://www.googleapis.com/drive/v3/files?q='{$folder_id}'+in+parents&key={$api_key}&fields=files(id,name,size,mimeType,webContentLink,webViewLink)";
-            
-            $response = Http::get($api_endpoint);
+            $count_added = 0;
+            $count_updated = 0;
+            $total_folders = count($folder_ids);
+            $processed_folders = 0;
 
-            if ($response->successful()) {
-                $data = $response->json();
-                $files = $data['files'] ?? [];
+            // Get all existing Used URLs from our database (Movies, Episodes) to check status
+            $movie_urls = Movies::pluck('video_url')->toArray();
+            $all_used_urls_in_system = $movie_urls;
 
-                if (!empty($files)) {
-                    $count_added = 0;
-                    $count_updated = 0;
+            foreach ($folder_ids as $folder_id) {
+                if (empty($folder_id)) continue;
 
-                    // Get all existing Used URLs from our database (Movies, Episodes) to check status
-                    $movie_urls = Movies::pluck('video_url')->toArray();
-                    $all_used_urls_in_system = $movie_urls;
+                $api_endpoint = "https://www.googleapis.com/drive/v3/files?q='{$folder_id}'+in+parents&key={$api_key}&fields=files(id,name,size,mimeType,webContentLink,webViewLink)";
+                
+                $response = Http::get($api_endpoint);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    $files = $data['files'] ?? [];
 
                     foreach ($files as $file) {
                         $file_id = $file['id'] ?? '';
@@ -103,6 +113,7 @@ class GdUrlController extends MainAdminController
                             // Update existing entry
                             $existing_entry->file_name = $file_name;
                             $existing_entry->url = $url;
+                            $existing_entry->folder_id = $folder_id;
                             $existing_entry->file_size = $file_size;
                             $existing_entry->mime_type = $mime_type;
                             $existing_entry->is_used = $is_used_system;
@@ -114,6 +125,7 @@ class GdUrlController extends MainAdminController
                                 'file_name' => $file_name,
                                 'url' => $url,
                                 'file_id' => $file_id,
+                                'folder_id' => $folder_id,
                                 'file_size' => $file_size,
                                 'mime_type' => $mime_type,
                                 'is_used' => $is_used_system
@@ -121,13 +133,14 @@ class GdUrlController extends MainAdminController
                             $count_added++;
                         }
                     }
-
-                    \Session::flash('flash_message', "Google Drive URLs Fetched Successfully! Added: $count_added, Updated: $count_updated");
-                } else {
-                    \Session::flash('error_flash_message', 'No files found in the Google Drive folder.');
+                    $processed_folders++;
                 }
+            }
+
+            if ($processed_folders > 0) {
+                \Session::flash('flash_message', "Google Drive URLs Fetched Successfully! Processed {$processed_folders} folder(s). Added: {$count_added}, Updated: {$count_updated}");
             } else {
-                \Session::flash('error_flash_message', 'Failed to connect to Google Drive API. Status: ' . $response->status());
+                \Session::flash('error_flash_message', 'Failed to fetch files from any folder.');
             }
         } catch (\Exception $e) {
             \Session::flash('error_flash_message', 'Error: ' . $e->getMessage());
