@@ -50,11 +50,11 @@
   <div class="container-fluid bg-dark video-player-base"> 
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12">
-        <div class="video-posts-video" style="position: relative;">  
+        <div class="video-posts-video" style="position: relative; min-height: 500px;">  
         
         @if(is_country_blocked())
         <!-- Country Restriction Overlay -->
-        <div id="country-restriction-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+        <div id="country-restriction-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; min-height: 500px; background: rgba(0, 0, 0, 0.95); z-index: 99999; display: flex; align-items: center; justify-content: center;">
           <div style="max-width: 600px; padding: 40px;">
             {!! get_restriction_message() !!}
           </div>
