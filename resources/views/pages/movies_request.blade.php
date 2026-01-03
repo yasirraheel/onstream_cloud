@@ -37,7 +37,6 @@
             <i class="fa fa-bullhorn"></i> {{ $announcement->title }}
           </h5>
           <p style="margin: 0; color: #fff;">{{ $announcement->message }}</p>
-          <small style="color: rgba(255,255,255,0.6);">{{ __('words.views') }}: {{ $announcement->view_count }}</small>
         </div>
         @endforeach
       </div>
@@ -120,15 +119,15 @@
 @if(count($announcements) > 0)
   @foreach($announcements as $announcement)
     @if($announcement->show_as_popup == 1)
-    <div class="modal fade" id="announcementModal{{ $announcement->id }}" tabindex="-1" role="dialog">
+    <div class="modal fade" id="announcementModal{{ $announcement->id }}" tabindex="-1" role="dialog" aria-labelledby="announcementModalLabel{{ $announcement->id }}" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content" style="background-color: #1a1a1a; border: 2px solid #ffc107; border-radius: 10px;">
           <div class="modal-header" style="border-bottom: 1px solid rgba(255,193,7,0.3);">
-            <h5 class="modal-title" style="color: #ffc107;">
+            <h5 class="modal-title" id="announcementModalLabel{{ $announcement->id }}" style="color: #ffc107;">
               <i class="fa fa-bullhorn"></i> {{ $announcement->title }}
             </h5>
-            <button type="button" class="close" data-dismiss="modal" style="color: #fff; opacity: 0.8;">
-              <span>&times;</span>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff; opacity: 0.8;">
+              <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body" style="color: #fff;">
@@ -144,8 +143,11 @@
   @endforeach
 @endif
 
-<script>
-$(document).ready(function() {
+@endsection
+
+@section('footer_extra')
+<script type="text/javascript">
+jQuery(document).ready(function($) {
     // Show popup announcements
     @if(count($announcements) > 0)
       @foreach($announcements as $announcement)
@@ -153,8 +155,10 @@ $(document).ready(function() {
           // Check if user has already seen this announcement
           var seenKey = 'announcement_seen_{{ $announcement->id }}';
           if(!sessionStorage.getItem(seenKey)) {
-            // Show modal
-            $('#announcementModal{{ $announcement->id }}').modal('show');
+            // Show modal after a short delay
+            setTimeout(function() {
+              $('#announcementModal{{ $announcement->id }}').modal('show');
+            }, 500);
             
             // Mark as seen in session
             sessionStorage.setItem(seenKey, 'true');

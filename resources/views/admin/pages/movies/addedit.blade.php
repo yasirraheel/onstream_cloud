@@ -465,9 +465,14 @@
 
                     <label class="col-sm-3 col-form-label">{{trans('words.video_url')}} <small id="emailHelp" class="form-text text-muted">(Defualt Player File)</small></label>
                      <div class="col-sm-8">
-                      <div id="api_file_select_wrapper" style="display: none;" class="mb-3">
+                      <div id="api_file_select_wrapper" class="mb-3">
                           <select id="api_file_select" class="form-control select2">
                               <option value="">Select File from API</option>
+                          </select>
+                      </div>
+                      <div id="gd_file_select_wrapper_url" class="mb-3">
+                          <select id="gd_file_select_url" class="form-control select2">
+                              <option value="">Select File from Google Drive</option>
                           </select>
                       </div>
                       <input type="text" name="video_url" id="video_url_input" value="{{ isset($movie->video_url) ? $movie->video_url : null }}" class="form-control" placeholder="http://example.com/demo.mp4">
@@ -496,7 +501,12 @@
                   <div class="form-group row" id="embed_id" @if(isset($movie->video_type) AND $movie->video_type!="Embed") style="display:none;" @endif @if(!isset($movie->id)) style="display:none;" @endif>
                     <label class="col-sm-3 col-form-label">{{trans('words.video_embed_code')}}</label>
                      <div class="col-sm-8">
-                      <div id="gd_file_select_wrapper" style="display: none;" class="mb-3">
+                      <div id="api_file_select_wrapper_embed" class="mb-3">
+                          <select id="api_file_select_embed" class="form-control select2">
+                              <option value="">Select File from API</option>
+                          </select>
+                      </div>
+                      <div id="gd_file_select_wrapper" class="mb-3">
                           <select id="gd_file_select" class="form-control select2">
                               <option value="">Select File from Google Drive</option>
                           </select>
@@ -741,7 +751,9 @@ function processSelectedFile(filePath, requestingField) {
                     options += '<option value="' + file.url + '" ' + disabledAttr + ' ' + styleAttr + '>' + labelText + '</option>';
                 });
 
+                // Populate both GD dropdowns
                 $('#gd_file_select').html(options);
+                $('#gd_file_select_url').html(options);
 
                 $('#gd_file_select').select2({
                     templateResult: function(data) {
@@ -758,10 +770,25 @@ function processSelectedFile(filePath, requestingField) {
                     }
                 });
 
+                $('#gd_file_select_url').select2({
+                    templateResult: function(data) {
+                        if (!data.element) {
+                            return data.text;
+                        }
+                        var $element = $(data.element);
+                        var $result = $('<span></span>');
+                        $result.text(data.text);
+                        if ($element.attr('style')) {
+                            $result.attr('style', $element.attr('style'));
+                        }
+                        return $result;
+                    }
+                });
+
                 gdFilesFetched = true;
-                $('#gd_file_select_wrapper').show();
             } else {
                 $('#gd_file_select').html('<option value="">No files found in Google Drive</option>');
+                $('#gd_file_select_url').html('<option value="">No files found in Google Drive</option>');
             }
         }
 
@@ -787,9 +814,11 @@ function processSelectedFile(filePath, requestingField) {
                     options += '<option value="' + file.url + '" ' + disabledAttr + ' ' + styleAttr + '>' + labelText + '</option>';
                 });
 
+                // Populate both API dropdowns
                 $('#api_file_select').html(options);
+                $('#api_file_select_embed').html(options);
 
-                // Initialize Select2
+                // Initialize Select2 for both
                 $('#api_file_select').select2({
                     templateResult: function(data) {
                         if (!data.element) {
@@ -805,10 +834,22 @@ function processSelectedFile(filePath, requestingField) {
                     }
                 });
 
-                apiFilesFetched = true;
+                $('#api_file_select_embed').select2({
+                    templateResult: function(data) {
+                        if (!data.element) {
+                            return data.text;
+                        }
+                        var $element = $(data.element);
+                        var $result = $('<span></span>');
+                        $result.text(data.text);
+                        if ($element.attr('style')) {
+                            $result.attr('style', $element.attr('style'));
+                        }
+                        return $result;
+                    }
+                });
 
-                // Show the dropdown
-                $('#api_file_select_wrapper').show();
+                apiFilesFetched = true;
 
                 // Auto-set search if needed
                 @if(isset($movie) && $movie->upcoming == 1)
@@ -876,22 +917,12 @@ function processSelectedFile(filePath, requestingField) {
 
         function checkVideoType() {
             var videoType = $('#video_type').val();
-            if (videoType === 'URL') {
-                if(apiFilesFetched) {
-                     $('#api_file_select_wrapper').show();
-                }
-                $('#gd_file_select_wrapper').hide();
+            // Always load both API and GD files
+            if(!apiFilesFetched) {
                 fetchApiFiles();
-            } else if (videoType === 'Embed') {
-                if(gdFilesFetched) {
-                     $('#gd_file_select_wrapper').show();
-                } else {
-                    loadLocalGdFiles();
-                }
-                $('#api_file_select_wrapper').hide();
-            } else {
-                $('#api_file_select_wrapper').hide();
-                $('#gd_file_select_wrapper').hide();
+            }
+            if(!gdFilesFetched) {
+                loadLocalGdFiles();
             }
         }
 
@@ -903,7 +934,7 @@ function processSelectedFile(filePath, requestingField) {
             checkVideoType();
         });
 
-        // Populate input on selection
+        // Populate input on API selection (URL section)
         $('#api_file_select').change(function() {
             var selectedLink = $(this).val();
             if (selectedLink) {
@@ -911,7 +942,23 @@ function processSelectedFile(filePath, requestingField) {
             }
         });
 
-        // Populate embed code on GD file selection
+        // Populate input on GD selection (URL section)
+        $('#gd_file_select_url').change(function() {
+            var selectedLink = $(this).val();
+            if (selectedLink) {
+                $('#video_url_input').val(selectedLink);
+            }
+        });
+
+        // Populate embed code on API selection (Embed section)
+        $('#api_file_select_embed').change(function() {
+            var selectedLink = $(this).val();
+            if (selectedLink) {
+                $('#video_embed_code').val(selectedLink);
+            }
+        });
+
+        // Populate embed code on GD selection (Embed section)
         $('#gd_file_select').change(function() {
             var selectedLink = $(this).val();
             if (selectedLink) {

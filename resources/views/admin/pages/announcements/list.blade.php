@@ -7,7 +7,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-12">
-          <div class="card-box">
+          <div class="card-box table-responsive">
 
             <div class="row">
               <div class="col-sm-6">
@@ -29,9 +29,8 @@
               </div>
             @endif
 
-            <div class="table-responsive">
               <table class="table table-striped">
-                <thead>
+                <thead class="thead-dark">
                   <tr>
                     <th>Title</th>
                     <th>Message</th>
@@ -71,7 +70,6 @@
                   @endforeach
                 </tbody>
               </table>
-            </div>
           </div>
         </div>
       </div>
