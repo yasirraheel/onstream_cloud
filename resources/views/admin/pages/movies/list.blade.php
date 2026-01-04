@@ -2,6 +2,14 @@
 
 @section("content")
 
+<style>
+  a.moviebox-search:visited {
+      background-color: #6c757d !important;
+      border-color: #6c757d !important;
+      color: #fff !important;
+  }
+</style>
+
 
   <div class="content-page">
       <div class="content">
@@ -92,6 +100,7 @@
 
                             <div class="card-body p-3">
                                 <h4 class="card-title book_title mb-3 d-flex align-items-center">{{ stripslashes($movies->video_title) }}</h4>
+                                <a href="https://moviebox.ph/web/searchResult?keyword={{ urlencode(stripslashes($movies->video_title)) }}" target="_blank" class="btn btn-icon waves-effect waves-light btn-info m-r-5 moviebox-search" onclick="$(this).removeClass('btn-info').addClass('btn-secondary');" data-toggle="tooltip" title="Search on MovieBox"><i class="fa fa-search"></i></a>
                                 <a href="{{ url('admin/movies/edit_movie/'.$movies->id) }}" class="btn btn-icon waves-effect waves-light btn-success m-r-5" data-toggle="tooltip" title="{{trans('words.edit')}}"><i class="fa fa-edit"></i></a>
                                 <a href="#" class="btn btn-icon waves-effect waves-light btn-danger data_remove" data-toggle="tooltip" title="{{trans('words.remove')}}" data-id="{{$movies->id}}"><i class="fa fa-remove"></i></a>
                                 <a class="ml-2 fl-right mt-1" href="Javascript:void(0);" data-toggle="tooltip" title="@if($movies->status==1){{ trans('words.active')}} @else {{trans('words.inactive')}} @endif"><input type="checkbox" name="category_on_off" id="category_on_off" value="1" data-plugin="switchery" data-color="#28a745" data-size="small" class="enable_disable" data-id="{{$movies->id}}" @if($movies->status==1) {{ 'checked' }} @endif/></a>
@@ -124,6 +133,7 @@
 
                             <div class="card-body p-3">
                                 <h4 class="card-title book_title mb-3 d-flex align-items-center">{{ stripslashes($movies->video_title) }}</h4>
+                                <a href="https://moviebox.ph/web/searchResult?keyword={{ urlencode(stripslashes($movies->video_title)) }}" target="_blank" class="btn btn-icon waves-effect waves-light btn-info m-r-5 moviebox-search" onclick="$(this).removeClass('btn-info').addClass('btn-secondary');" data-toggle="tooltip" title="Search on MovieBox"><i class="fa fa-search"></i></a>
                                 <a href="{{ url('admin/movies/edit_movie/'.$movies->id) }}" class="btn btn-icon waves-effect waves-light btn-success m-r-5" data-toggle="tooltip" title="{{trans('words.edit')}}"><i class="fa fa-edit"></i></a>
                                 <a href="#" class="btn btn-icon waves-effect waves-light btn-danger data_remove" data-toggle="tooltip" title="{{trans('words.remove')}}" data-id="{{$movies->id}}"><i class="fa fa-remove"></i></a>
                                 <a class="ml-2 fl-right mt-1" href="Javascript:void(0);" data-toggle="tooltip" title="@if($movies->status==1){{ trans('words.active')}} @else {{trans('words.inactive')}} @endif"><input type="checkbox" name="category_on_off" id="category_on_off" value="1" data-plugin="switchery" data-color="#28a745" data-size="small" class="enable_disable" data-id="{{$movies->id}}" @if($movies->status==1) {{ 'checked' }} @endif/></a>
