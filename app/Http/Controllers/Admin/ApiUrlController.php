@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\ApiUrl;
 use App\Movies;
 use App\Episodes;
+use App\Settings;
 use Illuminate\Support\Facades\Http;
 
 class ApiUrlController extends MainAdminController
@@ -51,9 +52,32 @@ class ApiUrlController extends MainAdminController
             return redirect('dashboard');
         }
 
-        $api_key = "MbTNkiPl03fHCkjkCCgRqx1ANg0A9e4hqdtJbGFZijBfY5D4DKDSImPPDnDw";
-        // Use limit=all to fetch all results as per API documentation
-        $api_endpoint = "https://cineworm.twoflip.com/api/files?api_key=" . $api_key . "&limit=all";
+        $settings = Settings::findOrFail('1');
+
+        $api_key = $settings->api_url_api_key;
+        $base_url = $settings->api_url_base_url;
+
+        if (empty($api_key)) {
+            \Session::flash('error_flash_message', 'API Key is not configured. Please configure it in API URL Settings.');
+            return redirect()->back();
+        }
+
+        if (empty($base_url)) {
+            \Session::flash('error_flash_message', 'Base URL is not configured. Please configure it in API URL Settings.');
+            return redirect()->back();
+        }
+
+        // Ensure base_url ends with / or not? The previous code was https://cineworm.twoflip.com/api/files?api_key=
+        // Let's assume the user enters the full endpoint or just base.
+        // The user said "option to add base url and api".
+        // The previous code was: "https://cineworm.twoflip.com/api/files?api_key=" . $api_key . "&limit=all";
+        // So I'll construct it: $base_url . "?api_key=" . $api_key . "&limit=all";
+        // I should make sure the user enters the URL up to '.../api/files'.
+
+        // Clean base url to remove trailing slash or parameters
+        // Actually, let's assume the user puts the full path to the endpoint without query params.
+
+        $api_endpoint = $base_url . "?api_key=" . $api_key . "&limit=all";
 
         try {
             $response = Http::get($api_endpoint);
@@ -120,6 +144,11 @@ class ApiUrlController extends MainAdminController
                     }
 
                     \Session::flash('flash_message', "URLs Fetched Successfully! Added: $count_added, Updated: $count_updated");
+
+                    // Update last fetch timestamp
+                    $settings->api_url_last_fetch_at = now();
+                    $settings->save();
+
                 } else {
                     \Session::flash('error_flash_message', 'API returned no data or invalid structure.');
                 }
@@ -161,6 +190,40 @@ class ApiUrlController extends MainAdminController
 
         \Session::flash('flash_message', trans('words.deleted'));
 
+        return redirect()->back();
+    }
+
+    public function settings()
+    {
+        if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
+        {
+            \Session::flash('flash_message', trans('words.access_denied'));
+            return redirect('dashboard');
+        }
+
+        $page_title = "API URL Settings";
+        $settings = Settings::findOrFail('1');
+
+        return view('admin.pages.api_urls.settings', compact('page_title', 'settings'));
+    }
+
+    public function update_settings(Request $request)
+    {
+        if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
+        {
+            \Session::flash('flash_message', trans('words.access_denied'));
+            return redirect('dashboard');
+        }
+
+        $settings = Settings::findOrFail('1');
+        $inputs = $request->all();
+
+        $settings->api_url_base_url = $inputs['api_url_base_url'];
+        $settings->api_url_api_key = $inputs['api_url_api_key'];
+
+        $settings->save();
+
+        \Session::flash('flash_message', trans('words.successfully_updated'));
         return redirect()->back();
     }
 }
