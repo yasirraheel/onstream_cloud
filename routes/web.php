@@ -43,6 +43,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::get('api_urls', 'ApiUrlController@index');
     Route::get('api_urls/fetch', 'ApiUrlController@fetch_urls');
     Route::get('api_urls/delete/{id}', 'ApiUrlController@delete');
+    Route::get('api_urls/delete_all', 'ApiUrlController@delete_all');
 
     // GD URLs Module
     Route::get('gd_urls', 'GdUrlController@index');

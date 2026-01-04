@@ -15,6 +15,9 @@
                     <h4 class="m-t-0 header-title">{{ $page_title }}</h4>
                   </div>
                   <div class="col-md-6 text-right">
+                    <a href="{{ URL::to('admin/api_urls/delete_all') }}" class="btn btn-danger btn-md waves-effect waves-light m-b-20 m-r-10" onclick="return confirm('{{trans('words.dlt_warning_text')}}')">
+                        <i class="fa fa-trash"></i> Delete All
+                    </a>
                     <a href="{{ URL::to('admin/api_urls/fetch') }}" class="btn btn-success btn-md waves-effect waves-light m-b-20" onclick="return confirm('This will fetch latest URLs from API. Continue?')">
                         <i class="fa fa-refresh"></i> Fetch/Sync URLs from API
                     </a>
