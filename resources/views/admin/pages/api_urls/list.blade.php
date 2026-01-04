@@ -66,6 +66,7 @@
                                     <th>URL</th>
                                     <th>Status</th>
                                     <th>Last Updated</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -84,6 +85,9 @@
                                         @endif
                                     </td>
                                     <td>{{ $url_data->updated_at->format('Y-m-d H:i') }}</td>
+                                    <td>
+                                        <a href="{{ URL::to('admin/api_urls/delete/'.$url_data->id) }}" class="btn btn-icon waves-effect waves-light btn-danger m-b-5" onclick="return confirm('{{trans('words.dlt_warning_text')}}')" data-toggle="tooltip" title="{{trans('words.remove')}}"> <i class="fa fa-remove"></i> </a>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>

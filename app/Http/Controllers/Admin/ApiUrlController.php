@@ -132,4 +132,20 @@ class ApiUrlController extends MainAdminController
 
         return redirect()->back();
     }
+
+    public function delete($id)
+    {
+        if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
+        {
+            \Session::flash('flash_message', trans('words.access_denied'));
+            return redirect('dashboard');
+        }
+
+        $url_obj = ApiUrl::findOrFail($id);
+        $url_obj->delete();
+
+        \Session::flash('flash_message', trans('words.deleted'));
+
+        return redirect()->back();
+    }
 }
