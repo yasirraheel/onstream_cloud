@@ -90,6 +90,7 @@
                                 @if(getcong('menu_livetv'))
                                 <option value="LiveTV" @if(isset($slider_info->id) && $slider_info->slider_type=="LiveTV") selected @endif>{{trans('words.live_tv')}}</option>
                                 @endif                            
+                                <option value="ExternalLink" @if(isset($slider_info->id) && $slider_info->slider_type=="ExternalLink") selected @endif>Custom Link</option>
                             </select>
                       </div>
                   </div>
@@ -135,6 +136,13 @@
                                 <option value="{{$live_tv_data->id}}" @if(isset($slider_info->id) && $slider_info->slider_type=="LiveTV" && $slider_info->slider_post_id==$live_tv_data->id) selected @endif>{{$live_tv_data->channel_name}}</option>
                                 @endforeach                            
                             </select>
+                      </div>
+                  </div>
+                  <div class="form-group row" id="external_link_id" @if(isset($slider_info->id) && $slider_info->slider_type!="ExternalLink") style="display: none;" @endif @if(!isset($slider_info->id)) style="display: none;" @endif>
+                    <label class="col-sm-3 col-form-label">External Link (CTA)</label>
+                      <div class="col-sm-8">
+                        <input type="url" class="form-control" name="external_url" id="external_url" value="{{ isset($slider_info->external_url) ? $slider_info->external_url : '' }}" placeholder="https://example.com/page">
+                        <small class="form-text text-muted">If set, the CTA will open this link.</small>
                       </div>
                   </div>
                   

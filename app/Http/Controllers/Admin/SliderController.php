@@ -118,23 +118,33 @@ class SliderController extends MainAdminController
         if($slider_type=="Movies")
         {
             $slider_obj->slider_post_id=$inputs['movie_id'];
+            $slider_obj->external_url=null;
         }
         else if($slider_type=="Shows")
         {   
             
             $slider_obj->slider_post_id=$inputs['series_id'];
+            $slider_obj->external_url=null;
         }
         else if($slider_type=="Sports")
         {
             $slider_obj->slider_post_id=$inputs['sport_id'];
+            $slider_obj->external_url=null;
         }
         else if($slider_type=="LiveTV")
         {
             $slider_obj->slider_post_id=$inputs['live_tv_id'];
+            $slider_obj->external_url=null;
+        }
+        else if($slider_type=="ExternalLink")
+        {
+            $slider_obj->slider_post_id=NULL;
+            $slider_obj->external_url = $inputs['external_url'] ?? null;
         }
         else
         {
             $slider_obj->slider_post_id=NULL;
+            $slider_obj->external_url=null;
         }
 
         if(isset($inputs['slider_display_on']))

@@ -809,6 +809,7 @@ $("#slider_type").change(function(){
           $("#show_list_id").hide();
           $("#sports_list_id").hide();
           $("#live_tv_list_id").hide();
+          $("#external_link_id").hide();
        }
        else if(type=="Shows")
        {
@@ -816,6 +817,7 @@ $("#slider_type").change(function(){
           $("#show_list_id").show();
           $("#sports_list_id").hide();
           $("#live_tv_list_id").hide();
+          $("#external_link_id").hide();
        }
        else if(type=="Sports")
        {
@@ -823,6 +825,7 @@ $("#slider_type").change(function(){
           $("#show_list_id").hide();
           $("#sports_list_id").show();
           $("#live_tv_list_id").hide();
+          $("#external_link_id").hide();
        }
        else if(type=="LiveTV")
        {
@@ -830,6 +833,15 @@ $("#slider_type").change(function(){
           $("#show_list_id").hide();
           $("#sports_list_id").hide();
           $("#live_tv_list_id").show();
+          $("#external_link_id").hide();
+       }
+       else if(type=="ExternalLink")
+       {
+          $("#movie_list_id").hide();
+          $("#show_list_id").hide();
+          $("#sports_list_id").hide();
+          $("#live_tv_list_id").hide();
+          $("#external_link_id").show();
        }
        else
        {
@@ -837,6 +849,7 @@ $("#slider_type").change(function(){
           $("#show_list_id").hide();
           $("#sports_list_id").hide();
           $("#live_tv_list_id").hide();
+          $("#external_link_id").hide();
        }
 
  });
