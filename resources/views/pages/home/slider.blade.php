@@ -37,16 +37,14 @@
 
         <?php $link_target = ($slider_data->slider_type=='ExternalLink') ? '_blank' : '_self'; ?>
         <li class="splide__slide">
-          <div class="slide-wrap">
-            <a href="{{$slider_url}}" title="{{stripslashes($slider_data->slider_title)}}" target="{{$link_target}}" @if($link_target=='_blank') rel="noopener" @endif>
-              <div class="splide-slider-details-area">
-                <h1>{{stripslashes($slider_data->slider_title)}}</h1>
-                <span class="btn-watch" title="{{stripslashes($slider_data->slider_title)}}"><img src="{{ URL::asset('site_assets/images/ic-play.png') }}" alt="ic-play" title="ic-play">{{trans('words.watch')}}</span>
-              </div>
-              <img src="{{URL::to('/'.$slider_data->slider_image)}}" title="{{stripslashes($slider_data->slider_title)}}" alt="{{stripslashes($slider_data->slider_title)}}">
-            </a>
-            <a href="{{ URL::to('membership_plan') }}" class="btn-buy-plan" title="buy-plan"><img src="{{ URL::asset('site_assets/images/ic-subscribe.png') }}" alt="ic-subscribe" title="ic-subscribe">{{trans('words.buy_plan')}}</a>
-          </div>
+          <a href="{{$slider_url}}" title="{{stripslashes($slider_data->slider_title)}}" target="{{$link_target}}" @if($link_target=='_blank') rel="noopener" @endif>
+            <div class="splide-slider-details-area">
+              <h1>{{stripslashes($slider_data->slider_title)}}</h1>
+              <span class="btn-watch" title="{{stripslashes($slider_data->slider_title)}}"><img src="{{ URL::asset('site_assets/images/ic-play.png') }}" alt="ic-play" title="ic-play">{{trans('words.watch')}}</span>
+            </div>
+            <img src="{{URL::to('/'.$slider_data->slider_image)}}" title="{{stripslashes($slider_data->slider_title)}}" alt="{{stripslashes($slider_data->slider_title)}}">
+          </a>
+          <a href="{{ URL::to('membership_plan') }}" class="btn-buy-plan" title="buy-plan"><img src="{{ URL::asset('site_assets/images/ic-subscribe.png') }}" alt="ic-subscribe" title="ic-subscribe">{{trans('words.buy_plan')}}</a>
         </li>
         @endforeach
 
