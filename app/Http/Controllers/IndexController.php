@@ -796,7 +796,7 @@ class IndexController extends Controller
         }
     }
 
-    public function trackAdClick(Request $request)
+    public function track_ad_click(Request $request)
     {
         $productId = $request->input('product_id');
 
