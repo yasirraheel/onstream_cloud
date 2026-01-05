@@ -166,39 +166,7 @@ class IndexController extends Controller
 
     }
 
-    public function offers(Request $request)
-    {
-         // Fetch ads from external API
-        $ads_products = [];
-        try {
-            $response = \Illuminate\Support\Facades\Http::timeout(10)->get('https://topdealsplus.com/api/listings');
-            if ($response->successful()) {
-                $api_data = $response->json();
-                $products_data = $api_data['data'] ?? [];
 
-                // Shuffle for random order
-                shuffle($products_data);
-
-                $ads_products = $products_data; // All products for offers page
-            }
-        } catch (\Exception $e) {
-            $ads_products = [];
-        }
-
-        return view('pages.offers', compact('ads_products'));
-    }
-
-    public function track_ad_click(Request $request)
-    {
-        $product_id = $request->product_id;
-
-        if($product_id) {
-            \App\AdClick::incrementClick($product_id, $request->ip(), $request->header('User-Agent'));
-            return response()->json(['success' => true]);
-        }
-
-        return response()->json(['success' => false], 400);
-    }
 
 
     public function alreadyInstalled()
