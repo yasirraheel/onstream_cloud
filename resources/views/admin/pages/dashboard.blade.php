@@ -127,6 +127,10 @@
                             <div class="text-center">
                                 <h2 class="text-purple" data-plugin="counterup">{{$users}}</h2>
                                 <h5 style="color: #f9f9f9;">{{trans('words.users')}}</h5>
+                                <div style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 5px;">
+                                    <span style="color: #f9f9f9; display: block; font-size: 13px;">Today: <strong>{{$users_today}}</strong></span>
+                                    <span style="color: #f9f9f9; display: block; font-size: 13px;">Last 30 Days: <strong>{{$users_last_30_days}}</strong></span>
+                                </div>
                             </div>
                         </div>
                         </a>

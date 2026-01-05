@@ -317,6 +317,9 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('watchlist/add', 'UsersController@watchlist_add');
     Route::get('watchlist/remove', 'UsersController@watchlist_remove');
 
+    Route::get('offers', 'IndexController@offers');
+    Route::post('track-ad-click', 'IndexController@track_ad_click');
+
     // Database Update Route
     Route::get('db_update', function() {
         try {
