@@ -544,8 +544,10 @@
         } catch(e) {}
     };
     @if(isset($announcements))
+      var rawAnnouncements = {!! $announcements->values()->toJson(JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) !!};
       var homeAnnouncements = {!! $announcements->where('show_as_popup', 1)->values()->toJson(JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) !!};
     @else
+      var rawAnnouncements = [];
       var homeAnnouncements = [];
     @endif
     var announcementStyles = document.createElement('style');
@@ -702,6 +704,52 @@
                 $('.modal-backdrop').remove();
                 $('body').removeClass('modal-open');
                 dbg('Dynamic close click: modal hidden, backdrop removed');
+              }
+            });
+          } else if (rawAnnouncements && rawAnnouncements.length > 0) {
+            dbg('No popup announcements configured. Showing latest active announcement as popup (fallback). Count:', rawAnnouncements.length);
+            var a2 = rawAnnouncements[0];
+            var modalIdDyn2 = 'homeAnnouncementModal' + a2.id;
+            var imgHtml2 = a2.image ? '<div class=\"mb-2 text-center\"><img src=\"{{ URL::asset('/') }}'+a2.image+'\" alt=\"Announcement\" class=\"img-fluid\"></div>' : '';
+            var ctaHtml2 = (a2.cta_text && a2.cta_url) ? '<div class=\"mt-2 text-center\"><a href=\"'+a2.cta_url+'\" target=\"'+(a2.cta_target || '_self')+'\" class=\"btn btn-warning\">'+a2.cta_text+'</a></div>' : '';
+            var modalHtml2 = '' +
+              '<div class=\"modal fade announcement-modal\" id=\"'+modalIdDyn2+'\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"'+modalIdDyn2+'Label\" aria-hidden=\"true\">' +
+              '  <div class=\"modal-dialog modal-dialog-centered\" role=\"document\">' +
+              '    <div class=\"modal-content\">' +
+              '      <div class=\"modal-header\">' +
+              '        <h5 class=\"modal-title\" id=\"'+modalIdDyn2+'Label\"><i class=\"fa fa-bullhorn\"></i> '+a2.title+'</h5>' +
+              '        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>' +
+              '      </div>' +
+              '      <div class=\"modal-body\">' + imgHtml2 + '<p>'+a2.message+'</p>' + ctaHtml2 + '</div>' +
+              '    </div>' +
+              '  </div>' +
+              '</div>';
+            $('body').append(modalHtml2);
+            var $modalDyn2 = $('#'+modalIdDyn2).addClass('announcement-modal-home');
+            dbg('Dynamic fallback (non-popup) modal appended. ID:', modalIdDyn2, 'classes:', $modalDyn2.attr('class'));
+            if (typeof $modalDyn2.modal === 'function') {
+              $modalDyn2.modal('show');
+              $modalDyn2.on('shown.bs.modal', function(){ dbg('Bootstrap shown event fired (dynamic non-popup):', modalIdDyn2); });
+            } else {
+              $modalDyn2.addClass('show').css('display', 'block').attr('aria-modal', 'true').removeAttr('aria-hidden');
+              var $backdropDyn2 = $('<div class=\"modal-backdrop fade show\"></div>').css('z-index','100040');
+              $('body').addClass('modal-open');
+              $backdropDyn2.insertAfter($modalDyn2);
+              dbg('Dynamic non-popup fallback show applied. Backdrop count:', $('.modal-backdrop').length);
+            }
+            $.ajax({
+              url: '{{ url("announcement/track-view") }}',
+              type: 'POST',
+              data: { _token: '{{ csrf_token() }}', announcement_id: a2.id }
+            }).done(function(){ dbg('View track success (dynamic non-popup):', a2.id); }).fail(function(jq){ dbg('View track failed (dynamic non-popup):', a2.id, jq.status); });
+            $modalDyn2.find('.close, [data-dismiss=\"modal\"]').on('click', function() {
+              if (typeof $modalDyn2.modal === 'function') {
+                $modalDyn2.modal('hide');
+              } else {
+                $modalDyn2.removeClass('show').css('display', 'none').attr('aria-hidden', 'true').removeAttr('aria-modal');
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+                dbg('Dynamic non-popup close click: modal hidden, backdrop removed');
               }
             });
           }
