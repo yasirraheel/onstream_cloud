@@ -98,17 +98,6 @@
             </div>
             @endif
 
-            <div class="form-group">
-              <label style="color: #ff8508; font-weight: 600; margin-bottom: 8px;">
-                <i class="fa fa-upload"></i> Payment Proof (Optional)
-              </label>
-              <div class="custom-file">
-                <input type="file" name="payment_proof" id="payment_proof" class="custom-file-input" accept="image/*,.pdf">
-                <label class="custom-file-label" for="payment_proof">Choose file...</label>
-              </div>
-              <small class="form-text" style="color: #aaa;">Upload screenshot or receipt (Image or PDF)</small>
-            </div>
-
             <button class="btn-submit btn-block my-4 mb-4" type="submit">Submit Request</button>
             {!! Form::close() !!}
 
@@ -187,11 +176,5 @@ function trackRequestPageCTAClick(announcementId, url, target) {
         }
     });
 }
-
-// Update file input label with selected filename
-$('#payment_proof').on('change', function() {
-    var fileName = $(this).val().split('\\').pop();
-    $(this).next('.custom-file-label').html(fileName || 'Choose file...');
-});
 </script>
 @endsection

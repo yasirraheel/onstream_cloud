@@ -835,7 +835,6 @@ class IndexController extends Controller
         $rule = array(
             'movie_name' => 'required',
             'email' => 'nullable|email',
-            'payment_proof' => 'nullable|mimes:jpg,jpeg,png,pdf|max:5120',
         );
 
         $validator = \Validator::make($data, $rule);
