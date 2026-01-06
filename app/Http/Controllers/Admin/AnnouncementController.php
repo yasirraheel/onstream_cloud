@@ -85,8 +85,8 @@ class AnnouncementController extends MainAdminController
 
         $announcement->title = $inputs['title'];
         $announcement->message = $inputs['message'];
-        $announcement->is_active = isset($inputs['is_active']) ? 1 : 0;
-        $announcement->show_as_popup = isset($inputs['show_as_popup']) ? 1 : 0;
+        $announcement->is_active = (int)($inputs['is_active'] ?? 0);
+        $announcement->show_as_popup = (int)($inputs['show_as_popup'] ?? 0);
         $announcement->cta_text = $inputs['cta_text'] ?? null;
         $announcement->cta_url = $inputs['cta_url'] ?? null;
         $announcement->cta_target = $inputs['cta_target'] ?? '_self';

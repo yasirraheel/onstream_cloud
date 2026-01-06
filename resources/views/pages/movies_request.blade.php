@@ -32,7 +32,6 @@
       @if(count($announcements) > 0)
       <div class="col-12 mb-4">
         @foreach($announcements as $announcement)
-        @if($announcement->show_as_popup != 1)
         <div class="alert" style="background-color: rgba(255,193,7,0.1); border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
           <h5 style="color: #ffc107; margin-bottom: 10px;">
             <i class="fa fa-bullhorn"></i> {{ $announcement->title }}
@@ -51,7 +50,6 @@
             </div>
           @endif
         </div>
-        @endif
         @endforeach
       </div>
       @endif
@@ -129,124 +127,4 @@
   </div>
 </div>
 
-@endsection
-
-<!-- Announcement Popup Modal -->
-@if(isset($announcements) && count($announcements) > 0)
-  @foreach($announcements as $announcement)
-    @if($announcement->show_as_popup == 1)
-    <div class="modal fade announcement-modal" id="announcementModal{{ $announcement->id }}" tabindex="-1" role="dialog" aria-labelledby="announcementModalLabel{{ $announcement->id }}" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="announcementModalLabel{{ $announcement->id }}">
-              <i class="fa fa-bullhorn"></i> {{ $announcement->title }}
-            </h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            @if(!empty($announcement->image))
-              <div class="mb-2 text-center">
-                <img src="{{ URL::asset('/'.$announcement->image) }}" alt="Announcement" class="img-fluid">
-              </div>
-            @endif
-            <p>{!! $announcement->message !!}</p>
-            @if(!empty($announcement->cta_text) && !empty($announcement->cta_url))
-              <div class="mt-2 text-center">
-                <a href="{{ $announcement->cta_url }}" target="{{ $announcement->cta_target ?? '_self' }}" class="btn btn-warning">
-                  {{ $announcement->cta_text }}
-                </a>
-              </div>
-            @endif
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('words.close') }}</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    @endif
-  @endforeach
-@endif
-
-@section('scripts')
-<script type="text/javascript">
-(function() {
-    'use strict';
-    var announcementStyles = document.createElement('style');
-    announcementStyles.innerHTML = ".announcement-modal{z-index:20050}.announcement-modal+.modal-backdrop{z-index:20040}";
-    document.head.appendChild(announcementStyles);
-
-    console.log('Announcement script loaded');
-
-    @if(isset($announcements) && count($announcements) > 0)
-      console.log('Total announcements:', {{ count($announcements) }});
-
-      @foreach($announcements as $announcement)
-        @if($announcement->show_as_popup == 1)
-          (function() {
-              var announcementId = {{ $announcement->id }};
-              var modalId = 'announcementModal' + announcementId;
-              var seenKey = 'announcement_seen_' + announcementId;
-
-              console.log('Processing popup announcement:', '{{ addslashes($announcement->title) }}', 'ID:', announcementId);
-              console.log('Modal ID:', modalId);
-              console.log('Checking if modal exists:', $('#' + modalId).length);
-
-              var hasSeen = sessionStorage.getItem(seenKey);
-              console.log('Has seen announcement', announcementId, ':', hasSeen);
-
-              if(!hasSeen) {
-                  // Wait for page to fully load
-                  $(document).ready(function() {
-                      setTimeout(function() {
-                          console.log('Attempting to show modal:', modalId);
-                          var $modal = $('#' + modalId);
-
-                          if($modal.length) {
-                              console.log('Modal found, showing...');
-                              $modal.appendTo('body');
-                              $modal.modal('show');
-
-                              // Mark as seen when modal is hidden/closed
-                              $modal.on('hidden.bs.modal', function() {
-                                  sessionStorage.setItem(seenKey, 'true');
-                                  console.log('Modal closed, marked as seen');
-                              });
-                               $modal.find('.close, [data-dismiss=\"modal\"]').on('click', function() {
-                                   $modal.modal('hide');
-                                   sessionStorage.setItem(seenKey, 'true');
-                               });
-
-                              // Track view count
-                              $.ajax({
-                                  url: '{{ url("announcement/track-view") }}',
-                                  type: 'POST',
-                                  data: {
-                                      _token: '{{ csrf_token() }}',
-                                      announcement_id: announcementId
-                                  },
-                                  success: function(response) {
-                                      console.log('View tracked successfully for announcement', announcementId);
-                                  },
-                                  error: function(xhr, status, error) {
-                                      console.log('Error tracking view:', error);
-                                  }
-                              });
-                          } else {
-                              console.error('Modal not found:', modalId);
-                          }
-                      }, 500);
-                  });
-              }
-          })();
-        @endif
-      @endforeach
-    @else
-      console.log('No announcements to display');
-    @endif
-})();
-</script>
 @endsection

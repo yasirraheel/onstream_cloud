@@ -552,15 +552,24 @@
                   setTimeout(function() {
                       var $modal = $('#' + modalId);
                       console.log('Checking homepage modal exists:', modalId, $modal.length);
-                      if($modal.length) {
-                          $modal.appendTo('body');
-                          console.log('Showing homepage announcement modal:', modalId);
-                          $modal.modal('show');
-                          $modal.find('.close, [data-dismiss=\"modal\"]').on('click', function() {
-                              $modal.modal('hide');
-                          });
-                      } else {
-                          console.warn('Homepage announcement modal not found:', modalId);
+                          if($modal.length) {
+                              $modal.appendTo('body');
+                              console.log('Showing homepage announcement modal:', modalId);
+                              $modal.modal('show');
+                              // Track view count when shown
+                              $.ajax({
+                                  url: '{{ url("announcement/track-view") }}',
+                                  type: 'POST',
+                                  data: {
+                                      _token: '{{ csrf_token() }}',
+                                      announcement_id: announcementId
+                                  }
+                              });
+                              $modal.find('.close, [data-dismiss=\"modal\"]').on('click', function() {
+                                  $modal.modal('hide');
+                              });
+                          } else {
+                              console.warn('Homepage announcement modal not found:', modalId);
                       }
                   }, 500);
               });
