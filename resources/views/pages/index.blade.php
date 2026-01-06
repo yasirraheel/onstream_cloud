@@ -542,32 +542,28 @@
     announcementStyles.innerHTML = ".announcement-modal{z-index:20050}.announcement-modal+.modal-backdrop{z-index:20040}";
     document.head.appendChild(announcementStyles);
     @if(isset($announcements) && count($announcements) > 0)
+      console.log('Home announcements script loaded. Total:', {{ count($announcements) }});
       @foreach($announcements as $announcement)
         @if($announcement->show_as_popup == 1)
           (function() {
               var announcementId = {{ $announcement->id }};
               var modalId = 'homeAnnouncementModal' + announcementId;
-              var seenKey = 'home_announcement_seen_' + announcementId;
-
-              var hasSeen = sessionStorage.getItem(seenKey);
-              if(!hasSeen) {
-                  $(document).ready(function() {
-                      setTimeout(function() {
-                          var $modal = $('#' + modalId);
-                          if($modal.length) {
-                              $modal.appendTo('body');
-                              $modal.modal('show');
-                              $modal.on('hidden.bs.modal', function() {
-                                  sessionStorage.setItem(seenKey, 'true');
-                              });
-                              $modal.find('.close, [data-dismiss="modal"]').on('click', function() {
-                                  $modal.modal('hide');
-                                  sessionStorage.setItem(seenKey, 'true');
-                              });
-                          }
-                      }, 500);
-                  });
-              }
+              $(document).ready(function() {
+                  setTimeout(function() {
+                      var $modal = $('#' + modalId);
+                      console.log('Checking homepage modal exists:', modalId, $modal.length);
+                      if($modal.length) {
+                          $modal.appendTo('body');
+                          console.log('Showing homepage announcement modal:', modalId);
+                          $modal.modal('show');
+                          $modal.find('.close, [data-dismiss=\"modal\"]').on('click', function() {
+                              $modal.modal('hide');
+                          });
+                      } else {
+                          console.warn('Homepage announcement modal not found:', modalId);
+                      }
+                  }, 500);
+              });
           })();
         @endif
       @endforeach
