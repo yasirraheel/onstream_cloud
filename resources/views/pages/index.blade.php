@@ -8,6 +8,325 @@
 
     @include('pages.home.slider')
 
+    <style>
+        /* Modern Announcement Modal Styles */
+        .announcement-modal .modal-dialog {
+            max-width: 600px;
+            margin: 1.75rem auto;
+        }
+
+        .announcement-modal .modal-content {
+            background: linear-gradient(135deg, #1a1f2e 0%, #2d3548 100%);
+            border: 2px solid #ff8508;
+            border-radius: 20px;
+            box-shadow: 0 25px 60px rgba(255, 133, 8, 0.5);
+            overflow: hidden;
+            animation: modalSlideIn 0.4s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .announcement-modal .modal-header {
+            background: linear-gradient(135deg, #ff8508 0%, #fd0575 100%);
+            border: none;
+            padding: 20px 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .announcement-modal .modal-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: headerShine 3s linear infinite;
+        }
+
+        @keyframes headerShine {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .announcement-modal .modal-title {
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 800;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .announcement-modal .modal-title i {
+            font-size: 24px;
+            animation: bellRing 2s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes bellRing {
+            0%, 100% { transform: rotate(0deg); }
+            10%, 30% { transform: rotate(-10deg); }
+            20%, 40% { transform: rotate(10deg); }
+            50% { transform: rotate(0deg); }
+        }
+
+        .announcement-modal .close {
+            position: relative;
+            z-index: 2;
+            color: #ffffff;
+            opacity: 1;
+            text-shadow: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 28px;
+            line-height: 1;
+            padding: 0;
+            margin: -5px -5px 0 0;
+        }
+
+        .announcement-modal .close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: #ffffff;
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .announcement-modal .close span {
+            display: block;
+            line-height: 1;
+        }
+
+        .announcement-modal .modal-body {
+            padding: 30px;
+            background: linear-gradient(135deg, #1e272e 0%, #2c3e50 100%);
+            color: #e0e0e0;
+        }
+
+        .announcement-modal .modal-body .announcement-image-wrapper {
+            margin-bottom: 20px;
+            text-align: center;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .announcement-modal .modal-body .announcement-image-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.2) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .announcement-modal .modal-body img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .announcement-modal .modal-body img:hover {
+            transform: scale(1.02);
+        }
+
+        .announcement-modal .modal-body p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #d5d5d5;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .announcement-modal .announcement-cta-wrapper {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .announcement-modal .announcement-cta-btn {
+            background: linear-gradient(135deg, #ff8508 0%, #fd0575 100%);
+            color: #ffffff;
+            padding: 14px 40px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 8px 25px rgba(255, 133, 8, 0.4);
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .announcement-modal .announcement-cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .announcement-modal .announcement-cta-btn:hover::before {
+            left: 100%;
+        }
+
+        .announcement-modal .announcement-cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 133, 8, 0.6);
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .announcement-modal .announcement-cta-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced Backdrop */
+        .announcement-modal-home + .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .announcement-modal .modal-dialog {
+                max-width: 95%;
+                margin: 1rem auto;
+            }
+
+            .announcement-modal .modal-content {
+                border-radius: 15px;
+            }
+
+            .announcement-modal .modal-header {
+                padding: 15px 20px;
+            }
+
+            .announcement-modal .modal-title {
+                font-size: 18px;
+            }
+
+            .announcement-modal .modal-title i {
+                font-size: 20px;
+            }
+
+            .announcement-modal .close {
+                width: 35px;
+                height: 35px;
+                font-size: 24px;
+            }
+
+            .announcement-modal .modal-body {
+                padding: 20px;
+            }
+
+            .announcement-modal .modal-body p {
+                font-size: 14px;
+                line-height: 1.6;
+            }
+
+            .announcement-modal .announcement-cta-btn {
+                padding: 12px 30px;
+                font-size: 14px;
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .announcement-modal .modal-dialog {
+                margin: 0.5rem;
+            }
+
+            .announcement-modal .modal-header {
+                padding: 12px 15px;
+            }
+
+            .announcement-modal .modal-title {
+                font-size: 16px;
+            }
+
+            .announcement-modal .modal-title i {
+                font-size: 18px;
+            }
+
+            .announcement-modal .close {
+                width: 32px;
+                height: 32px;
+                font-size: 22px;
+            }
+
+            .announcement-modal .modal-body {
+                padding: 15px;
+            }
+
+            .announcement-modal .modal-body p {
+                font-size: 13px;
+            }
+
+            .announcement-modal .announcement-cta-btn {
+                padding: 10px 25px;
+                font-size: 13px;
+            }
+        }
+
+        /* Smooth scroll for modal */
+        .announcement-modal .modal-body {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .announcement-modal .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .announcement-modal .modal-body::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .announcement-modal .modal-body::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #ff8508, #fd0575);
+            border-radius: 10px;
+        }
+
+        .announcement-modal .modal-body::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #fd0575, #ff8508);
+        }
+    </style>
+
     @if(isset($announcements) && count($announcements) > 0)
       @foreach($announcements as $announcement)
         @if($announcement->show_as_popup == 1)
@@ -24,15 +343,15 @@
               </div>
               <div class="modal-body">
                 @if(!empty($announcement->image))
-                  <div class="mb-2 text-center">
+                  <div class="announcement-image-wrapper">
                     <img src="{{ URL::asset('/'.$announcement->image) }}" alt="Announcement" class="img-fluid">
                   </div>
                 @endif
                 <p>{!! $announcement->message !!}</p>
                 @if(!empty($announcement->cta_text) && !empty($announcement->cta_url))
-                  <div class="mt-2 text-center">
-                    <a href="{{ $announcement->cta_url }}" target="{{ $announcement->cta_target ?? '_self' }}" class="btn btn-warning">
-                      {{ $announcement->cta_text }}
+                  <div class="announcement-cta-wrapper">
+                    <a href="{{ $announcement->cta_url }}" target="{{ $announcement->cta_target ?? '_self' }}" class="announcement-cta-btn">
+                      {{ $announcement->cta_text }} <i class="fa fa-arrow-right" style="margin-left: 8px;"></i>
                     </a>
                   </div>
                 @endif
