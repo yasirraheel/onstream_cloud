@@ -538,11 +538,20 @@
 <script type="text/javascript">
 (function() {
     'use strict';
+    var dbg = function() {
+        try {
+            console.log.apply(console, ['[AnnouncementDBG]'].concat([].slice.call(arguments)));
+        } catch(e) {}
+    };
     var announcementStyles = document.createElement('style');
     announcementStyles.innerHTML = ".announcement-modal,.announcement-modal-home{z-index:100050}.announcement-modal-home+.modal-backdrop{z-index:100040}";
     document.head.appendChild(announcementStyles);
     @if(isset($announcements) && count($announcements) > 0)
-      console.log('Home announcements script loaded. Total:', {{ count($announcements) }});
+      dbg('Script loaded. Announcements count:', {{ count($announcements) }});
+      dbg('jQuery version:', (window.jQuery && jQuery.fn && jQuery.fn.jquery) || 'missing');
+      dbg('Bootstrap modal available:', typeof (jQuery && jQuery.fn && jQuery.fn.modal));
+      dbg('DOM modal elements found:', $('.announcement-modal').length);
+      dbg('Offer overlay present:', $('.offer-popup-overlay').length, 'visible:', $('.offer-popup-overlay.show').length);
       @foreach($announcements as $announcement)
         @if($announcement->show_as_popup == 1)
           (function() {
@@ -551,18 +560,26 @@
               $(document).ready(function() {
                   setTimeout(function() {
                       var $modal = $('#' + modalId);
-                      console.log('Checking homepage modal exists:', modalId, $modal.length);
+                      dbg('Check modal exists for id:', modalId, 'len:', $modal.length);
+                      dbg('Modal initial classes:', $modal.attr('class'));
+                      dbg('Modal initial display:', $modal.css('display'));
+                      dbg('Bootstrap modal fn:', typeof $modal.modal);
                       if($modal.length) {
                           $modal.addClass('announcement-modal-home').appendTo('body');
-                          console.log('Showing homepage announcement modal:', modalId);
+                          dbg('Appended modal to body. Classes now:', $modal.attr('class'));
+                          dbg('Computed z-index:', window.getComputedStyle($modal[0]).zIndex);
+                          dbg('Attempt show via Bootstrap:', typeof $modal.modal === 'function');
                           if (typeof $modal.modal === 'function') {
                               $modal.modal('show');
+                              $modal.on('shown.bs.modal', function(){ dbg('Bootstrap shown event fired:', modalId); });
+                              $modal.on('hidden.bs.modal', function(){ dbg('Bootstrap hidden event fired:', modalId); });
                           } else {
                               // Fallback if Bootstrap modal plugin is not available/conflicts
                               $modal.addClass('show').css('display', 'block').attr('aria-modal', 'true').removeAttr('aria-hidden');
                               // Create backdrop
                               var $backdrop = $('<div class="modal-backdrop fade show"></div>');
                               $backdrop.insertAfter($modal);
+                              dbg('Fallback show applied. Backdrop inserted:', $('.modal-backdrop').length);
                           }
                           // Track view count when shown
                           $.ajax({
@@ -572,17 +589,18 @@
                                   _token: '{{ csrf_token() }}',
                                   announcement_id: announcementId
                               }
-                          });
+                          }).done(function(){ dbg('View track success:', announcementId); }).fail(function(jq){ dbg('View track failed:', announcementId, jq.status); });
                           $modal.find('.close, [data-dismiss=\"modal\"]').on('click', function() {
                               if (typeof $modal.modal === 'function') {
                                   $modal.modal('hide');
                               } else {
                                   $modal.removeClass('show').css('display', 'none').attr('aria-hidden', 'true').removeAttr('aria-modal');
                                   $('.modal-backdrop').remove();
+                                  dbg('Fallback hide: removed backdrop, modal hidden');
                               }
                           });
                       } else {
-                          console.warn('Homepage announcement modal not found:', modalId);
+                          dbg('Modal not found:', modalId);
                       }
                   }, 800);
               });
@@ -602,24 +620,29 @@
             }
           });
         }
+        dbg('Visibility check after initial attempts. anyVisible:', anyVisible);
         if (!anyVisible) {
           var $first = $('.announcement-modal').first();
+          dbg('Fallback will use first modal. Exists:', $first.length, 'id:', $first.attr('id'));
           if ($first.length) {
             var announcementId = $first.attr('id').replace('homeAnnouncementModal','');
             var $modal = $first.addClass('announcement-modal-home').appendTo('body');
+            dbg('Fallback append to body. Classes:', $modal.attr('class'));
             if (typeof $modal.modal === 'function') {
               $modal.modal('show');
+              $modal.on('shown.bs.modal', function(){ dbg('Bootstrap shown event fired (fallback):', $first.attr('id')); });
             } else {
               $modal.addClass('show').css('display', 'block').attr('aria-modal', 'true').removeAttr('aria-hidden');
               var $backdrop = $('<div class="modal-backdrop fade show"></div>').css('z-index','100040');
               $('body').addClass('modal-open');
               $backdrop.insertAfter($modal);
+              dbg('Fallback show applied. Backdrop count:', $('.modal-backdrop').length);
             }
             $.ajax({
               url: '{{ url("announcement/track-view") }}',
               type: 'POST',
               data: { _token: '{{ csrf_token() }}', announcement_id: announcementId }
-            });
+            }).done(function(){ dbg('View track success (fallback):', announcementId); }).fail(function(jq){ dbg('View track failed (fallback):', announcementId, jq.status); });
             $modal.find('.close, [data-dismiss="modal"]').on('click', function() {
               if (typeof $modal.modal === 'function') {
                 $modal.modal('hide');
@@ -627,6 +650,7 @@
                 $modal.removeClass('show').css('display', 'none').attr('aria-hidden', 'true').removeAttr('aria-modal');
                 $('.modal-backdrop').remove();
                 $('body').removeClass('modal-open');
+                dbg('Fallback close click: modal hidden, backdrop removed');
               }
             });
           }
