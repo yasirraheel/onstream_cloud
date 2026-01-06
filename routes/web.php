@@ -309,6 +309,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('movies_request', 'IndexController@movies_request');
     Route::post('movies_request', 'IndexController@post_movies_request');
     Route::post('announcement/track-view', 'IndexController@track_announcement_view');
+    Route::post('announcement/track-cta-click', 'IndexController@track_announcement_cta_click');
 
     Route::get('google_login', 'IndexController@google_login');
     Route::get('facebook_login', 'IndexController@facebook_login');

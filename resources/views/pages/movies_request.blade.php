@@ -28,30 +28,49 @@
   <div class="container-fluid">
     <div class="row justify-content-center align-items-start">
 
-      <!-- Announcements Section -->
-      @if(count($announcements) > 0)
+      <!-- Announcements Section (Non-Popup Only) -->
+      @if(isset($announcements) && count($announcements) > 0)
       <div class="col-12 mb-4">
         @foreach($announcements as $announcement)
-        <div class="alert" style="background-color: rgba(255,193,7,0.1); border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
-          <h5 style="color: #ffc107; margin-bottom: 10px;">
-            <i class="fa fa-bullhorn"></i> {{ $announcement->title }}
-          </h5>
-          @if(!empty($announcement->image))
-            <div class="mb-2">
-              <img src="{{ URL::asset('/'.$announcement->image) }}" alt="Announcement" style="max-height:120px;border-radius:8px;">
-            </div>
+          @if($announcement->show_as_popup == 0)
+          <div class="alert announcement-alert" style="background: linear-gradient(135deg, rgba(255,133,8,0.15) 0%, rgba(253,5,117,0.15) 100%); border: 2px solid #ff8508; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(255,133,8,0.2);">
+            <h5 style="color: #ff8508; margin-bottom: 12px; font-weight: 800;">
+              <i class="fa fa-bullhorn" style="animation: bellRing 2s ease-in-out infinite;"></i> {{ $announcement->title }}
+            </h5>
+            @if(!empty($announcement->image))
+              <div class="mb-3">
+                <img src="{{ URL::asset('/'.$announcement->image) }}" alt="Announcement" style="max-height:150px;border-radius:10px;box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+              </div>
+            @endif
+            <p style="margin: 0 0 15px 0; color: #e0e0e0; font-size: 15px; line-height: 1.6;">{!! $announcement->message !!}</p>
+            @if(!empty($announcement->cta_text) && !empty($announcement->cta_url))
+              <div class="mt-3">
+                <a href="javascript:void(0);"
+                   onclick="trackRequestPageCTAClick({{ $announcement->id }}, '{{ $announcement->cta_url }}', '{{ $announcement->cta_target ?? '_self' }}')"
+                   class="btn btn-warning btn-sm"
+                   style="background: linear-gradient(135deg, #ff8508 0%, #fd0575 100%); border: none; color:#fff; font-weight:700; padding: 10px 25px; border-radius: 25px; box-shadow: 0 4px 15px rgba(255,133,8,0.4); transition: all 0.3s ease;">
+                  {{ $announcement->cta_text }} <i class="fa fa-arrow-right" style="margin-left: 5px;"></i>
+                </a>
+              </div>
+            @endif
+          </div>
           @endif
-          <p style="margin: 0; color: #fff;">{!! $announcement->message !!}</p>
-          @if(!empty($announcement->cta_text) && !empty($announcement->cta_url))
-            <div class="mt-3">
-              <a href="{{ $announcement->cta_url }}" target="{{ $announcement->cta_target ?? '_self' }}" class="btn btn-warning btn-sm" style="color:#000; font-weight:700;">
-                {{ $announcement->cta_text }}
-              </a>
-            </div>
-          @endif
-        </div>
         @endforeach
       </div>
+
+      <style>
+        @keyframes bellRing {
+            0%, 100% { transform: rotate(0deg); }
+            10%, 30% { transform: rotate(-10deg); }
+            20%, 40% { transform: rotate(10deg); }
+            50% { transform: rotate(0deg); }
+        }
+
+        .announcement-alert a.btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,133,8,0.6);
+        }
+      </style>
       @endif
 
       <!-- Request Form -->
@@ -127,4 +146,35 @@
   </div>
 </div>
 
+@endsection
+
+@section('scripts')
+<script type="text/javascript">
+function trackRequestPageCTAClick(announcementId, url, target) {
+    $.ajax({
+        url: '{{ url("announcement/track-cta-click") }}',
+        type: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}',
+            announcement_id: announcementId
+        }
+    }).done(function(){
+        if(url) {
+            if(target === '_blank') {
+                window.open(url, '_blank');
+            } else {
+                window.location.href = url;
+            }
+        }
+    }).fail(function(){
+        if(url) {
+            if(target === '_blank') {
+                window.open(url, '_blank');
+            } else {
+                window.location.href = url;
+            }
+        }
+    });
+}
+</script>
 @endsection

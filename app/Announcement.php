@@ -12,6 +12,7 @@ class Announcement extends Model
         'is_active',
         'show_as_popup',
         'view_count',
+        'cta_click_count',
         'image',
         'cta_text',
         'cta_url',
@@ -21,11 +22,17 @@ class Announcement extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'show_as_popup' => 'boolean',
-        'view_count' => 'integer'
+        'view_count' => 'integer',
+        'cta_click_count' => 'integer'
     ];
 
     public function incrementViewCount()
     {
         $this->increment('view_count');
+    }
+
+    public function incrementCTAClickCount()
+    {
+        $this->increment('cta_click_count');
     }
 }

@@ -882,4 +882,19 @@ class IndexController extends Controller
         return response()->json(['success' => false]);
     }
 
+    public function track_announcement_cta_click(Request $request)
+    {
+        $announcement_id = $request->input('announcement_id');
+
+        if($announcement_id) {
+            $announcement = Announcement::find($announcement_id);
+            if($announcement) {
+                $announcement->incrementCTAClickCount();
+                return response()->json(['success' => true]);
+            }
+        }
+
+        return response()->json(['success' => false]);
+    }
+
 }
