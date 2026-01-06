@@ -281,24 +281,6 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('profile', 'UserController@updateProfile');
 
     Route::get('membership_plan', 'UserController@membership_plan');
-    Route::get('payment_method/{plan_id}', 'UserController@payment_method');
-    Route::get('membership_plan/paypal/{id}', 'UserController@membership_plan_paypal');
-    Route::get('paypal_success/{id}', 'UserController@paypal_success');
-    Route::get('paypal_cancel/{id}', 'UserController@paypal_cancel');
-
-    Route::get('membership_plan/stripe/{id}', 'UserController@membership_plan_stripe');
-    Route::post('stripe/payment', 'UserController@stripe_payment');
-
-    Route::get('membership_plan/paystack/{id}', 'UserController@membership_plan_paystack');
-    Route::post('/pay', [PaystackController::class, 'redirectToGateway'])->name('pay');
-    Route::get('/payment/callback', [PaystackController::class, 'handleGatewayCallback']);
-
-
-    Route::get('membership_plan/razorpay/{id}', 'UserController@membership_plan_razorpay');
-    Route::post('razorpay/payment', 'UserController@razorpay_payment');
-
-    // Bank Transfer Payment with Proof Upload
-    Route::post('banktransfer/pay', 'UserController@banktransfer_pay');
 
     Route::get('movies', 'MoviesController@movies');
     Route::get('movies/details/{slug}/{id}', 'MoviesController@movies_details');
@@ -385,6 +367,26 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('{slug}/{id}', 'IndexController@home_collections');
 
 });
+
+// Payment routes - Must be outside middleware group
+Route::get('payment_method/{plan_id}', 'UserController@payment_method');
+
+Route::get('membership_plan/paypal/{id}', 'UserController@membership_plan_paypal');
+Route::get('paypal_success/{id}', 'UserController@paypal_success');
+Route::get('paypal_cancel/{id}', 'UserController@paypal_cancel');
+
+Route::get('membership_plan/stripe/{id}', 'UserController@membership_plan_stripe');
+Route::post('stripe/payment', 'UserController@stripe_payment');
+
+Route::get('membership_plan/paystack/{id}', 'UserController@membership_plan_paystack');
+Route::post('/pay', [PaystackController::class, 'redirectToGateway'])->name('pay');
+Route::get('/payment/callback', [PaystackController::class, 'handleGatewayCallback']);
+
+Route::get('membership_plan/razorpay/{id}', 'UserController@membership_plan_razorpay');
+Route::post('razorpay/payment', 'UserController@razorpay_payment');
+
+// Bank Transfer Payment with Proof Upload
+Route::post('banktransfer/pay', 'UserController@banktransfer_pay');
 
 // Cron Job URL - Access via: https://onstream.cloud/cron/run?token=YOUR_SECRET_TOKEN
 Route::get('/cron/run', function() {

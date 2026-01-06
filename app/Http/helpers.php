@@ -255,6 +255,9 @@ if (! function_exists('user_device_limit_reached')) {
 
     function user_device_limit_reached($user_id,$plan_id)
     {
+        return false; // Device check disabled by user request
+        
+        /*
         if($plan_id==0)
         {
           return false;
@@ -275,7 +278,7 @@ if (! function_exists('user_device_limit_reached')) {
         {
           return false;
         }
-
+        */
     }
 }
 
