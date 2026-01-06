@@ -175,6 +175,9 @@
 <script type="text/javascript">
 (function() {
     'use strict';
+    var announcementStyles = document.createElement('style');
+    announcementStyles.innerHTML = ".announcement-modal{z-index:20050}.announcement-modal+.modal-backdrop{z-index:20040}";
+    document.head.appendChild(announcementStyles);
 
     console.log('Announcement script loaded');
 
@@ -204,6 +207,7 @@
 
                           if($modal.length) {
                               console.log('Modal found, showing...');
+                              $modal.appendTo('body');
                               $modal.modal('show');
 
                               // Mark as seen when modal is hidden/closed

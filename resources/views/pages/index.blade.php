@@ -538,6 +538,9 @@
 <script type="text/javascript">
 (function() {
     'use strict';
+    var announcementStyles = document.createElement('style');
+    announcementStyles.innerHTML = ".announcement-modal{z-index:20050}.announcement-modal+.modal-backdrop{z-index:20040}";
+    document.head.appendChild(announcementStyles);
     @if(isset($announcements) && count($announcements) > 0)
       @foreach($announcements as $announcement)
         @if($announcement->show_as_popup == 1)
@@ -552,6 +555,7 @@
                       setTimeout(function() {
                           var $modal = $('#' + modalId);
                           if($modal.length) {
+                              $modal.appendTo('body');
                               $modal.modal('show');
                               $modal.on('hidden.bs.modal', function() {
                                   sessionStorage.setItem(seenKey, 'true');
