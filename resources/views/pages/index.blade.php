@@ -543,6 +543,11 @@
             console.log.apply(console, ['[AnnouncementDBG]'].concat([].slice.call(arguments)));
         } catch(e) {}
     };
+    @if(isset($announcements))
+      var homeAnnouncements = {!! $announcements->where('show_as_popup', 1)->values()->toJson(JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) !!};
+    @else
+      var homeAnnouncements = [];
+    @endif
     var announcementStyles = document.createElement('style');
     announcementStyles.innerHTML = ".announcement-modal,.announcement-modal-home{z-index:100050}.announcement-modal-home+.modal-backdrop{z-index:100040}";
     document.head.appendChild(announcementStyles);
@@ -651,6 +656,52 @@
                 $('.modal-backdrop').remove();
                 $('body').removeClass('modal-open');
                 dbg('Fallback close click: modal hidden, backdrop removed');
+              }
+            });
+          } else if (homeAnnouncements && homeAnnouncements.length > 0) {
+            dbg('No static modal found. Building dynamic modal from data. Count:', homeAnnouncements.length);
+            var a = homeAnnouncements[0];
+            var modalIdDyn = 'homeAnnouncementModal' + a.id;
+            var imgHtml = a.image ? '<div class=\"mb-2 text-center\"><img src=\"{{ URL::asset('/') }}'+a.image+'\" alt=\"Announcement\" class=\"img-fluid\"></div>' : '';
+            var ctaHtml = (a.cta_text && a.cta_url) ? '<div class=\"mt-2 text-center\"><a href=\"'+a.cta_url+'\" target=\"'+(a.cta_target || '_self')+'\" class=\"btn btn-warning\">'+a.cta_text+'</a></div>' : '';
+            var modalHtml = '' +
+              '<div class=\"modal fade announcement-modal\" id=\"'+modalIdDyn+'\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"'+modalIdDyn+'Label\" aria-hidden=\"true\">' +
+              '  <div class=\"modal-dialog modal-dialog-centered\" role=\"document\">' +
+              '    <div class=\"modal-content\">' +
+              '      <div class=\"modal-header\">' +
+              '        <h5 class=\"modal-title\" id=\"'+modalIdDyn+'Label\"><i class=\"fa fa-bullhorn\"></i> '+a.title+'</h5>' +
+              '        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>' +
+              '      </div>' +
+              '      <div class=\"modal-body\">' + imgHtml + '<p>'+a.message+'</p>' + ctaHtml + '</div>' +
+              '    </div>' +
+              '  </div>' +
+              '</div>';
+            $('body').append(modalHtml);
+            var $modalDyn = $('#'+modalIdDyn).addClass('announcement-modal-home');
+            dbg('Dynamic modal appended. ID:', modalIdDyn, 'classes:', $modalDyn.attr('class'));
+            if (typeof $modalDyn.modal === 'function') {
+              $modalDyn.modal('show');
+              $modalDyn.on('shown.bs.modal', function(){ dbg('Bootstrap shown event fired (dynamic):', modalIdDyn); });
+            } else {
+              $modalDyn.addClass('show').css('display', 'block').attr('aria-modal', 'true').removeAttr('aria-hidden');
+              var $backdropDyn = $('<div class=\"modal-backdrop fade show\"></div>').css('z-index','100040');
+              $('body').addClass('modal-open');
+              $backdropDyn.insertAfter($modalDyn);
+              dbg('Dynamic fallback show applied. Backdrop count:', $('.modal-backdrop').length);
+            }
+            $.ajax({
+              url: '{{ url("announcement/track-view") }}',
+              type: 'POST',
+              data: { _token: '{{ csrf_token() }}', announcement_id: a.id }
+            }).done(function(){ dbg('View track success (dynamic):', a.id); }).fail(function(jq){ dbg('View track failed (dynamic):', a.id, jq.status); });
+            $modalDyn.find('.close, [data-dismiss=\"modal\"]').on('click', function() {
+              if (typeof $modalDyn.modal === 'function') {
+                $modalDyn.modal('hide');
+              } else {
+                $modalDyn.removeClass('show').css('display', 'none').attr('aria-hidden', 'true').removeAttr('aria-modal');
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+                dbg('Dynamic close click: modal hidden, backdrop removed');
               }
             });
           }
