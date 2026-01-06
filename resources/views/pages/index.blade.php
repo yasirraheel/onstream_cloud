@@ -590,6 +590,49 @@
         @endif
       @endforeach
     @endif
+    // Fallback: if no announcement modal becomes visible, force-show the first one
+    $(function(){
+      setTimeout(function(){
+        var anyVisible = $('.announcement-modal-home.show').length > 0;
+        if (!anyVisible) {
+          $('.announcement-modal-home').each(function() {
+            if ($(this).is(':visible') && $(this).css('display') === 'block') {
+              anyVisible = true;
+              return false;
+            }
+          });
+        }
+        if (!anyVisible) {
+          var $first = $('.announcement-modal').first();
+          if ($first.length) {
+            var announcementId = $first.attr('id').replace('homeAnnouncementModal','');
+            var $modal = $first.addClass('announcement-modal-home').appendTo('body');
+            if (typeof $modal.modal === 'function') {
+              $modal.modal('show');
+            } else {
+              $modal.addClass('show').css('display', 'block').attr('aria-modal', 'true').removeAttr('aria-hidden');
+              var $backdrop = $('<div class="modal-backdrop fade show"></div>').css('z-index','100040');
+              $('body').addClass('modal-open');
+              $backdrop.insertAfter($modal);
+            }
+            $.ajax({
+              url: '{{ url("announcement/track-view") }}',
+              type: 'POST',
+              data: { _token: '{{ csrf_token() }}', announcement_id: announcementId }
+            });
+            $modal.find('.close, [data-dismiss="modal"]').on('click', function() {
+              if (typeof $modal.modal === 'function') {
+                $modal.modal('hide');
+              } else {
+                $modal.removeClass('show').css('display', 'none').attr('aria-hidden', 'true').removeAttr('aria-modal');
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+              }
+            });
+          }
+        }
+      }, 1200);
+    });
 })();
 </script>
 @endsection
