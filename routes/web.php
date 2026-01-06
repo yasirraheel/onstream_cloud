@@ -281,6 +281,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('profile', 'UserController@updateProfile');
 
     Route::get('membership_plan', 'UserController@membership_plan');
+    Route::get('payment_method/{plan_id}', 'UserController@payment_method');
     Route::get('membership_plan/paypal/{id}', 'UserController@membership_plan_paypal');
     Route::get('paypal_success/{id}', 'UserController@paypal_success');
     Route::get('paypal_cancel/{id}', 'UserController@paypal_cancel');
