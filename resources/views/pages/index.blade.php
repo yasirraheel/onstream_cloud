@@ -1785,9 +1785,33 @@
             });
         }
 
+        // Remove any previous event handlers to avoid duplicates
+        $modal.off('shown.bs.modal hidden.bs.modal');
+        $modal.find('.close, [data-dismiss="modal"]').off('click');
+
         // Show modal
         if (typeof $modal.modal === 'function') {
-            $modal.modal('show');
+            // Bind close button click event manually to ensure it works
+            $modal.find('.close, [data-dismiss="modal"]').on('click', function(e) {
+                dbg('Close button clicked for:', modalId);
+                e.preventDefault();
+                $modal.modal('hide');
+            });
+
+            // Bind hidden event
+            $modal.on('hidden.bs.modal', function(){
+                dbg('Popup closed via Bootstrap modal:', modalId);
+                saveAnnouncementCloseTime(announcement.id);
+                currentPopupIndex++;
+                // Remove the modal from DOM to clean up
+                $modal.removeClass('show');
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open');
+                // Show next popup after a short delay
+                setTimeout(showNextPopup, 500);
+            });
+
+            // Bind shown event
             $modal.on('shown.bs.modal', function(){
                 dbg('Popup shown:', modalId);
                 // Track view
@@ -1797,15 +1821,16 @@
                     data: { _token: '{{ csrf_token() }}', announcement_id: announcement.id }
                 });
             });
-            $modal.on('hidden.bs.modal', function(){
-                dbg('Popup closed:', modalId);
-                saveAnnouncementCloseTime(announcement.id);
-                currentPopupIndex++;
-                // Show next popup after a short delay
-                setTimeout(showNextPopup, 500);
+
+            // Show the modal
+            $modal.modal({
+                backdrop: 'static',
+                keyboard: true
             });
+            $modal.modal('show');
+
         } else {
-            // Fallback
+            // Fallback for when Bootstrap modal is not available
             $modal.addClass('show').css('display', 'block').attr('aria-modal', 'true').removeAttr('aria-hidden');
             var $backdrop = $('<div class="modal-backdrop fade show"></div>').css('z-index','100040');
             $('body').addClass('modal-open');
@@ -1819,13 +1844,20 @@
             });
 
             // Handle close
-            $modal.find('.close, [data-dismiss="modal"]').on('click', function() {
+            $modal.find('.close, [data-dismiss="modal"]').on('click', function(e) {
+                dbg('Close button clicked (fallback) for:', modalId);
+                e.preventDefault();
                 $modal.removeClass('show').css('display', 'none').attr('aria-hidden', 'true').removeAttr('aria-modal');
                 $('.modal-backdrop').remove();
                 $('body').removeClass('modal-open');
                 saveAnnouncementCloseTime(announcement.id);
                 currentPopupIndex++;
                 setTimeout(showNextPopup, 500);
+            });
+
+            // Also handle backdrop click
+            $backdrop.on('click', function() {
+                $modal.find('.close').trigger('click');
             });
         }
     }
