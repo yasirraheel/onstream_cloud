@@ -38,7 +38,7 @@
             <div class="form-group row">
               <label class="col-sm-3 col-form-label">Message *</label>
               <div class="col-sm-8">
-                <textarea name="message" class="form-control elm1_editor" rows="6" required>{{ isset($announcement->message) ? $announcement->message : old('message') }}</textarea>
+                <textarea name="message" id="announcement_message" class="form-control" rows="6" required>{{ isset($announcement->message) ? $announcement->message : old('message') }}</textarea>
               </div>
             </div>
 
@@ -129,5 +129,17 @@
     </div>
   </div>
 </div>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/41.2.0/classic/ckeditor.js"></script>
+<script>
+  (function() {
+    var el = document.getElementById('announcement_message');
+    if (el && typeof ClassicEditor !== 'undefined') {
+      ClassicEditor.create(el, {
+        toolbar: ['heading','bold','italic','link','bulletedList','numberedList','blockQuote','undo','redo']
+      }).catch(function(err){ console.error(err); });
+    }
+  })();
+</script>
 
 @endsection

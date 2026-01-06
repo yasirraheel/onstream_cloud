@@ -539,7 +539,7 @@
 (function() {
     'use strict';
     var announcementStyles = document.createElement('style');
-    announcementStyles.innerHTML = ".announcement-modal{z-index:20050}.announcement-modal+.modal-backdrop{z-index:20040}";
+    announcementStyles.innerHTML = ".announcement-modal,.announcement-modal-home{z-index:100050}.announcement-modal-home+.modal-backdrop{z-index:100040}";
     document.head.appendChild(announcementStyles);
     @if(isset($announcements) && count($announcements) > 0)
       console.log('Home announcements script loaded. Total:', {{ count($announcements) }});
@@ -552,26 +552,39 @@
                   setTimeout(function() {
                       var $modal = $('#' + modalId);
                       console.log('Checking homepage modal exists:', modalId, $modal.length);
-                          if($modal.length) {
-                              $modal.appendTo('body');
-                              console.log('Showing homepage announcement modal:', modalId);
+                      if($modal.length) {
+                          $modal.addClass('announcement-modal-home').appendTo('body');
+                          console.log('Showing homepage announcement modal:', modalId);
+                          if (typeof $modal.modal === 'function') {
                               $modal.modal('show');
-                              // Track view count when shown
-                              $.ajax({
-                                  url: '{{ url("announcement/track-view") }}',
-                                  type: 'POST',
-                                  data: {
-                                      _token: '{{ csrf_token() }}',
-                                      announcement_id: announcementId
-                                  }
-                              });
-                              $modal.find('.close, [data-dismiss=\"modal\"]').on('click', function() {
-                                  $modal.modal('hide');
-                              });
                           } else {
-                              console.warn('Homepage announcement modal not found:', modalId);
+                              // Fallback if Bootstrap modal plugin is not available/conflicts
+                              $modal.addClass('show').css('display', 'block').attr('aria-modal', 'true').removeAttr('aria-hidden');
+                              // Create backdrop
+                              var $backdrop = $('<div class="modal-backdrop fade show"></div>');
+                              $backdrop.insertAfter($modal);
+                          }
+                          // Track view count when shown
+                          $.ajax({
+                              url: '{{ url("announcement/track-view") }}',
+                              type: 'POST',
+                              data: {
+                                  _token: '{{ csrf_token() }}',
+                                  announcement_id: announcementId
+                              }
+                          });
+                          $modal.find('.close, [data-dismiss=\"modal\"]').on('click', function() {
+                              if (typeof $modal.modal === 'function') {
+                                  $modal.modal('hide');
+                              } else {
+                                  $modal.removeClass('show').css('display', 'none').attr('aria-hidden', 'true').removeAttr('aria-modal');
+                                  $('.modal-backdrop').remove();
+                              }
+                          });
+                      } else {
+                          console.warn('Homepage announcement modal not found:', modalId);
                       }
-                  }, 500);
+                  }, 800);
               });
           })();
         @endif
@@ -1342,9 +1355,25 @@
                 const randomInterval = Math.floor(Math.random() * (maxInterval - minInterval + 1)) + minInterval;
 
                 if (!lastShown || (currentTime - parseInt(lastShown)) > randomInterval) {
-                    // Show popup after 5 seconds on page load (first time or after interval)
-                    setTimeout(function() {
-                        showOfferPopup();
+                    // Avoid conflict: wait until announcement modal is closed
+                    function isAnnouncementOpen() {
+                        var open = $('.announcement-modal-home.show').length > 0;
+                        if (!open) {
+                            $('.announcement-modal-home').each(function() {
+                                if ($(this).is(':visible') && $(this).css('display') === 'block') {
+                                    open = true;
+                                    return false;
+                                }
+                            });
+                        }
+                        return open;
+                    }
+                    setTimeout(function scheduleOffer() {
+                        if (isAnnouncementOpen()) {
+                            setTimeout(scheduleOffer, 2000);
+                        } else {
+                            showOfferPopup();
+                        }
                     }, 5000);
                 }
             }
