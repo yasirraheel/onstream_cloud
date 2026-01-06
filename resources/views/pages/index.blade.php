@@ -8,6 +8,41 @@
 
     @include('pages.home.slider')
 
+    @if(isset($announcements) && count($announcements) > 0)
+      @foreach($announcements as $announcement)
+        @if($announcement->show_as_popup == 1)
+        <div class="modal fade" id="homeAnnouncementModal{{ $announcement->id }}" tabindex="-1" role="dialog" aria-labelledby="homeAnnouncementModalLabel{{ $announcement->id }}" aria-hidden="true" style="display:none;">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" style="background-color: #1a1a1a; border: 2px solid #ffc107; border-radius: 10px;">
+              <div class="modal-header" style="border-bottom: 1px solid rgba(255,193,7,0.3);">
+                <h5 class="modal-title" id="homeAnnouncementModalLabel{{ $announcement->id }}" style="color: #ffc107;">
+                  <i class="fa fa-bullhorn"></i> {{ $announcement->title }}
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff; opacity: 0.8;">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" style="color: #fff;">
+                @if(!empty($announcement->image))
+                  <div class="mb-2 text-center">
+                    <img src="{{ URL::asset('/'.$announcement->image) }}" alt="Announcement" style="max-height:160px;border-radius:8px;">
+                  </div>
+                @endif
+                <p>{!! $announcement->message !!}</p>
+                @if(!empty($announcement->cta_text) && !empty($announcement->cta_url))
+                  <div class="mt-2 text-center">
+                    <a href="{{ $announcement->cta_url }}" target="{{ $announcement->cta_target ?? '_self' }}" class="btn btn-warning" style="color:#000; font-weight:700;">
+                      {{ $announcement->cta_text }}
+                    </a>
+                  </div>
+                @endif
+              </div>
+            </div>
+          </div>
+        </div>
+        @endif
+      @endforeach
+    @endif
 
     <!-- Banner -->
     @if (get_web_banner('home_top') != '')
@@ -499,6 +534,43 @@
             </div>
         </div>
     @endif
+@section('scripts')
+<script type="text/javascript">
+(function() {
+    'use strict';
+    @if(isset($announcements) && count($announcements) > 0)
+      @foreach($announcements as $announcement)
+        @if($announcement->show_as_popup == 1)
+          (function() {
+              var announcementId = {{ $announcement->id }};
+              var modalId = 'homeAnnouncementModal' + announcementId;
+              var seenKey = 'home_announcement_seen_' + announcementId;
+
+              var hasSeen = sessionStorage.getItem(seenKey);
+              if(!hasSeen) {
+                  $(document).ready(function() {
+                      setTimeout(function() {
+                          var $modal = $('#' + modalId);
+                          if($modal.length) {
+                              $modal.modal('show');
+                              $modal.on('hidden.bs.modal', function() {
+                                  sessionStorage.setItem(seenKey, 'true');
+                              });
+                              $modal.find('.close, [data-dismiss="modal"]').on('click', function() {
+                                  $modal.modal('hide');
+                                  sessionStorage.setItem(seenKey, 'true');
+                              });
+                          }
+                      }, 500);
+                  });
+              }
+          })();
+        @endif
+      @endforeach
+    @endif
+})();
+</script>
+@endsection
     <!-- End Ads Section -->
 
     @if (getcong('menu_movies'))

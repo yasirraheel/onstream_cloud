@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Auth;
 use App\Announcement;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class AnnouncementController extends MainAdminController
 {
@@ -63,7 +64,11 @@ class AnnouncementController extends MainAdminController
 
         $rule = [
             'title' => 'required',
-            'message' => 'required'
+            'message' => 'required',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'cta_text' => 'nullable|string|max:100',
+            'cta_url' => 'nullable|url|max:255',
+            'cta_target' => 'nullable|in:_self,_blank'
         ];
 
         $validator = \Validator::make($data, $rule);
@@ -82,6 +87,20 @@ class AnnouncementController extends MainAdminController
         $announcement->message = $inputs['message'];
         $announcement->is_active = isset($inputs['is_active']) ? 1 : 0;
         $announcement->show_as_popup = isset($inputs['show_as_popup']) ? 1 : 0;
+        $announcement->cta_text = $inputs['cta_text'] ?? null;
+        $announcement->cta_url = $inputs['cta_url'] ?? null;
+        $announcement->cta_target = $inputs['cta_target'] ?? '_self';
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $upload_path = base_path('public/uploads/announcements');
+            if (!file_exists($upload_path)) {
+                @mkdir($upload_path, 0775, true);
+            }
+            $filename = 'ann_' . time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
+            $file->move($upload_path, $filename);
+            $announcement->image = 'public/uploads/announcements/' . $filename;
+        }
 
         $announcement->save();
 

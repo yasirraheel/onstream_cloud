@@ -70,6 +70,43 @@
               </div>
             </div>
 
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">Image (Optional)</label>
+              <div class="col-sm-8">
+                <input type="file" name="image" class="form-control">
+                @if(isset($announcement->image) && $announcement->image)
+                  <div class="mt-2">
+                    <img src="{{ URL::asset('/'.$announcement->image) }}" alt="Announcement Image" style="max-height:80px;border-radius:6px;">
+                  </div>
+                @endif
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">CTA Button Text</label>
+              <div class="col-sm-4">
+                <input type="text" name="cta_text" value="{{ isset($announcement->cta_text) ? $announcement->cta_text : old('cta_text') }}" class="form-control" placeholder="e.g., Learn More">
+              </div>
+              <label class="col-sm-1 col-form-label">URL</label>
+              <div class="col-sm-3">
+                <input type="text" name="cta_url" value="{{ isset($announcement->cta_url) ? $announcement->cta_url : old('cta_url') }}" class="form-control" placeholder="https://example.com">
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">CTA Target</label>
+              <div class="col-sm-8">
+                <div class="radio radio-success form-check-inline pl-2" style="margin-top: 8px;">
+                  <input type="radio" id="target_same" value="_self" name="cta_target" @if(isset($announcement->cta_target) && $announcement->cta_target=='_self') checked @endif {{ !isset($announcement->cta_target) ? 'checked' : '' }}>
+                  <label for="target_same"> Same Tab </label>
+                </div>
+                <div class="radio form-check-inline" style="margin-top: 8px;">
+                  <input type="radio" id="target_new" value="_blank" name="cta_target" @if(isset($announcement->cta_target) && $announcement->cta_target=='_blank') checked @endif>
+                  <label for="target_new"> New Tab </label>
+                </div>
+              </div>
+            </div>
+
             @if(isset($announcement->view_count))
             <div class="form-group row">
               <label class="col-sm-3 col-form-label">Total Views</label>

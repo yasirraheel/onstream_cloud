@@ -32,12 +32,26 @@
       @if(count($announcements) > 0)
       <div class="col-12 mb-4">
         @foreach($announcements as $announcement)
+        @if($announcement->show_as_popup != 1)
         <div class="alert" style="background-color: rgba(255,193,7,0.1); border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
           <h5 style="color: #ffc107; margin-bottom: 10px;">
             <i class="fa fa-bullhorn"></i> {{ $announcement->title }}
           </h5>
+          @if(!empty($announcement->image))
+            <div class="mb-2">
+              <img src="{{ URL::asset('/'.$announcement->image) }}" alt="Announcement" style="max-height:120px;border-radius:8px;">
+            </div>
+          @endif
           <p style="margin: 0; color: #fff;">{!! $announcement->message !!}</p>
+          @if(!empty($announcement->cta_text) && !empty($announcement->cta_url))
+            <div class="mt-3">
+              <a href="{{ $announcement->cta_url }}" target="{{ $announcement->cta_target ?? '_self' }}" class="btn btn-warning btn-sm" style="color:#000; font-weight:700;">
+                {{ $announcement->cta_text }}
+              </a>
+            </div>
+          @endif
         </div>
+        @endif
         @endforeach
       </div>
       @endif
@@ -133,7 +147,19 @@
             </button>
           </div>
           <div class="modal-body" style="color: #fff;">
+            @if(!empty($announcement->image))
+              <div class="mb-2 text-center">
+                <img src="{{ URL::asset('/'.$announcement->image) }}" alt="Announcement" style="max-height:160px;border-radius:8px;">
+              </div>
+            @endif
             <p>{!! $announcement->message !!}</p>
+            @if(!empty($announcement->cta_text) && !empty($announcement->cta_url))
+              <div class="mt-2 text-center">
+                <a href="{{ $announcement->cta_url }}" target="{{ $announcement->cta_target ?? '_self' }}" class="btn btn-warning" style="color:#000; font-weight:700;">
+                  {{ $announcement->cta_text }}
+                </a>
+              </div>
+            @endif
           </div>
           <div class="modal-footer" style="border-top: 1px solid rgba(255,193,7,0.3);">
             <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color: #333; border: 1px solid #ffc107;">{{ __('words.close') }}</button>
@@ -185,6 +211,10 @@
                                   sessionStorage.setItem(seenKey, 'true');
                                   console.log('Modal closed, marked as seen');
                               });
+                               $modal.find('.close, [data-dismiss=\"modal\"]').on('click', function() {
+                                   $modal.modal('hide');
+                                   sessionStorage.setItem(seenKey, 'true');
+                               });
 
                               // Track view count
                               $.ajax({

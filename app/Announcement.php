@@ -11,7 +11,11 @@ class Announcement extends Model
         'message',
         'is_active',
         'show_as_popup',
-        'view_count'
+        'view_count',
+        'image',
+        'cta_text',
+        'cta_url',
+        'cta_target'
     ];
 
     protected $casts = [
