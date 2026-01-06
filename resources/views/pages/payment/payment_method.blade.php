@@ -517,7 +517,32 @@
         </div>
         <div class="modal-body">
             <div class="edit-profile-form">
-               {!!json_decode(getPaymentGatewayInfo(12)->gateway_info)->banktransfer_info!!}
+               <div class="bank-transfer-instructions mb-4">
+                 {!!json_decode(getPaymentGatewayInfo(12)->gateway_info)->banktransfer_info!!}
+               </div>
+
+               <hr/>
+
+               <h5 class="mt-3 mb-3">Submit Payment Proof</h5>
+
+               {!! Form::open(array('url' => 'banktransfer/pay','class'=>'','id'=>'bank_transfer_form','role'=>'form','method'=>'POST','enctype'=>'multipart/form-data')) !!}
+
+                 <input type="hidden" name="plan_id" value="{{$plan_info->id}}">
+                 <input type="hidden" name="amount" value="{{number_format($plan_info->plan_price - $discount_price_less,2)}}">
+
+                 <div class="form-group mb-3">
+                   <label style="color: #ff8508; font-weight: 600; margin-bottom: 8px;">
+                     <i class="fa fa-upload"></i> Payment Proof (Screenshot or Receipt) *
+                   </label>
+                   <div class="custom-file">
+                     <input type="file" name="payment_proof" id="payment_proof_bank" class="custom-file-input" accept="image/*,.pdf" required>
+                     <label class="custom-file-label" for="payment_proof_bank">Choose file...</label>
+                   </div>
+                   <small class="form-text" style="color: #aaa;">Upload payment screenshot or receipt (Image or PDF, Max 5MB)</small>
+                 </div>
+
+                 <button type="submit" class="vfx-item-btn-danger text-uppercase btn-block">Submit Payment</button>
+               {!! Form::close() !!}
             </div>
 
         </div>
@@ -685,6 +710,12 @@
 
  $('#open_phone_update').on('click', function(e) {
     $('#phone_update').modal('show');
+ });
+
+ // Update file input label with selected filename for bank transfer
+ $('#payment_proof_bank').on('change', function() {
+    var fileName = $(this).val().split('\\').pop();
+    $(this).next('.custom-file-label').html(fileName || 'Choose file...');
  });
 
 </script>

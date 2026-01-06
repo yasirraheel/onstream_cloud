@@ -155,6 +155,25 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::post('subscription_plan/add_edit_plan', 'SubscriptionPlanController@addnew');
     Route::get('subscription_plan/delete/{id}', 'SubscriptionPlanController@delete');
 
+    // Payment Gateway Routes
+    Route::get('payment_gateway', 'PaymentGatewayController@list');
+    Route::get('payment_gateway/edit/{id}', 'PaymentGatewayController@edit');
+    Route::post('payment_gateway/paypal', 'PaymentGatewayController@paypal');
+    Route::post('payment_gateway/stripe', 'PaymentGatewayController@stripe');
+    Route::post('payment_gateway/razorpay', 'PaymentGatewayController@razorpay');
+    Route::post('payment_gateway/paystack', 'PaymentGatewayController@paystack');
+    Route::post('payment_gateway/instamojo', 'PaymentGatewayController@instamojo');
+    Route::post('payment_gateway/payu', 'PaymentGatewayController@payu');
+    Route::post('payment_gateway/mollie', 'PaymentGatewayController@mollie');
+    Route::post('payment_gateway/flutterwave', 'PaymentGatewayController@flutterwave');
+    Route::post('payment_gateway/paytm', 'PaymentGatewayController@paytm');
+    Route::post('payment_gateway/cashfree', 'PaymentGatewayController@cashfree');
+    Route::post('payment_gateway/coingate', 'PaymentGatewayController@coingate');
+    Route::post('payment_gateway/banktransfer', 'PaymentGatewayController@banktransfer');
+    Route::post('payment_gateway/braintree', 'PaymentGatewayController@braintree');
+    Route::post('payment_gateway/sslcommerz', 'PaymentGatewayController@sslcommerz');
+    Route::post('payment_gateway/cinetpay', 'PaymentGatewayController@cinetpay');
+
     Route::get('otp_view', 'OtpController@index');
     // Route::post('otp_send', 'OtpController@sendOtp');
 
@@ -277,6 +296,9 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('membership_plan/razorpay/{id}', 'UserController@membership_plan_razorpay');
     Route::post('razorpay/payment', 'UserController@razorpay_payment');
 
+    // Bank Transfer Payment with Proof Upload
+    Route::post('banktransfer/pay', 'UserController@banktransfer_pay');
+
     Route::get('movies', 'MoviesController@movies');
     Route::get('movies/details/{slug}/{id}', 'MoviesController@movies_details');
     Route::get('movies/watch/{slug}/{id}', 'MoviesController@movies_watch');
@@ -313,6 +335,13 @@ Route::group(['middleware' => ['web']], function() {
 
     Route::get('google_login', 'IndexController@google_login');
     Route::get('facebook_login', 'IndexController@facebook_login');
+
+    // OAuth Routes
+    Route::get('auth/google', 'Auth\GoogleController@redirectToGoogle');
+    Route::get('auth/google/callback', 'Auth\GoogleController@handleGoogleCallback');
+
+    Route::get('auth/facebook', 'Auth\FacebookController@redirectToFacebook');
+    Route::get('auth/facebook/callback', 'Auth\FacebookController@handleFacebookCallback');
 
     Route::get('watchlist', 'UserController@watchlist');
     Route::get('watchlist/add', 'UserController@watchlist_add');

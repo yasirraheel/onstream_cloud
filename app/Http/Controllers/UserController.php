@@ -576,4 +576,72 @@ class UserController extends Controller
         }
     }
 
+    public function banktransfer_pay(Request $request)
+    {
+        if(!Auth::check())
+        {
+            \Session::flash('error_flash_message', trans('words.access_denied'));
+            return redirect('login');
+        }
+
+        $validator = \Validator::make($request->all(), [
+            'plan_id' => 'required',
+            'payment_proof' => 'required|mimes:jpg,jpeg,png,pdf|max:5120',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $plan_id = $request->plan_id;
+        $plan_info = SubscriptionPlan::where('id', $plan_id)->where('status', '1')->first();
+
+        if(!$plan_info)
+        {
+            \Session::flash('error_flash_message', 'Invalid plan selected!');
+            return redirect('membership_plan');
+        }
+
+        // Handle payment proof upload
+        $payment_proof_filename = null;
+        if ($request->hasFile('payment_proof')) {
+            $payment_proof = $request->file('payment_proof');
+            $payment_proof_filename = 'payment_proof_' . time() . '_' . uniqid() . '.' . $payment_proof->getClientOriginalExtension();
+            $payment_proof->move(public_path('upload/payment_proofs'), $payment_proof_filename);
+        }
+
+        // Get coupon info if applied
+        $coupon_code = Session::get('coupon_code') ? Session::get('coupon_code') : '';
+        $coupon_percentage = Session::get('coupon_percentage') ? Session::get('coupon_percentage') : 0;
+
+        // Calculate final amount
+        $discount_price_less = 0;
+        if($coupon_percentage) {
+            $discount_price_less = $plan_info->plan_price * $coupon_percentage / 100;
+        }
+        $plan_amount = $plan_info->plan_price - $discount_price_less;
+
+        // Create pending transaction with payment proof
+        $payment_trans = new Transactions;
+        $payment_trans->user_id = Auth::user()->id;
+        $payment_trans->email = Auth::user()->email;
+        $payment_trans->plan_id = $plan_id;
+        $payment_trans->gateway = 'Bank Transfer';
+        $payment_trans->payment_amount = $plan_amount;
+        $payment_trans->payment_id = 'BT-' . time() . '-' . Auth::user()->id;
+        $payment_trans->payment_status = 0; // 0 = Pending verification
+        $payment_trans->payment_proof = $payment_proof_filename;
+        $payment_trans->coupon_code = $coupon_code;
+        $payment_trans->coupon_percentage = $coupon_percentage;
+        $payment_trans->date = strtotime(date('m/d/Y H:i:s'));
+        $payment_trans->save();
+
+        // Clear coupon session
+        Session::forget('coupon_code');
+        Session::forget('coupon_percentage');
+
+        \Session::flash('flash_message', 'Payment proof submitted successfully! Your payment is pending verification by admin.');
+        return redirect('dashboard');
+    }
+
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddPaymentProofToMovieRequestsTable extends Migration
+class AddPaymentProofToTransactionTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddPaymentProofToMovieRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::table('movie_requests', function (Blueprint $table) {
-            $table->string('payment_proof')->nullable()->after('status');
+        Schema::table('transaction', function (Blueprint $table) {
+            $table->string('payment_proof')->nullable()->after('payment_status');
         });
     }
 
@@ -25,7 +25,7 @@ class AddPaymentProofToMovieRequestsTable extends Migration
      */
     public function down()
     {
-        Schema::table('movie_requests', function (Blueprint $table) {
+        Schema::table('transaction', function (Blueprint $table) {
             $table->dropColumn('payment_proof');
         });
     }
