@@ -38,7 +38,7 @@
             <div class="form-group row">
               <label class="col-sm-3 col-form-label">Message *</label>
               <div class="col-sm-8">
-                <textarea name="message" class="form-control" rows="6" required>{{ isset($announcement->message) ? $announcement->message : old('message') }}</textarea>
+                <textarea name="message" class="form-control elm1_editor" rows="6" required>{{ isset($announcement->message) ? $announcement->message : old('message') }}</textarea>
               </div>
             </div>
 

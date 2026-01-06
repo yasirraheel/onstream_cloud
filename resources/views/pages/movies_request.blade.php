@@ -36,7 +36,7 @@
           <h5 style="color: #ffc107; margin-bottom: 10px;">
             <i class="fa fa-bullhorn"></i> {{ $announcement->title }}
           </h5>
-          <p style="margin: 0; color: #fff;">{{ $announcement->message }}</p>
+          <p style="margin: 0; color: #fff;">{!! $announcement->message !!}</p>
         </div>
         @endforeach
       </div>
@@ -133,7 +133,7 @@
             </button>
           </div>
           <div class="modal-body" style="color: #fff;">
-            <p>{{ $announcement->message }}</p>
+            <p>{!! $announcement->message !!}</p>
           </div>
           <div class="modal-footer" style="border-top: 1px solid rgba(255,193,7,0.3);">
             <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color: #333; border: 1px solid #ffc107;">{{ __('words.close') }}</button>
