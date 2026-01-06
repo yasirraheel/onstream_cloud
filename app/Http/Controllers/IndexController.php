@@ -835,6 +835,7 @@ class IndexController extends Controller
         $rule = array(
             'movie_name' => 'required',
             'email' => 'nullable|email',
+            'payment_proof' => 'nullable|mimes:jpg,jpeg,png,pdf|max:5120',
         );
 
         $validator = \Validator::make($data, $rule);
@@ -850,6 +851,14 @@ class IndexController extends Controller
         $request_obj->language = isset($inputs['language']) ? $inputs['language'] : null;
         $request_obj->message = isset($inputs['message']) ? $inputs['message'] : null;
         $request_obj->email = isset($inputs['email']) ? $inputs['email'] : null;
+
+        // Handle payment proof upload
+        if ($request->hasFile('payment_proof')) {
+            $payment_proof = $request->file('payment_proof');
+            $filename = 'payment_proof_' . time() . '_' . uniqid() . '.' . $payment_proof->getClientOriginalExtension();
+            $payment_proof->move(public_path('upload/payment_proofs'), $filename);
+            $request_obj->payment_proof = $filename;
+        }
 
         if(Auth::check())
         {

@@ -8,7 +8,7 @@ class MovieRequest extends Model
 {
     protected $table = 'movie_requests';
 
-    protected $fillable = ['user_id', 'movie_name', 'language', 'message', 'email', 'status'];
+    protected $fillable = ['user_id', 'movie_name', 'language', 'message', 'email', 'status', 'payment_proof'];
 
     public function user()
     {
