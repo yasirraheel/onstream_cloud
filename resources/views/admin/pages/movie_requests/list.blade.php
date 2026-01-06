@@ -50,25 +50,6 @@
                                             {{ $request->email ?? 'Guest' }}
                                         @endif
                                     </td>
-                                    <td>
-                                        @if($request->payment_proof)
-                                            @php
-                                                $extension = pathinfo($request->payment_proof, PATHINFO_EXTENSION);
-                                                $isPdf = strtolower($extension) === 'pdf';
-                                            @endphp
-                                            @if($isPdf)
-                                                <a href="{{ URL::asset('upload/payment_proofs/'.$request->payment_proof) }}" target="_blank" class="btn btn-sm btn-primary">
-                                                    <i class="fa fa-file-pdf-o"></i> View PDF
-                                                </a>
-                                            @else
-                                                <a href="{{ URL::asset('upload/payment_proofs/'.$request->payment_proof) }}" target="_blank" data-toggle="tooltip" title="Click to view">
-                                                    <img src="{{ URL::asset('upload/payment_proofs/'.$request->payment_proof) }}" alt="Payment Proof" style="max-width: 60px; max-height: 60px; border-radius: 5px; border: 2px solid #ddd;">
-                                                </a>
-                                            @endif
-                                        @else
-                                            <span class="text-muted">No proof</span>
-                                        @endif
-                                    </td>
                                     <td>{{ $request->created_at->format('d-m-Y h:i A') }}</td>
                                     <td>
                                         @if($request->status == 'Pending')
