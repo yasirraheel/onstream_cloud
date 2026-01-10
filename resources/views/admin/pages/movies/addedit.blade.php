@@ -687,26 +687,31 @@ function processSelectedFile(filePath, requestingField) {
  </script>
 
  <script type="text/javascript">
-    $(document).ready(function() {
-        // Auto-fetch if import_id is present in URL
-        var urlParams = new URLSearchParams(window.location.search);
-        var importId = urlParams.get('import_id');
-        if (importId) {
-             $('#imdb_id_title').val(importId);
+     $(window).on('load', function() {
+         // Auto-fetch if import_id is present in URL
+         var urlParams = new URLSearchParams(window.location.search);
+         var importId = urlParams.get('import_id');
+         if (importId) {
+              $('#imdb_id_title').val(importId);
 
-             // Wait a moment for other scripts to initialize if necessary
-             setTimeout(function() {
-                 $('#import_movie_btn').click();
-             }, 500);
+              // Show visual feedback
+              $("#import_movie_btn").html('Auto Fetching...');
 
-             // Clean URL to avoid re-fetching on refresh
-             if (window.history.replaceState) {
-                 var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                 window.history.replaceState({path:newUrl},'',newUrl);
-             }
-        }
-    });
- </script>
+              // Ensure button is enabled and click it
+              $('#import_movie_btn').prop('disabled', false);
+
+              setTimeout(function() {
+                  $('#import_movie_btn').trigger('click');
+              }, 500);
+
+              // Clean URL to avoid re-fetching on refresh
+              if (window.history.replaceState) {
+                  var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                  window.history.replaceState({path:newUrl},'',newUrl);
+              }
+         }
+     });
+  </script>
 
  <script type="text/javascript">
 
