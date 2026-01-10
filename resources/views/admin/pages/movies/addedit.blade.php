@@ -70,7 +70,7 @@
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.import_from_imdb')}}</label>
                     <div class="col-sm-6">
-                      <input type="text" name="imdb_id_title" id="imdb_id_title" value="" class="form-control" placeholder="Enter IMDb ID (e.g. tt1469304)" @if(!getcong('omdb_api_key')) disabled @endif>
+                      <input type="text" name="imdb_id_title" id="imdb_id_title" value="" class="form-control" placeholder="Enter IMDb ID or Title (e.g. tt1469304 or Avatar)" @if(!getcong('omdb_api_key')) disabled @endif>
                       <small id="emailHelp" class="form-text text-muted">({{trans('words.imdb_search_recommended')}})</small>
                     </div>
                      <div class="col-sm-2">

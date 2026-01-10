@@ -24,11 +24,48 @@ class ImportImdbController extends MainAdminController
 
     public function find_imdb_movie()
     { 
-        
         $movie_id= $_GET['id'];
 
 //   return response()->json("Hello");
         $default_language=set_tmdb_language();
+
+        // Check if input is a title (not numeric and not starting with tt)
+        $is_tmdb_id = is_numeric($movie_id);
+        $is_imdb_id = (substr($movie_id, 0, 2) === 'tt');
+
+        if (!$is_tmdb_id && !$is_imdb_id) {
+            // It's a title, search for it
+            $search_curl = curl_init();
+            $search_query = urlencode($movie_id);
+            
+            curl_setopt_array($search_curl, [
+                CURLOPT_URL => "https://api.themoviedb.org/3/search/movie?query=$search_query&include_adult=false&language=$default_language&page=1",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_HTTPHEADER => [
+                    "Authorization: Bearer ".getcong('tmdb_api_key'),
+                    "accept: application/json"
+                ],
+            ]);
+            
+            $search_response = curl_exec($search_curl);
+            curl_close($search_curl);
+            
+            $search_result = json_decode($search_response);
+            
+            if (isset($search_result->results) && count($search_result->results) > 0) {
+                // Take the first result
+                $movie_id = $search_result->results[0]->id;
+            } else {
+                 $response['imdb_status'] = 'fail';
+                 echo json_encode($response);
+                 exit;
+            }
+        }
          
         //For Movies Details
         $curl = curl_init();
