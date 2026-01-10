@@ -633,6 +633,15 @@ $("select").on("select2:select", function (evt) {
         }
     });
 
+    // Handle selection from modal for Movies
+    $(document).on('click', '.movie-candidate', function(e) {
+        e.preventDefault();
+        var tmdbId = $(this).data('id');
+        $('#movieSelectionModal').modal('hide');
+        $('#imdb_id_title').val(tmdbId); // Put ID back in input
+        $('#import_movie_btn').click(); // Trigger fetch again
+    });
+
     // Handle selection from modal for Shows
     $(document).on('click', '.show-candidate', function(e) {
         e.preventDefault();
