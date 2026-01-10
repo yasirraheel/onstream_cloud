@@ -108,7 +108,13 @@
 $(document).ready(function() {
     $('.search-movie').click(function(e) {
         e.preventDefault();
-        var title = $(this).data('title');
+        var title = $(this).attr('data-title');
+
+        if (!title || title.trim() === '') {
+             alert('Movie name is empty!');
+             return;
+        }
+
         $('#movieRequestModal').modal('show');
         $('#movieRequestResults').html('<div class="text-center" style="padding: 20px;"><i class="fa fa-spinner fa-spin fa-3x"></i><br><br>Searching for "' + title + '"...</div>');
 
