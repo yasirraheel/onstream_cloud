@@ -257,7 +257,10 @@ public function addnew(Request $request)
         $rule = array(
             'movie_language'    => 'required',
             'genres'            => 'required',
-            'video_title'       => 'required',
+            'video_title'       => [
+                'required',
+                Rule::unique('movie_videos', 'video_title')->ignore($inputs['id']),
+            ],
             'imdb_id'           => [
 
                 // Rule::unique('movie_videos', 'imdb_id')->ignore($inputs['id']),
@@ -268,7 +271,7 @@ public function addnew(Request $request)
         $rule = [
             'movie_language'    => 'required',
             'genres'            => 'required',
-            'video_title'       => 'required',
+            'video_title'       => 'required|unique:movie_videos,video_title',
             'video_image_thumb' => 'required',
         ];
     }

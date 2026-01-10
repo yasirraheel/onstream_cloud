@@ -7,26 +7,26 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-4">
-                     <div class="card-box widget-user bg-primary text-white">
+                     <div class="card-box widget-user p-3 m-b-20 border border-primary">
                         <div class="text-center">
-                            <h2 class="text-white" data-plugin="counterup">{{ number_format($total_requests) }}</h2>
-                            <h5>Total Requests</h5>
+                            <h2 class="text-primary" data-plugin="counterup">{{ number_format($total_requests) }}</h2>
+                            <h5 class="text-muted">Total Requests</h5>
                         </div>
                      </div>
                 </div>
                 <div class="col-md-4">
-                     <div class="card-box widget-user bg-warning text-white">
+                     <div class="card-box widget-user p-3 m-b-20 border border-warning">
                         <div class="text-center">
-                            <h2 class="text-white" data-plugin="counterup">{{ number_format($pending_requests) }}</h2>
-                            <h5>Pending Requests</h5>
+                            <h2 class="text-warning" data-plugin="counterup">{{ number_format($pending_requests) }}</h2>
+                            <h5 class="text-muted">Pending Requests</h5>
                         </div>
                      </div>
                 </div>
                 <div class="col-md-4">
-                     <div class="card-box widget-user bg-success text-white">
+                     <div class="card-box widget-user p-3 m-b-20 border border-success">
                         <div class="text-center">
-                            <h2 class="text-white" data-plugin="counterup">{{ number_format($completed_requests) }}</h2>
-                            <h5>Completed Requests</h5>
+                            <h2 class="text-success" data-plugin="counterup">{{ number_format($completed_requests) }}</h2>
+                            <h5 class="text-muted">Completed Requests</h5>
                         </div>
                      </div>
                 </div>
