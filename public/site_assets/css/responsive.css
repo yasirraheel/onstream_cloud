@@ -19,7 +19,8 @@
 @media only screen and (min-width: 1365px) {
 .container-fluid {
 	max-width: 100%;
-	width: 100%;
+	width: 96%;
+    margin: 0 auto;
 }
 .video-js.vjs-16-9 {
 	padding-top: 43% !important;
@@ -739,7 +740,7 @@ h2.form-title-item {
 }
 .splide--draggable > .splide__track > .splide__list > .splide__slide {
 	border-radius: 6px;
-}  
+}
 .splide-slider-details-area h1 {
 	font-size: 20px;
 	font-weight: 700;
@@ -769,7 +770,7 @@ h2.form-title-item {
 	font-weight: 700;
 	height: 34px;
 	line-height: 35px;
-}  
+}
 .youtube_video_wrapper {
 	height: 330px;
 }
@@ -830,7 +831,7 @@ h2.form-title-item {
 .actors-detail-wrapper .actors-profile img {
 	width: 150px;
 	max-width: 150px;
-}  
+}
 .actors-detail-wrapper{
 	padding:10px;
 }
@@ -843,7 +844,7 @@ h2.form-title-item {
 .actors-info-details span.des-bold-text {
 	font-size: 13px;
 	line-height: 22px;
-}  
+}
 }
 
 @media only screen and (max-width:355px) {
