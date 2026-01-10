@@ -38,6 +38,9 @@
                     @endif
                   </div>
                   <div class="col-md-6 text-right">
+                    <button id="search-all-btn" class="btn btn-info btn-md waves-effect waves-light m-b-20 m-r-10">
+                        <i class="fa fa-search"></i> Search All Available
+                    </button>
                     <a href="{{ URL::to('admin/gd_urls/cleanup-duplicates') }}" class="btn btn-warning btn-md waves-effect waves-light m-b-20 m-r-10" onclick="return confirm('This will delete all duplicate entries (keeping used ones). Continue?')">
                         <i class="fa fa-trash"></i> Cleanup Duplicates
                     </a>
@@ -169,6 +172,55 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
+    // Search All Available URLs
+    $('#search-all-btn').on('click', function() {
+        var searchAllBtn = $(this);
+
+        // Disable the button
+        searchAllBtn.prop('disabled', true);
+        searchAllBtn.html('<i class="fa fa-spinner fa-spin"></i> Searching All...');
+
+        // Get all available (not used) search buttons
+        var availableBtns = $('.search-video-btn').filter(function() {
+            var row = $(this).closest('tr');
+            var statusBadge = row.find('.badge-success');
+            return statusBadge.length > 0; // Only available URLs
+        });
+
+        var totalBtns = availableBtns.length;
+        var processed = 0;
+
+        if (totalBtns === 0) {
+            searchAllBtn.prop('disabled', false);
+            searchAllBtn.html('<i class="fa fa-search"></i> Search All Available');
+            alert('No available URLs to search.');
+            return;
+        }
+
+        // Process each button with a delay to avoid overwhelming the server
+        availableBtns.each(function(index) {
+            var btn = $(this);
+
+            setTimeout(function() {
+                // Trigger click on the search button
+                btn.trigger('click');
+
+                processed++;
+
+                // Update progress on search all button
+                searchAllBtn.html('<i class="fa fa-spinner fa-spin"></i> Searching... (' + processed + '/' + totalBtns + ')');
+
+                // Re-enable search all button when done
+                if (processed === totalBtns) {
+                    setTimeout(function() {
+                        searchAllBtn.prop('disabled', false);
+                        searchAllBtn.html('<i class="fa fa-search"></i> Search All Available');
+                    }, 1000);
+                }
+            }, index * 500); // 500ms delay between each search
+        });
+    });
+
     $('.search-video-btn').on('click', function() {
         var btn = $(this);
         var gdUrlId = btn.data('id');
