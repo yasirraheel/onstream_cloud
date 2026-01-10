@@ -308,8 +308,8 @@ class GdUrlController extends MainAdminController
                 $cleanedMatches->whereRaw('0 = 1'); // Return nothing
             }
 
-            // 3. Strict Word Matching: ALL words must be present (Medium relevance)
-            // This prevents "Don 2" from matching "Don 1" or just "2"
+            // 3. Robust Word Matching with PHP Sorting
+            // Fetch candidates that match ANY significant word, then sort by relevance in PHP
             $wordMatches = clone $query;
             $words = explode(' ', $searchTerm);
             $words = array_filter($words, function($w) { return strlen($w) > 2; }); // Filter short words
@@ -317,23 +317,56 @@ class GdUrlController extends MainAdminController
             if (!empty($words)) {
                  $wordMatches->where(function($q) use ($words) {
                      foreach ($words as $word) {
-                         $q->where('video_title', 'LIKE', '%' . $word . '%');
+                         $q->orWhere('video_title', 'LIKE', '%' . $word . '%');
                      }
                  });
 
-                 // Exclude previous results to avoid duplicates
+                 // Exclude previous results (Exact & Cleaned matches)
                  $wordMatches->where('video_title', 'NOT LIKE', '%' . $fileName . '%');
                  if (!empty($searchTerm) && $searchTerm !== $fileName) {
                     $wordMatches->where('video_title', 'NOT LIKE', '%' . $searchTerm . '%');
                  }
+
+                 // Limit candidates for performance before PHP processing
+                 $candidates = $wordMatches->limit(100)->get();
+
+                 // Calculate Relevance Score in PHP
+                 $candidates = $candidates->map(function($movie) use ($words) {
+                     $score = 0;
+                     $title = strtolower($movie->video_title);
+
+                     foreach ($words as $word) {
+                         $word = strtolower($word);
+                         if (strpos($title, $word) !== false) {
+                             $score++;
+                         }
+                     }
+
+                     // Bonus: Higher score if title is contained in search term words (Reverse check)
+                     // e.g. Title "Don 2" vs Words ["Don", "2", "2011"] -> 2 matches.
+                     // e.g. Title "Don" vs Words ["Don", "2", "2011"] -> 1 match.
+
+                     $movie->relevance_score = $score;
+                     return $movie;
+                 });
+
+                 // Filter out low relevance (e.g. only 1 word match if there are many words)
+                 // Or just sort desc
+                 $candidates = $candidates->sortByDesc('relevance_score')->values();
+
+                 // Keep top results
+                 $wordMatches = $candidates;
+
             } else {
-                 $wordMatches->whereRaw('0 = 1');
+                 $wordMatches = collect([]);
             }
 
             // Execute queries and merge results
             $results = $exactMatches->get()
                 ->merge($cleanedMatches->get())
-                ->merge($wordMatches->get())
+                ->merge($wordMatches)
+                ->unique('id') // Ensure uniqueness
+                ->values()
                 ->take(50); // Limit total results
 
             return response()->json([
