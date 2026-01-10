@@ -51,7 +51,7 @@
                      </div>
                      <div class="col-sm-6">
                         <div class="pull-right">
-                            <a href="{{ URL::to('admin/movie_requests') }}" class="btn btn-primary waves-effect waves-light m-r-10" target="_blank" style="margin-top: -10px; margin-right: 15px;"><i class="fa fa-list"></i> Movie Requests</a>
+                            <a href="{{ URL::to('admin/movie_requests') }}" class="btn btn-primary waves-effect waves-light m-r-10" style="margin-top: -10px; margin-right: 15px;"><i class="fa fa-list"></i> Movie Requests</a>
                             @if(isset($movie->id))
                             <a href="{{ URL::to('movies/watch/'.$movie->video_slug.'/'.$movie->id) }}" target="_blank"><h4 class="header-title m-t-0 m-b-30 text-primary" style="font-size: 20px; display: inline-block;">{{trans('words.preview')}} <i class="fa fa-eye"></i></h4> </a>
                             @endif
