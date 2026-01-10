@@ -271,13 +271,12 @@ public function addnew(Request $request)
             ],
         );
     } else {
-        // Creating → enforce unique imdb_id
+        // Creating
         $rule = [
             'movie_language'    => 'required',
             'genres'            => 'required',
             'video_title'       => 'required',
             'video_image_thumb' => 'required',
-            'imdb_id'           => 'unique:movie_videos,imdb_id',
         ];
     }
 
