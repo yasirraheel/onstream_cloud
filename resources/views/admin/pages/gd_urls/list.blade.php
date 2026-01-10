@@ -339,16 +339,6 @@ $(document).ready(function() {
                         statusCell.removeClass('badge-success').addClass('badge-danger').text('Used');
                     }
 
-                    // Show success notification in the results area
-                    $('#results-content-' + gdUrlId).html(
-                        '<div style="padding: 20px; text-align: center;">' +
-                        '<p style="color: #4caf50; font-size: 16px; margin-bottom: 10px;"><i class="fa fa-check-circle"></i> <strong>Successfully Inserted!</strong></p>' +
-                        '<p style="color: #ffffff;">URL has been inserted into movie: <strong>' + response.message + '</strong></p>' +
-                        '<p style="color: #b0bec5; font-size: 14px; margin-top: 10px;">This URL is now marked as "Used"</p>' +
-                        '</div>'
-                    );
-                    resultsRow.show();
-
                     // Update statistics counters
                     var availableCounter = $('.card-box.bg-success h2');
                     var usedCounter = $('.card-box.bg-danger h2');
@@ -361,10 +351,23 @@ $(document).ready(function() {
                         usedCounter.text(currentUsed + 1);
                     }
 
-                    // Hide success message after 3 seconds
+                    // Show flash message using existing flash message system
+                    var flashMessage = '<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                        '<span aria-hidden="true">&times;</span>' +
+                        '</button>' +
+                        response.message +
+                        '</div>';
+
+                    // Insert flash message at the top of card-box
+                    $('.card-box.table-responsive').prepend(flashMessage);
+
+                    // Auto-dismiss flash message after 5 seconds
                     setTimeout(function() {
-                        resultsRow.fadeOut();
-                    }, 3000);
+                        $('.alert-success').fadeOut(function() {
+                            $(this).remove();
+                        });
+                    }, 5000);
 
                 } else {
                     btn.prop('disabled', false);
