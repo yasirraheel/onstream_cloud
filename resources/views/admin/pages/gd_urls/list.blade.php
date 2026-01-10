@@ -316,8 +316,56 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.success) {
-                    // Reload page to show flash message and update status
-                    location.reload();
+                    // Update UI without page reload
+                    var gdUrlRow = $('#row-' + gdUrlId);
+                    var resultsRow = $('#results-' + gdUrlId);
+
+                    // Hide the results section
+                    resultsRow.hide();
+
+                    // Update the row styling to "Used"
+                    gdUrlRow.css({
+                        'background-color': '#5a2a2a',
+                        'color': '#ffcccc'
+                    });
+
+                    // Update all text cells to have the used color
+                    gdUrlRow.find('td').not(':has(.badge)').css('color', '#ffcccc');
+                    gdUrlRow.find('input[type="text"]').css('color', '#ffcccc');
+
+                    // Update status badge from Available to Used
+                    var statusCell = gdUrlRow.find('.badge-success');
+                    if (statusCell.length > 0) {
+                        statusCell.removeClass('badge-success').addClass('badge-danger').text('Used');
+                    }
+
+                    // Show success notification in the results area
+                    $('#results-content-' + gdUrlId).html(
+                        '<div style="padding: 20px; text-align: center;">' +
+                        '<p style="color: #4caf50; font-size: 16px; margin-bottom: 10px;"><i class="fa fa-check-circle"></i> <strong>Successfully Inserted!</strong></p>' +
+                        '<p style="color: #ffffff;">URL has been inserted into movie: <strong>' + response.message + '</strong></p>' +
+                        '<p style="color: #b0bec5; font-size: 14px; margin-top: 10px;">This URL is now marked as "Used"</p>' +
+                        '</div>'
+                    );
+                    resultsRow.show();
+
+                    // Update statistics counters
+                    var availableCounter = $('.card-box.bg-success h2');
+                    var usedCounter = $('.card-box.bg-danger h2');
+
+                    if (availableCounter.length > 0 && usedCounter.length > 0) {
+                        var currentAvailable = parseInt(availableCounter.text());
+                        var currentUsed = parseInt(usedCounter.text());
+
+                        availableCounter.text(currentAvailable - 1);
+                        usedCounter.text(currentUsed + 1);
+                    }
+
+                    // Hide success message after 3 seconds
+                    setTimeout(function() {
+                        resultsRow.fadeOut();
+                    }, 3000);
+
                 } else {
                     btn.prop('disabled', false);
                     btn.html('<i class="fa fa-check"></i> Insert URL');
