@@ -117,15 +117,15 @@
                             </thead>
                             <tbody>
                                 @foreach($gd_urls as $i => $url_data)
-                                <tr style="{{ $url_data->is_used ? 'background-color: #f8d7da; color: #721c24;' : '' }}" id="row-{{ $url_data->id }}">
-                                    <td>{{ $i+1 }}</td>
-                                    <td>{{ $url_data->file_name }}</td>
+                                <tr style="{{ $url_data->is_used ? 'background-color: #5a2a2a; color: #ffcccc;' : '' }}" id="row-{{ $url_data->id }}">
+                                    <td style="{{ $url_data->is_used ? 'color: #ffcccc;' : '' }}">{{ $i+1 }}</td>
+                                    <td style="{{ $url_data->is_used ? 'color: #ffcccc;' : '' }}">{{ $url_data->file_name }}</td>
                                     <td><span class="badge badge-info">{{ $url_data->folder_id ?? 'N/A' }}</span></td>
                                     <td>
-                                        <input type="text" value="{{ $url_data->url }}" class="form-control" readonly style="background: transparent; border: none; width: 100%; color: inherit;">
+                                        <input type="text" value="{{ $url_data->url }}" class="form-control" readonly style="background: transparent; border: none; width: 100%; color: {{ $url_data->is_used ? '#ffcccc' : 'inherit' }};">
                                     </td>
-                                    <td>{{ $url_data->file_size ? number_format($url_data->file_size / 1048576, 2) . ' MB' : 'N/A' }}</td>
-                                    <td>{{ $url_data->mime_type ?? 'N/A' }}</td>
+                                    <td style="{{ $url_data->is_used ? 'color: #ffcccc;' : '' }}">{{ $url_data->file_size ? number_format($url_data->file_size / 1048576, 2) . ' MB' : 'N/A' }}</td>
+                                    <td style="{{ $url_data->is_used ? 'color: #ffcccc;' : '' }}">{{ $url_data->mime_type ?? 'N/A' }}</td>
                                     <td>
                                         @if($url_data->is_used)
                                             <span class="badge badge-danger">Used</span>
@@ -133,7 +133,7 @@
                                             <span class="badge badge-success">Available</span>
                                         @endif
                                     </td>
-                                    <td>{{ $url_data->updated_at->format('Y-m-d H:i') }}</td>
+                                    <td style="{{ $url_data->is_used ? 'color: #ffcccc;' : '' }}">{{ $url_data->updated_at->format('Y-m-d H:i') }}</td>
                                     <td>
                                         <button class="btn btn-sm btn-primary search-video-btn" data-id="{{ $url_data->id }}" data-filename="{{ $url_data->file_name }}">
                                             <i class="fa fa-search"></i> Search
