@@ -10,6 +10,7 @@ use App\Movies;
 use App\Episodes;
 use App\Settings;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class GdUrlController extends MainAdminController
 {
@@ -236,5 +237,70 @@ class GdUrlController extends MainAdminController
         }
 
         return redirect()->back();
+    }
+
+    public function searchVideo(Request $request)
+    {
+        if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
+        {
+            return response()->json(['success' => false, 'message' => 'Access denied']);
+        }
+
+        try {
+            $fileName = $request->input('file_name');
+            $gdUrlId = $request->input('gd_url_id');
+
+            if (empty($fileName)) {
+                return response()->json(['success' => false, 'message' => 'File name is required']);
+            }
+
+            // Extract keywords from file name for better search
+            // Remove file extension
+            $searchTerm = pathinfo($fileName, PATHINFO_FILENAME);
+
+            // Remove common separators and normalize
+            $searchTerm = str_replace(['.', '_', '-', '(', ')', '[', ']'], ' ', $searchTerm);
+
+            // Remove common quality indicators and extra info
+            $searchTerm = preg_replace('/\b(480p|720p|1080p|2160p|4k|hd|fullhd|bluray|webrip|web-dl|hdtv|xvid|x264|x265|hevc|aac|mp4|mkv|avi)\b/i', '', $searchTerm);
+
+            // Clean up extra spaces
+            $searchTerm = trim(preg_replace('/\s+/', ' ', $searchTerm));
+
+            // Search in movie_videos table
+            $results = DB::table('movie_videos')
+                ->select('id', 'video_title', 'release_date', 'duration', 'video_type', 'video_url')
+                ->where(function($query) use ($searchTerm, $fileName) {
+                    // Search for exact match first
+                    $query->where('video_title', 'LIKE', '%' . $fileName . '%');
+
+                    // Then search for cleaned search term
+                    if (!empty($searchTerm)) {
+                        $query->orWhere('video_title', 'LIKE', '%' . $searchTerm . '%');
+                    }
+
+                    // Search for individual words (for better matching)
+                    $words = explode(' ', $searchTerm);
+                    foreach ($words as $word) {
+                        if (strlen($word) > 3) { // Only search for words longer than 3 characters
+                            $query->orWhere('video_title', 'LIKE', '%' . $word . '%');
+                        }
+                    }
+                })
+                ->orderBy('id', 'desc')
+                ->limit(50) // Limit results to prevent overwhelming output
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'results' => $results,
+                'search_term' => $searchTerm,
+                'original_filename' => $fileName
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('GD URL Video Search Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()]);
+        }
     }
 }

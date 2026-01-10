@@ -112,11 +112,12 @@
                                     <th>MIME Type</th>
                                     <th>Status</th>
                                     <th>Last Updated</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($gd_urls as $i => $url_data)
-                                <tr style="{{ $url_data->is_used ? 'background-color: #f8d7da; color: #721c24;' : '' }}">
+                                <tr style="{{ $url_data->is_used ? 'background-color: #f8d7da; color: #721c24;' : '' }}" id="row-{{ $url_data->id }}">
                                     <td>{{ $i+1 }}</td>
                                     <td>{{ $url_data->file_name }}</td>
                                     <td><span class="badge badge-info">{{ $url_data->folder_id ?? 'N/A' }}</span></td>
@@ -133,6 +134,21 @@
                                         @endif
                                     </td>
                                     <td>{{ $url_data->updated_at->format('Y-m-d H:i') }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary search-video-btn" data-id="{{ $url_data->id }}" data-filename="{{ $url_data->file_name }}">
+                                            <i class="fa fa-search"></i> Search
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr id="results-{{ $url_data->id }}" style="display: none;">
+                                    <td colspan="9">
+                                        <div class="search-results-container" style="padding: 15px; background: #f9f9f9;">
+                                            <h5>Search Results:</h5>
+                                            <div id="results-content-{{ $url_data->id }}">
+                                                <!-- Results will be loaded here -->
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -146,5 +162,73 @@
         </div>
       </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.search-video-btn').on('click', function() {
+        var btn = $(this);
+        var gdUrlId = btn.data('id');
+        var fileName = btn.data('filename');
+
+        // Show loading state
+        btn.prop('disabled', true);
+        btn.html('<i class="fa fa-spinner fa-spin"></i> Searching...');
+
+        // Show results row
+        $('#results-' + gdUrlId).show();
+        $('#results-content-' + gdUrlId).html('<p class="text-muted"><i class="fa fa-spinner fa-spin"></i> Searching for matching videos...</p>');
+
+        // Make AJAX request
+        $.ajax({
+            url: '{{ url("admin/gd_urls/search-video") }}',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                file_name: fileName,
+                gd_url_id: gdUrlId
+            },
+            success: function(response) {
+                btn.prop('disabled', false);
+                btn.html('<i class="fa fa-search"></i> Search');
+
+                if (response.success) {
+                    if (response.results.length > 0) {
+                        var html = '<div class="table-responsive"><table class="table table-sm table-striped">';
+                        html += '<thead><tr><th>#</th><th>Video Title</th><th>Release Date</th><th>Duration</th><th>Type</th><th>Action</th></tr></thead>';
+                        html += '<tbody>';
+
+                        $.each(response.results, function(index, video) {
+                            var releaseDate = video.release_date ? new Date(video.release_date * 1000).toLocaleDateString() : 'N/A';
+                            html += '<tr>';
+                            html += '<td>' + (index + 1) + '</td>';
+                            html += '<td>' + video.video_title + '</td>';
+                            html += '<td>' + releaseDate + '</td>';
+                            html += '<td>' + (video.duration || 'N/A') + '</td>';
+                            html += '<td><span class="badge badge-info">' + (video.video_type || 'N/A') + '</span></td>';
+                            html += '<td><a href="{{ url("admin/movies/edit") }}/' + video.id + '" class="btn btn-xs btn-info" target="_blank"><i class="fa fa-edit"></i> View/Edit</a></td>';
+                            html += '</tr>';
+                        });
+
+                        html += '</tbody></table></div>';
+                        html += '<p class="text-success"><strong>' + response.results.length + ' matching video(s) found</strong></p>';
+
+                        $('#results-content-' + gdUrlId).html(html);
+                    } else {
+                        $('#results-content-' + gdUrlId).html('<p class="text-warning"><i class="fa fa-exclamation-circle"></i> No matching videos found for "' + fileName + '"</p>');
+                    }
+                } else {
+                    $('#results-content-' + gdUrlId).html('<p class="text-danger"><i class="fa fa-times-circle"></i> ' + response.message + '</p>');
+                }
+            },
+            error: function(xhr) {
+                btn.prop('disabled', false);
+                btn.html('<i class="fa fa-search"></i> Search');
+                $('#results-content-' + gdUrlId).html('<p class="text-danger"><i class="fa fa-times-circle"></i> An error occurred while searching. Please try again.</p>');
+            }
+        });
+    });
+});
+</script>
 
 @endsection
