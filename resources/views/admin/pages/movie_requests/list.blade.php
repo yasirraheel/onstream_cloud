@@ -38,17 +38,11 @@
 
                         <div class="row">
                             <div class="col-sm-12">
-                                <ul class="nav nav-tabs m-b-20">
-                                    <li class="{{ $status_filter == '' ? 'active' : '' }}">
-                                        <a href="{{ url('admin/movie_requests') }}">All</a>
-                                    </li>
-                                    <li class="{{ $status_filter == 'Pending' ? 'active' : '' }}">
-                                        <a href="{{ url('admin/movie_requests?status=Pending') }}">Pending</a>
-                                    </li>
-                                    <li class="{{ $status_filter == 'Completed' ? 'active' : '' }}">
-                                        <a href="{{ url('admin/movie_requests?status=Completed') }}">Completed</a>
-                                    </li>
-                                </ul>
+                                <div class="btn-group m-b-20">
+                                    <a href="{{ url('admin/movie_requests') }}" class="btn waves-effect waves-light {{ $status_filter == '' ? 'btn-primary' : 'btn-secondary' }}">All</a>
+                                    <a href="{{ url('admin/movie_requests?status=Pending') }}" class="btn waves-effect waves-light {{ $status_filter == 'Pending' ? 'btn-warning' : 'btn-secondary' }}">Pending</a>
+                                    <a href="{{ url('admin/movie_requests?status=Completed') }}" class="btn waves-effect waves-light {{ $status_filter == 'Completed' ? 'btn-success' : 'btn-secondary' }}">Completed</a>
+                                </div>
                             </div>
                         </div>
                         <br>
