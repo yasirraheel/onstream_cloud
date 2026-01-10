@@ -637,9 +637,16 @@ $("select").on("select2:select", function (evt) {
     $(document).on('click', '.movie-candidate', function(e) {
         e.preventDefault();
         var tmdbId = $(this).data('id');
+        console.log('Movie candidate clicked. ID:', tmdbId);
+
         $('#movieSelectionModal').modal('hide');
         $('#imdb_id_title').val(tmdbId); // Put ID back in input
-        $('#import_movie_btn').click(); // Trigger fetch again
+
+        // Slight delay to ensure modal is hidden and input is set
+        setTimeout(function() {
+            console.log('Triggering import button click with ID:', $('#imdb_id_title').val());
+            $('#import_movie_btn').click(); // Trigger fetch again
+        }, 100);
     });
 
     // Handle selection from modal for Shows
