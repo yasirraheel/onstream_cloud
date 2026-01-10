@@ -70,7 +70,7 @@
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.import_from_imdb')}}</label>
                     <div class="col-sm-6">
-                      <input type="text" name="imdb_id_title" id="imdb_id_title" value="" class="form-control" placeholder="Enter IMDb ID or Title (e.g. tt1469304 or Avatar)" @if(!getcong('omdb_api_key')) disabled @endif>
+                      <input type="text" name="imdb_id_title" id="imdb_id_title" value="{{ isset($import_id) ? $import_id : '' }}" class="form-control" placeholder="Enter IMDb ID or Title (e.g. tt1469304 or Avatar)" @if(!getcong('omdb_api_key')) disabled @endif>
                       <small id="emailHelp" class="form-text text-muted">({{trans('words.imdb_search_recommended')}})</small>
                     </div>
                      <div class="col-sm-2">
@@ -687,31 +687,40 @@ function processSelectedFile(filePath, requestingField) {
  </script>
 
  <script type="text/javascript">
-     $(window).on('load', function() {
-         // Auto-fetch if import_id is present in URL
-         var urlParams = new URLSearchParams(window.location.search);
-         var importId = urlParams.get('import_id');
-         if (importId) {
-              $('#imdb_id_title').val(importId);
+      $(window).on('load', function() {
+          // Auto-fetch if import_id is present
+          var importId = "{{ isset($import_id) ? $import_id : '' }}";
 
-              // Show visual feedback
-              $("#import_movie_btn").html('Auto Fetching...');
+          // Fallback to URL param if PHP variable is empty
+          if (!importId) {
+             var urlParams = new URLSearchParams(window.location.search);
+             importId = urlParams.get('import_id');
+          }
 
-              // Ensure button is enabled and click it
-              $('#import_movie_btn').prop('disabled', false);
+          if (importId) {
+               // Ensure the input has the value
+               if (!$('#imdb_id_title').val()) {
+                   $('#imdb_id_title').val(importId);
+               }
 
-              setTimeout(function() {
-                  $('#import_movie_btn').trigger('click');
-              }, 500);
+               // Show visual feedback
+               $("#import_movie_btn").html('Auto Fetching...');
 
-              // Clean URL to avoid re-fetching on refresh
-              if (window.history.replaceState) {
-                  var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-                  window.history.replaceState({path:newUrl},'',newUrl);
-              }
-         }
-     });
-  </script>
+               // Ensure button is enabled
+               $('#import_movie_btn').prop('disabled', false);
+
+               setTimeout(function() {
+                   $('#import_movie_btn').trigger('click');
+               }, 1000);
+
+               // Clean URL to avoid re-fetching on refresh
+               if (window.history.replaceState) {
+                   var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                   window.history.replaceState({path:newUrl},'',newUrl);
+               }
+          }
+      });
+   </script>
 
  <script type="text/javascript">
 

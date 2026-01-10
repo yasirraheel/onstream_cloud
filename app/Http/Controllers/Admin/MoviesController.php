@@ -183,7 +183,7 @@ class MoviesController extends MainAdminController
     }
 
 
-    public function addMovie()    {
+    public function addMovie(Request $request)    {
 
         if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
         {
@@ -208,16 +208,9 @@ class MoviesController extends MainAdminController
             ->orderBy('movie_name', 'asc')
             ->get();
 
-        // Prepare list for dropdown: available first, then used
-        // Note: The view logic currently uses $used_urls array to mark items.
-        // We will pass the full $api_urls collection to the view and handle it there.
+        $import_id = $request->get('import_id');
 
-        // We still need 'used_urls' for backward compatibility or we can deprecate it if view is updated.
-        // Let's keep it but populated from ApiUrl table for consistency?
-        // No, 'used_urls' was used to check against external API. Now we use local table.
-        // We can just pass $api_urls.
-
-        return view('admin.pages.movies.addedit',compact('page_title','language_list','genre_list','actor_list','director_list', 'api_urls_data'));
+        return view('admin.pages.movies.addedit',compact('page_title','language_list','genre_list','actor_list','director_list', 'api_urls_data', 'import_id'));
     }
 
 public function addnew(Request $request)
