@@ -96,7 +96,7 @@ class MoviesController extends MainAdminController
         $allMovies = Movies::where('upcoming',0)->where('pending', 0)->orderBy('id','DESC')->get(); // Exclude pending
 
         // Pending Movies Count
-        $pending_count = Movies::where('pending', 1)->count();
+        $pending_count = Movies::where('video_type', '!=', 'Embed')->count();
 
         // Calculate duplicate count
         $duplicate_titles = Movies::where('upcoming', 0)
@@ -143,7 +143,7 @@ class MoviesController extends MainAdminController
         $duplicate_count = $movies_list->total();
 
         // Pending Movies Count
-        $pending_count = Movies::where('pending', 1)->count();
+        $pending_count = Movies::where('video_type', '!=', 'Embed')->count();
 
         return view('admin.pages.movies.list', compact('page_title', 'movies_list', 'language_list', 'genres_list', 'allMovies', 'duplicate_count', 'pending_count'));
     }
