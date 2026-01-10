@@ -291,28 +291,38 @@ class GdUrlController extends MainAdminController
             // Clean up extra spaces
             $searchTerm = trim(preg_replace('/\s+/', ' ', $searchTerm));
 
-            // Search in movie_videos table
-            $results = DB::table('movie_videos')
-                ->select('id', 'video_title', 'release_date', 'duration', 'video_type', 'video_url')
-                ->where(function($query) use ($searchTerm, $fileName) {
-                    // Search for exact match first
-                    $query->where('video_title', 'LIKE', '%' . $fileName . '%');
+            // Search in movies table (renamed from movie_videos in some versions, checking Movies model)
+            // Using Movies model to be safe with table name
+            $query = Movies::select('id', 'video_title', 'release_date', 'duration', 'video_type', 'video_url');
 
-                    // Then search for cleaned search term
-                    if (!empty($searchTerm)) {
-                        $query->orWhere('video_title', 'LIKE', '%' . $searchTerm . '%');
-                    }
+            $query->where(function($q) use ($searchTerm, $fileName) {
+                // 1. Exact match on full filename (most relevant)
+                $q->where('video_title', 'LIKE', '%' . $fileName . '%');
 
-                    // Search for individual words (for better matching)
-                    $words = explode(' ', $searchTerm);
-                    foreach ($words as $word) {
-                        if (strlen($word) > 3) { // Only search for words longer than 3 characters
-                            $query->orWhere('video_title', 'LIKE', '%' . $word . '%');
-                        }
-                    }
-                })
-                ->orderBy('id', 'desc')
-                ->limit(50) // Limit results to prevent overwhelming output
+                // 2. Cleaned search term match
+                if (!empty($searchTerm)) {
+                    $q->orWhere('video_title', 'LIKE', '%' . $searchTerm . '%');
+                }
+
+                // 3. Robust partial matching: Check if ANY word exists
+                $words = explode(' ', $searchTerm);
+                $words = array_filter($words, function($w) { return strlen($w) > 2; }); // Filter short words
+
+                if (!empty($words)) {
+                    $q->orWhere(function($subQ) use ($words) {
+                         foreach ($words as $word) {
+                             $subQ->where('video_title', 'LIKE', '%' . $word . '%');
+                         }
+                    });
+                     // Also try matching ANY individual word to catch partial titles like "Don 2" matching "Don"
+                     foreach ($words as $word) {
+                        $q->orWhere('video_title', 'LIKE', '%' . $word . '%');
+                     }
+                }
+            });
+
+            $results = $query->orderBy('id', 'desc')
+                ->limit(50)
                 ->get();
 
             return response()->json([
