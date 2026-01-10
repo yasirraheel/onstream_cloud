@@ -65,6 +65,34 @@ class GdUrlController extends MainAdminController
 
         $page_title = "GD URLs Module";
 
+        // Get all video URLs from movies to check usage
+        $movie_urls = Movies::pluck('video_url')->toArray();
+
+        // Fetch all GD URLs
+        $gd_urls = GdUrl::all();
+
+        // Update is_used status for each GD URL based on actual usage in movie_videos
+        foreach ($gd_urls as $gd_url) {
+            $is_used = 0;
+            $file_id = $gd_url->file_id;
+
+            if (!empty($file_id)) {
+                foreach ($movie_urls as $video_url) {
+                    // Check if the video_url contains this file_id in the format /d/{file_id}/
+                    if (strpos($video_url, "/d/{$file_id}/") !== false) {
+                        $is_used = 1;
+                        break;
+                    }
+                }
+            }
+
+            // Update if status changed
+            if ($gd_url->is_used != $is_used) {
+                $gd_url->is_used = $is_used;
+                $gd_url->save();
+            }
+        }
+
         // Fetch URLs sorted: Available first (is_used=0), then Used (is_used=1)
         // Secondary sort by file_name
         $gd_urls = GdUrl::orderBy('is_used', 'asc')
@@ -131,9 +159,8 @@ class GdUrlController extends MainAdminController
             $processed_folders = 0;
             $errors = [];
 
-            // Get all existing Used URLs from our database (Movies, Episodes) to check status
+            // Get all existing video URLs from our database to check if GD URLs are used
             $movie_urls = Movies::pluck('video_url')->toArray();
-            $all_used_urls_in_system = $movie_urls;
 
             foreach ($folder_ids as $folder_id) {
                 if (empty($folder_id)) continue;
@@ -171,8 +198,15 @@ class GdUrlController extends MainAdminController
 
                             if (empty($file_id)) continue;
 
-                            // Check if URL is used in system
-                            $is_used_system = in_array($url, $all_used_urls_in_system) ? 1 : 0;
+                            // Check if this file_id is used in any movie's video_url (which contains iframe embed code)
+                            $is_used_system = 0;
+                            foreach ($movie_urls as $video_url) {
+                                // Check if the video_url contains this file_id in the format /d/{file_id}/
+                                if (strpos($video_url, "/d/{$file_id}/") !== false) {
+                                    $is_used_system = 1;
+                                    break;
+                                }
+                            }
 
                             // Check if file exists in GdUrl table by file_id
                             $existing_entry = GdUrl::where('file_id', $file_id)->first();
