@@ -36,34 +36,43 @@ class ImportImdbController extends MainAdminController
 
         if (!$is_tmdb_id && !$is_imdb_id) {
             // It's a title, search for it
-            $search_curl = curl_init();
             $search_query = urlencode($movie_id);
+            $all_results = [];
 
-            curl_setopt_array($search_curl, [
-                CURLOPT_URL => "https://api.themoviedb.org/3/search/movie?query=$search_query&include_adult=false&language=$default_language&page=1",
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "GET",
-                CURLOPT_HTTPHEADER => [
-                    "Authorization: Bearer ".getcong('tmdb_api_key'),
-                    "accept: application/json"
-                ],
-            ]);
+            for($page=1; $page<=3; $page++) {
+                $search_curl = curl_init();
+                curl_setopt_array($search_curl, [
+                    CURLOPT_URL => "https://api.themoviedb.org/3/search/movie?query=$search_query&include_adult=false&language=$default_language&page=$page",
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => "",
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 30,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => "GET",
+                    CURLOPT_HTTPHEADER => [
+                        "Authorization: Bearer ".getcong('tmdb_api_key'),
+                        "accept: application/json"
+                    ],
+                ]);
 
-            $search_response = curl_exec($search_curl);
-            curl_close($search_curl);
+                $search_response = curl_exec($search_curl);
+                curl_close($search_curl);
 
-            $search_result = json_decode($search_response);
+                $search_result = json_decode($search_response);
 
-            if (isset($search_result->results) && count($search_result->results) > 0) {
+                if (isset($search_result->results) && count($search_result->results) > 0) {
+                    $all_results = array_merge($all_results, $search_result->results);
+                } else {
+                    break;
+                }
+            }
+
+            if (count($all_results) > 0) {
                 // Return list of candidates for selection
                 $response['imdb_status'] = 'selection_required';
                 $response['results'] = [];
 
-                foreach ($search_result->results as $result) {
+                foreach ($all_results as $result) {
                     $response['results'][] = [
                         'id' => $result->id,
                         'title' => $result->title,
