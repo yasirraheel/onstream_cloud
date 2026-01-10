@@ -65,50 +65,30 @@ class GdUrlController extends MainAdminController
 
         $page_title = "GD URLs Module";
 
-        // Get all video URLs from movies to check usage
-        $movie_urls = Movies::pluck('video_url')->toArray();
-
-        // Fetch all GD URLs with fresh data (no cache)
-        $gd_urls_to_check = GdUrl::all()->fresh();
-
-        // Update is_used status for each GD URL based on actual usage in movie_videos
-        foreach ($gd_urls_to_check as $gd_url) {
-            $is_used = 0;
-            $file_id = $gd_url->file_id;
-
-            if (!empty($file_id)) {
-                foreach ($movie_urls as $video_url) {
-                    // Check if the video_url contains this file_id in the format /d/{file_id}/
-                    if (!empty($video_url) && strpos($video_url, "/d/{$file_id}/") !== false) {
-                        $is_used = 1;
-                        break;
-                    }
+        // Update is_used status efficiently using a single query
+        // First, get all file_ids that are currently used in movies
+        $used_file_ids = Movies::whereNotNull('video_url')
+            ->where('video_url', '!=', '')
+            ->get()
+            ->pluck('video_url')
+            ->map(function($video_url) {
+                // Extract file_id from iframe src using regex
+                if (preg_match('/\/d\/([a-zA-Z0-9_-]+)\//', $video_url, $matches)) {
+                    return $matches[1];
                 }
-            }
+                return null;
+            })
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
 
-            // Update if status changed
-            if ($gd_url->is_used != $is_used) {
-                $gd_url->is_used = $is_used;
-                $gd_url->save();
-            }
-        }
+        // Mark all as unused first
+        GdUrl::query()->update(['is_used' => 0]);
 
-        // Clean up actual database duplicates by file_id
-        $all_gd_urls = GdUrl::all();
-        $file_id_groups = $all_gd_urls->groupBy('file_id');
-
-        foreach ($file_id_groups as $file_id => $group) {
-            if ($group->count() > 1) {
-                // Keep only the one with is_used = 1, or the first one if none are used
-                $to_keep = $group->where('is_used', 1)->first() ?? $group->first();
-
-                // Delete all others
-                foreach ($group as $gd_url) {
-                    if ($gd_url->id != $to_keep->id) {
-                        $gd_url->delete();
-                    }
-                }
-            }
+        // Then mark the used ones
+        if (!empty($used_file_ids)) {
+            GdUrl::whereIn('file_id', $used_file_ids)->update(['is_used' => 1]);
         }
 
         // Fetch URLs sorted: Available first (is_used=0), then Used (is_used=1)
@@ -219,37 +199,30 @@ class GdUrlController extends MainAdminController
                             $is_used_system = 0;
                             foreach ($movie_urls as $video_url) {
                                 // Check if the video_url contains this file_id in the format /d/{file_id}/
-                                if (strpos($video_url, "/d/{$file_id}/") !== false) {
+                                if (!empty($video_url) && strpos($video_url, "/d/{$file_id}/") !== false) {
                                     $is_used_system = 1;
                                     break;
                                 }
                             }
 
-                            // Check if file exists in GdUrl table by file_id
-                            $existing_entry = GdUrl::where('file_id', $file_id)->first();
-
-                            if ($existing_entry) {
-                                // Update existing entry
-                                $existing_entry->file_name = $file_name;
-                                $existing_entry->url = $url;
-                                $existing_entry->folder_id = $folder_id;
-                                $existing_entry->file_size = $file_size;
-                                $existing_entry->mime_type = $mime_type;
-                                $existing_entry->is_used = $is_used_system;
-                                $existing_entry->save();
-                                $count_updated++;
-                            } else {
-                                // Create new entry
-                                GdUrl::create([
+                            // Use updateOrCreate to prevent duplicates and handle updates atomically
+                            $gd_url = GdUrl::updateOrCreate(
+                                ['file_id' => $file_id], // Search criteria
+                                [
                                     'file_name' => $file_name,
                                     'url' => $url,
-                                    'file_id' => $file_id,
                                     'folder_id' => $folder_id,
                                     'file_size' => $file_size,
                                     'mime_type' => $mime_type,
                                     'is_used' => $is_used_system
-                                ]);
+                                ]
+                            );
+
+                            // Track if this was a new creation or update
+                            if ($gd_url->wasRecentlyCreated) {
                                 $count_added++;
+                            } else {
+                                $count_updated++;
                             }
                             $folder_files_count++;
                         }
@@ -432,5 +405,44 @@ class GdUrlController extends MainAdminController
             \Log::error('GD URL Insert Error: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()]);
         }
+    }
+
+    public function cleanupDuplicates()
+    {
+        if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
+        {
+            \Session::flash('flash_message', trans('words.access_denied'));
+            return redirect('dashboard');
+        }
+
+        try {
+            $deleted_count = 0;
+
+            // Get all duplicates grouped by file_id
+            $all_gd_urls = GdUrl::all();
+            $file_id_groups = $all_gd_urls->groupBy('file_id');
+
+            foreach ($file_id_groups as $file_id => $group) {
+                if ($group->count() > 1) {
+                    // Keep only the one with is_used = 1, or the first one if none are used
+                    $to_keep = $group->where('is_used', 1)->first() ?? $group->first();
+
+                    // Delete all others
+                    foreach ($group as $gd_url) {
+                        if ($gd_url->id != $to_keep->id) {
+                            $gd_url->delete();
+                            $deleted_count++;
+                        }
+                    }
+                }
+            }
+
+            \Session::flash('flash_message', "Cleanup completed! Deleted {$deleted_count} duplicate entries.");
+
+        } catch (\Exception $e) {
+            \Session::flash('error_flash_message', 'Error during cleanup: ' . $e->getMessage());
+        }
+
+        return redirect('admin/gd_urls');
     }
 }

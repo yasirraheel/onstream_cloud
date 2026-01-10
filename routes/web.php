@@ -55,6 +55,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::post('gd_urls/settings', 'GdUrlController@update_settings');
     Route::post('gd_urls/search-video', 'GdUrlController@searchVideo');
     Route::post('gd_urls/insert-url', 'GdUrlController@insertUrlToMovie');
+    Route::get('gd_urls/cleanup-duplicates', 'GdUrlController@cleanupDuplicates');
 
     Route::get('language', 'LanguageController@languag_list');
     Route::get('language/add_language', 'LanguageController@addLanguage');
