@@ -214,7 +214,10 @@ $(document).ready(function() {
                             html += '<td style="color: #ffffff; border-color: #445566;">' + releaseDate + '</td>';
                             html += '<td style="color: #ffffff; border-color: #445566;">' + (video.duration || 'N/A') + '</td>';
                             html += '<td style="border-color: #445566;"><span class="badge badge-info">' + (video.video_type || 'N/A') + '</span></td>';
-                            html += '<td style="border-color: #445566;"><a href="{{ url("admin/movies/edit") }}/' + video.id + '" class="btn btn-xs btn-info" target="_blank"><i class="fa fa-edit"></i> View/Edit</a></td>';
+                            html += '<td style="border-color: #445566;">';
+                            html += '<a href="{{ url("admin/movies/edit") }}/' + video.id + '" class="btn btn-xs btn-info" target="_blank" style="margin-right: 5px;"><i class="fa fa-edit"></i> View/Edit</a>';
+                            html += '<button class="btn btn-xs btn-success insert-url-btn" data-video-id="' + video.id + '" data-gd-url-id="' + gdUrlId + '"><i class="fa fa-check"></i> Insert URL</button>';
+                            html += '</td>';
                             html += '</tr>';
                         });
 
@@ -233,6 +236,47 @@ $(document).ready(function() {
                 btn.prop('disabled', false);
                 btn.html('<i class="fa fa-search"></i> Search');
                 $('#results-content-' + gdUrlId).html('<p style="color: #f44336;"><i class="fa fa-times-circle"></i> An error occurred while searching. Please try again.</p>');
+            }
+        });
+    });
+
+    // Handle Insert URL button click (using event delegation for dynamically created buttons)
+    $(document).on('click', '.insert-url-btn', function() {
+        var btn = $(this);
+        var videoId = btn.data('video-id');
+        var gdUrlId = btn.data('gd-url-id');
+
+        if (!confirm('Are you sure you want to insert this GD URL into the movie? This will update the video type to Embed and replace the existing video URL.')) {
+            return;
+        }
+
+        // Show loading state
+        btn.prop('disabled', true);
+        btn.html('<i class="fa fa-spinner fa-spin"></i> Inserting...');
+
+        // Make AJAX request
+        $.ajax({
+            url: '{{ url("admin/gd_urls/insert-url") }}',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                video_id: videoId,
+                gd_url_id: gdUrlId
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Reload page to show flash message and update status
+                    location.reload();
+                } else {
+                    btn.prop('disabled', false);
+                    btn.html('<i class="fa fa-check"></i> Insert URL');
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function(xhr) {
+                btn.prop('disabled', false);
+                btn.html('<i class="fa fa-check"></i> Insert URL');
+                alert('An error occurred while inserting the URL. Please try again.');
             }
         });
     });

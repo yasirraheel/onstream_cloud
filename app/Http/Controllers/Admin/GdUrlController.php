@@ -303,4 +303,86 @@ class GdUrlController extends MainAdminController
             return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()]);
         }
     }
+
+    public function insertUrlToMovie(Request $request)
+    {
+        if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
+        {
+            return response()->json(['success' => false, 'message' => 'Access denied']);
+        }
+
+        try {
+            $videoId = $request->input('video_id');
+            $gdUrlId = $request->input('gd_url_id');
+
+            if (empty($videoId) || empty($gdUrlId)) {
+                return response()->json(['success' => false, 'message' => 'Video ID and GD URL ID are required']);
+            }
+
+            // Get the movie
+            $movie = Movies::find($videoId);
+            if (!$movie) {
+                return response()->json(['success' => false, 'message' => 'Movie not found']);
+            }
+
+            // Get the GD URL
+            $gdUrl = GdUrl::find($gdUrlId);
+            if (!$gdUrl) {
+                return response()->json(['success' => false, 'message' => 'GD URL not found']);
+            }
+
+            $video_url = $gdUrl->url;
+
+            // Log for debugging
+            \Log::info('Processing GD URL for insert:', ['url' => $video_url, 'movie_id' => $videoId]);
+
+            // Extract file ID from Google Drive URL (same logic as MoviesController)
+            preg_match('/\/d\/(.*?)\//', $video_url, $matches);
+            $file_id = $matches[1] ?? '';
+
+            \Log::info('Extracted file ID:', ['file_id' => $file_id, 'matches' => $matches]);
+
+            if ($file_id) {
+                $video_embed_url = "https://drive.google.com/file/d/{$file_id}/preview";
+                $video_embed_code = "
+<div class=\"responsive-video\">
+    <iframe
+        src=\"{$video_embed_url}\"
+        allow=\"autoplay; fullscreen\"
+        allowfullscreen>
+    </iframe>
+</div>";
+
+                \Log::info('Generated embed code successfully');
+
+                // Update the movie
+                $movie->video_type = 'Embed';
+                $movie->video_url = $video_embed_code;
+                $movie->save();
+
+                // Mark GD URL as used
+                $gdUrl->is_used = 1;
+                $gdUrl->save();
+
+                \Log::info('Movie updated successfully', ['movie_id' => $videoId, 'video_type' => 'Embed']);
+
+                \Session::flash('flash_message', 'GD URL successfully inserted into movie "' . $movie->video_title . '". Video type set to Embed.');
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'GD URL inserted successfully',
+                    'movie_id' => $videoId,
+                    'video_type' => 'Embed'
+                ]);
+
+            } else {
+                \Log::warning('Failed to extract file ID from URL');
+                return response()->json(['success' => false, 'message' => 'Failed to extract file ID from Google Drive URL']);
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('GD URL Insert Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()]);
+        }
+    }
 }
