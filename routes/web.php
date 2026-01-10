@@ -72,6 +72,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::get('genres/delete/{id}', 'GenresController@delete');
 
     Route::get('movies', 'MoviesController@movies_list');
+    Route::get('movies/duplicate', 'MoviesController@duplicate_movies_list');
     Route::get('upcoming_movies', 'MoviesController@upcoming_movies_list');
     Route::get('pending_movies', 'MoviesController@pending_movies_list');
     Route::get('movies/add_movie', 'MoviesController@addMovie');

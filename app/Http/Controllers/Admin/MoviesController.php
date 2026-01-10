@@ -94,8 +94,54 @@ class MoviesController extends MainAdminController
 
         }
         $allMovies = Movies::where('upcoming',0)->where('pending', 0)->orderBy('id','DESC')->get(); // Exclude pending
-        return view('admin.pages.movies.list',compact('page_title','movies_list','language_list','genres_list','allMovies', 'trial_movies'));
+
+        // Calculate duplicate count
+        $duplicate_titles = Movies::where('upcoming', 0)
+            ->where('pending', 0)
+            ->select('video_title')
+            ->groupBy('video_title')
+            ->havingRaw('COUNT(*) > 1')
+            ->pluck('video_title');
+
+        $duplicate_count = Movies::where('upcoming', 0)
+            ->where('pending', 0)
+            ->whereIn('video_title', $duplicate_titles)
+            ->count();
+
+        return view('admin.pages.movies.list',compact('page_title','movies_list','language_list','genres_list','allMovies', 'trial_movies', 'duplicate_count'));
     }
+
+    public function duplicate_movies_list()
+    {
+        if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
+        {
+            \Session::flash('flash_message', trans('words.access_denied'));
+            return redirect('dashboard');
+        }
+
+        $page_title = 'Duplicate Movies';
+        $language_list = Language::orderBy('language_name')->get();
+        $genres_list = Genres::orderBy('genre_name')->get();
+
+        $duplicate_titles = Movies::where('upcoming', 0)
+            ->where('pending', 0)
+            ->select('video_title')
+            ->groupBy('video_title')
+            ->havingRaw('COUNT(*) > 1')
+            ->pluck('video_title');
+
+        $movies_list = Movies::where('upcoming', 0)
+            ->where('pending', 0)
+            ->whereIn('video_title', $duplicate_titles)
+            ->orderBy('video_title')
+            ->paginate(12);
+
+        $allMovies = Movies::where('upcoming',0)->where('pending', 0)->orderBy('id','DESC')->get();
+        $duplicate_count = $movies_list->total();
+
+        return view('admin.pages.movies.list', compact('page_title', 'movies_list', 'language_list', 'genres_list', 'allMovies', 'duplicate_count'));
+    }
+
     public function upcoming_movies_list(){
         if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
         {
