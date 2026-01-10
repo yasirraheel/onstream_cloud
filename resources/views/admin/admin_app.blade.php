@@ -619,6 +619,12 @@ $("select").on("select2:select", function (evt) {
                         $('#result').html('<div class="alert alert-danger alert-dismissable m-t-15"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>No data found in IMDb database..</div>');
                         $('#import_movie_btn').html('{{trans('words.fetch')}}');
                     }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $('.card-box').removeClass('payment_loading');
+                    $("#loading").hide();
+                    alert('Error: ' + textStatus + ' - ' + errorThrown);
+                    $('#import_movie_btn').html('{{trans('words.fetch')}}');
                 }
             });
         }
@@ -766,6 +772,12 @@ $("select").on("select2:select", function (evt) {
                         $('#result').html('<div class="alert alert-danger alert-dismissable m-t-15"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>No data found in IMDb database..</div>');
                         $('#import_show_btn').html('{{trans('words.fetch')}}');
                     }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $('.card-box').removeClass('payment_loading');
+                    $("#loading").hide();
+                    alert('Error: ' + textStatus + ' - ' + errorThrown);
+                    $('#import_show_btn').html('{{trans('words.fetch')}}');
                 }
             });
         }

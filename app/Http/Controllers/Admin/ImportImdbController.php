@@ -111,30 +111,31 @@ class ImportImdbController extends MainAdminController
         {
 
             $response['imdb_status']    = 'success';
-            $response['imdbid']         = $result->imdb_id;
-            $response['imdb_rating']         = round($result->vote_average,1);
+            $response['imdbid']         = isset($result->imdb_id) ? $result->imdb_id : '';
+            $response['imdb_rating']         = isset($result->vote_average) ? round($result->vote_average,1) : 0;
             $response['imdb_votes']         = '';
 
-            $response['title']          = $result->title;
+            $response['title']          = isset($result->title) ? $result->title : '';
 
-            $minutes = $result->runtime;
+            $minutes = isset($result->runtime) ? $result->runtime : 0;
 
             $hours = floor($minutes / 60);
             $min = $minutes - ($hours * 60);
 
             $response['runtime']        = $hours."h ".$min."m";
-            $response['released']       = date('m/d/Y',strtotime($result->release_date));
+            $response['released']       = isset($result->release_date) ? date('m/d/Y',strtotime($result->release_date)) : '';
 
             //Get Lang
-            $lang_list=$result->spoken_languages[0]->english_name;
-            $response['language']          = Language::getLanguageID($lang_list);
+            $lang_list = isset($result->spoken_languages[0]->english_name) ? $result->spoken_languages[0]->english_name : (isset($result->original_language) ? $result->original_language : 'English');
+            $response['language'] = Language::getLanguageID($lang_list);
 
             //Get Genre
-            //$genre_names          = $result->genres;
-
-            foreach($result->genres as $gname)
-            {
-                $genre[]= Genres::getGenresID($gname->name);
+            $genre = [];
+            if (isset($result->genres) && is_array($result->genres)) {
+                foreach($result->genres as $gname)
+                {
+                    $genre[]= Genres::getGenresID($gname->name);
+                }
             }
 
             //print_r($genre);
@@ -144,7 +145,8 @@ class ImportImdbController extends MainAdminController
 
             //$cast_result= json_decode($cast_response);
 
-            $cast_length = count($result->credits->cast);
+            $cast_length = isset($result->credits->cast) ? count($result->credits->cast) : 0;
+            $actors_names = [];
 
             for($cn=0;$cn<= 10;$cn++)
             {
@@ -225,17 +227,18 @@ class ImportImdbController extends MainAdminController
 
             $response['actors']=$actors_names;
 
-            $crew_length = count($result->credits->crew);
+            $director_names = [];
+            $crew_length = isset($result->credits->crew) ? count($result->credits->crew) : 0;
 
-            for($cn=0;$cn<= $crew_length;$cn++)
+            for($cn=0;$cn < $crew_length;$cn++)
             {
                 //echo $crew_result->crew[$cn]->job;
                 if(isset($result->credits->crew[$cn]->job) AND $result->credits->crew[$cn]->job == "Director")
                 {
-                    if(isset($result->credits->cast[$cn]->id))
+                    if(isset($result->credits->crew[$cn]->id))
                     {
 
-                            $d_id = $result->credits->cast[$cn]->id;
+                            $d_id = $result->credits->crew[$cn]->id;
                             $d_name =  $result->credits->crew[$cn]->name;
 
                             //Add Director
@@ -267,9 +270,9 @@ class ImportImdbController extends MainAdminController
 
                                 $director_result= json_decode($director_response);
 
-                                $ad_bio = $director_result->biography;
-                                $ad_birthdate = $director_result->birthday;
-                                $ad_place_of_birth = $director_result->place_of_birth;
+                                $ad_bio = isset($director_result->biography) ? $director_result->biography : '';
+                                $ad_birthdate = isset($director_result->birthday) ? $director_result->birthday : '';
+                                $ad_place_of_birth = isset($director_result->place_of_birth) ? $director_result->place_of_birth : '';
 
                                 //Get Actor Details End
 
@@ -286,7 +289,7 @@ class ImportImdbController extends MainAdminController
                                 $ad_obj->ad_slug = $ad_slug;
 
 
-                            if($result->credits->crew[$cn]->profile_path!="")
+                            if(isset($result->credits->crew[$cn]->profile_path) && $result->credits->crew[$cn]->profile_path!="")
                             {
                                 $crew_profile_path = 'https://image.tmdb.org/t/p/w300'.$result->credits->crew[$cn]->profile_path;
 
@@ -312,18 +315,15 @@ class ImportImdbController extends MainAdminController
                     }
 
                 }
-                else
-                {
-                        $director_names[]='';
-                }
+                // Removed else block that adds empty string, as it clutters the array
 
             }
 
             $response['director']=$director_names;
 
-            $response['plot']  = $result->overview;
+            $response['plot']  = isset($result->overview) ? $result->overview : '';
 
-            $poster_path = 'https://image.tmdb.org/t/p/w300'.$result->poster_path.'?language='.$default_language;
+            $poster_path = isset($result->poster_path) ? 'https://image.tmdb.org/t/p/w300'.$result->poster_path.'?language='.$default_language : '';
 
             $get_file_name = parse_url($poster_path, PHP_URL_PATH);
 
@@ -331,7 +331,7 @@ class ImportImdbController extends MainAdminController
             $response['thumbnail_name']  =basename($get_file_name);
 
 
-            $backdrop_path = 'https://image.tmdb.org/t/p/w780'.$result->backdrop_path.'?language='.$default_language;
+            $backdrop_path = isset($result->backdrop_path) ? 'https://image.tmdb.org/t/p/w780'.$result->backdrop_path.'?language='.$default_language : '';
 
             $backdrop_file_name = parse_url($backdrop_path, PHP_URL_PATH);
 
@@ -339,13 +339,15 @@ class ImportImdbController extends MainAdminController
             $response['poster_name']  =basename($backdrop_file_name);
 
             //Get Trailer
-            $videos_length = count($result->videos->results);
+            $videos_length = isset($result->videos->results) ? count($result->videos->results) : 0;
+            $response['trailer_url'] = '';
 
-            for($vn=0;$vn<= $videos_length;$vn++)
+            for($vn=0;$vn < $videos_length;$vn++)
             {
                 if(isset($result->videos->results[$vn]->type) AND $result->videos->results[$vn]->type == "Trailer")
                 {
                     $response['trailer_url'] = 'https://www.youtube.com/watch?v='.$result->videos->results[$vn]->key;
+                    break; // Only need one trailer
                 }
             }
 
