@@ -33,6 +33,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::get('profile', 'AdminController@profile');
     Route::post('profile', 'AdminController@updateProfile');
     Route::get('verify_purchase', 'AdminController@verify_purchase');
+    Route::post('ajax_status', 'ActionsController@ajax_status');
+    Route::post('ajax_delete', 'ActionsController@ajax_delete');
 
     Route::get('settings', 'SettingsController@settings');
 
