@@ -18,7 +18,7 @@
 
 @media only screen and (min-width: 1365px) {
 .container-fluid {
-	max-width: 1350px;
+	max-width: 100%;
 	width: 100%;
 }
 .video-js.vjs-16-9 {
