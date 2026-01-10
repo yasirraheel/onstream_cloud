@@ -142,8 +142,8 @@
                                 </tr>
                                 <tr id="results-{{ $url_data->id }}" style="display: none;">
                                     <td colspan="9">
-                                        <div class="search-results-container" style="padding: 15px; background: #f9f9f9;">
-                                            <h5>Search Results:</h5>
+                                        <div class="search-results-container" style="padding: 15px; background: #2c3e50; color: #ffffff;">
+                                            <h5 style="color: #ffffff;">Search Results:</h5>
                                             <div id="results-content-{{ $url_data->id }}">
                                                 <!-- Results will be loaded here -->
                                             </div>
@@ -177,7 +177,7 @@ $(document).ready(function() {
 
         // Show results row
         $('#results-' + gdUrlId).show();
-        $('#results-content-' + gdUrlId).html('<p class="text-muted"><i class="fa fa-spinner fa-spin"></i> Searching for matching videos...</p>');
+        $('#results-content-' + gdUrlId).html('<p style="color: #b0bec5;"><i class="fa fa-spinner fa-spin"></i> Searching for matching videos...</p>');
 
         // Make AJAX request
         $.ajax({
@@ -194,7 +194,7 @@ $(document).ready(function() {
 
                 if (response.success) {
                     if (response.results.length > 0) {
-                        var html = '<div class="table-responsive"><table class="table table-sm table-striped">';
+                        var html = '<div class="table-responsive"><table class="table table-dark table-sm table-striped">';
                         html += '<thead><tr><th>#</th><th>Video Title</th><th>Release Date</th><th>Duration</th><th>Type</th><th>Action</th></tr></thead>';
                         html += '<tbody>';
 
@@ -211,20 +211,20 @@ $(document).ready(function() {
                         });
 
                         html += '</tbody></table></div>';
-                        html += '<p class="text-success"><strong>' + response.results.length + ' matching video(s) found</strong></p>';
+                        html += '<p style="color: #4caf50;"><strong>' + response.results.length + ' matching video(s) found</strong></p>';
 
                         $('#results-content-' + gdUrlId).html(html);
                     } else {
-                        $('#results-content-' + gdUrlId).html('<p class="text-warning"><i class="fa fa-exclamation-circle"></i> No matching videos found for "' + fileName + '"</p>');
+                        $('#results-content-' + gdUrlId).html('<p style="color: #ffc107;"><i class="fa fa-exclamation-circle"></i> No matching videos found for "' + fileName + '"</p>');
                     }
                 } else {
-                    $('#results-content-' + gdUrlId).html('<p class="text-danger"><i class="fa fa-times-circle"></i> ' + response.message + '</p>');
+                    $('#results-content-' + gdUrlId).html('<p style="color: #f44336;"><i class="fa fa-times-circle"></i> ' + response.message + '</p>');
                 }
             },
             error: function(xhr) {
                 btn.prop('disabled', false);
                 btn.html('<i class="fa fa-search"></i> Search');
-                $('#results-content-' + gdUrlId).html('<p class="text-danger"><i class="fa fa-times-circle"></i> An error occurred while searching. Please try again.</p>');
+                $('#results-content-' + gdUrlId).html('<p style="color: #f44336;"><i class="fa fa-times-circle"></i> An error occurred while searching. Please try again.</p>');
             }
         });
     });
