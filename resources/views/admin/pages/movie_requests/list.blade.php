@@ -7,21 +7,27 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-4">
-                     <div class="card-box">
-                        <h4 class="header-title mt-0 m-b-30">Total Requests</h4>
-                        <h2 class="p-t-10 mb-0"> {{ number_format($total_requests) }} </h2>
+                     <div class="card-box widget-user bg-primary text-white">
+                        <div class="text-center">
+                            <h2 class="text-white" data-plugin="counterup">{{ number_format($total_requests) }}</h2>
+                            <h5>Total Requests</h5>
+                        </div>
                      </div>
                 </div>
                 <div class="col-md-4">
-                     <div class="card-box">
-                        <h4 class="header-title mt-0 m-b-30">Pending Requests</h4>
-                        <h2 class="p-t-10 mb-0 text-warning"> {{ number_format($pending_requests) }} </h2>
+                     <div class="card-box widget-user bg-warning text-white">
+                        <div class="text-center">
+                            <h2 class="text-white" data-plugin="counterup">{{ number_format($pending_requests) }}</h2>
+                            <h5>Pending Requests</h5>
+                        </div>
                      </div>
                 </div>
                 <div class="col-md-4">
-                     <div class="card-box">
-                        <h4 class="header-title mt-0 m-b-30">Completed Requests</h4>
-                        <h2 class="p-t-10 mb-0 text-success"> {{ number_format($completed_requests) }} </h2>
+                     <div class="card-box widget-user bg-success text-white">
+                        <div class="text-center">
+                            <h2 class="text-white" data-plugin="counterup">{{ number_format($completed_requests) }}</h2>
+                            <h5>Completed Requests</h5>
+                        </div>
                      </div>
                 </div>
             </div>
