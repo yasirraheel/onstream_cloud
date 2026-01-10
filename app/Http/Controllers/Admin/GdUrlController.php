@@ -93,21 +93,28 @@ class GdUrlController extends MainAdminController
             }
         }
 
+        // Clean up actual database duplicates by file_id
+        $all_gd_urls = GdUrl::all();
+        $file_id_groups = $all_gd_urls->groupBy('file_id');
+
+        foreach ($file_id_groups as $file_id => $group) {
+            if ($group->count() > 1) {
+                // Keep only the one with is_used = 1, or the first one if none are used
+                $to_keep = $group->where('is_used', 1)->first() ?? $group->first();
+
+                // Delete all others
+                foreach ($group as $gd_url) {
+                    if ($gd_url->id != $to_keep->id) {
+                        $gd_url->delete();
+                    }
+                }
+            }
+        }
+
         // Fetch URLs sorted: Available first (is_used=0), then Used (is_used=1)
-        // Get unique file_ids only (in case there are duplicates)
-        $gd_urls_raw = GdUrl::orderBy('is_used', 'asc')
+        $gd_urls = GdUrl::orderBy('is_used', 'asc')
             ->orderBy('file_name', 'asc')
             ->get();
-
-        // Remove duplicates by file_id, keeping the first occurrence
-        $seen_file_ids = [];
-        $gd_urls = $gd_urls_raw->filter(function($url) use (&$seen_file_ids) {
-            if (in_array($url->file_id, $seen_file_ids)) {
-                return false;
-            }
-            $seen_file_ids[] = $url->file_id;
-            return true;
-        });
 
         // Summary Statistics
         $total_urls = $gd_urls->count();
