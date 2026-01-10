@@ -249,10 +249,6 @@ $(document).ready(function() {
         var videoId = btn.data('video-id');
         var gdUrlId = btn.data('gd-url-id');
 
-        if (!confirm('Are you sure you want to insert this GD URL into the movie? This will update the video type to Embed and replace the existing video URL.')) {
-            return;
-        }
-
         // Show loading state
         btn.prop('disabled', true);
         btn.html('<i class="fa fa-spinner fa-spin"></i> Inserting...');
