@@ -38,7 +38,7 @@
             <div class="form-group row">
               <label class="col-sm-3 col-form-label">Message *</label>
               <div class="col-sm-8">
-                <textarea name="message" id="announcement_message" class="form-control" rows="6" required>{{ isset($announcement->message) ? $announcement->message : old('message') }}</textarea>
+                <textarea name="message" id="announcement_message" class="form-control" rows="6">{{ isset($announcement->message) ? $announcement->message : old('message') }}</textarea>
               </div>
             </div>
 
@@ -130,6 +130,31 @@
   </div>
 </div>
 
+<style>
+  .ck-editor__editable {
+    background-color: #1a2234 !important;
+    color: #ffffff !important;
+  }
+  .ck.ck-editor__main>.ck-editor__editable {
+    background: #1a2234 !important;
+  }
+  .ck.ck-toolbar {
+    background-color: #2b3648 !important;
+    border-color: #3e4d66 !important;
+  }
+  .ck.ck-button {
+    color: #e0e0e0 !important;
+  }
+  .ck.ck-button:hover {
+    background-color: #3e4d66 !important;
+  }
+  .ck.ck-list {
+    background: #2b3648 !important;
+  }
+  .ck.ck-dropdown__panel {
+    background: #2b3648 !important;
+  }
+</style>
 <script src="https://cdn.ckeditor.com/ckeditor5/41.2.0/classic/ckeditor.js"></script>
 <script>
   (function() {
