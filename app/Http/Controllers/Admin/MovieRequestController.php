@@ -16,7 +16,7 @@ class MovieRequestController extends MainAdminController
         check_verify_purchase();
     }
 
-    public function index()
+    public function index(Request $request)
     {
         if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
         {
@@ -26,9 +26,22 @@ class MovieRequestController extends MainAdminController
 
         $page_title = "Movie Requests";
 
-        $requests = MovieRequest::orderBy('id', 'DESC')->paginate(20);
+        $total_requests = MovieRequest::count();
+        $pending_requests = MovieRequest::where('status', 'Pending')->count();
+        $completed_requests = MovieRequest::where('status', 'Completed')->count();
 
-        return view('admin.pages.movie_requests.list', compact('page_title', 'requests'));
+        $status_filter = $request->get('status');
+        
+        $query = MovieRequest::orderBy('id', 'DESC');
+
+        if($status_filter){
+             $query->where('status', $status_filter);
+        }
+
+        $requests = $query->paginate(20);
+        $requests->appends($request->all());
+
+        return view('admin.pages.movie_requests.list', compact('page_title', 'requests', 'total_requests', 'pending_requests', 'completed_requests', 'status_filter'));
     }
 
     public function delete($id)

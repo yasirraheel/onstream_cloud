@@ -6,6 +6,27 @@
     <div class="content">
         <div class="container-fluid">
             <div class="row">
+                <div class="col-md-4">
+                     <div class="card-box">
+                        <h4 class="header-title mt-0 m-b-30">Total Requests</h4>
+                        <h2 class="p-t-10 mb-0"> {{ number_format($total_requests) }} </h2>
+                     </div>
+                </div>
+                <div class="col-md-4">
+                     <div class="card-box">
+                        <h4 class="header-title mt-0 m-b-30">Pending Requests</h4>
+                        <h2 class="p-t-10 mb-0 text-warning"> {{ number_format($pending_requests) }} </h2>
+                     </div>
+                </div>
+                <div class="col-md-4">
+                     <div class="card-box">
+                        <h4 class="header-title mt-0 m-b-30">Completed Requests</h4>
+                        <h2 class="p-t-10 mb-0 text-success"> {{ number_format($completed_requests) }} </h2>
+                     </div>
+                </div>
+            </div>
+
+            <div class="row">
                 <div class="col-12">
                     <div class="card-box table-responsive">
 
@@ -14,6 +35,23 @@
                                 <h4 class="m-t-0 header-title"><b>{{$page_title}}</b></h4>
                             </div>
                         </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <ul class="nav nav-tabs m-b-20">
+                                    <li class="{{ $status_filter == '' ? 'active' : '' }}">
+                                        <a href="{{ url('admin/movie_requests') }}">All</a>
+                                    </li>
+                                    <li class="{{ $status_filter == 'Pending' ? 'active' : '' }}">
+                                        <a href="{{ url('admin/movie_requests?status=Pending') }}">Pending</a>
+                                    </li>
+                                    <li class="{{ $status_filter == 'Completed' ? 'active' : '' }}">
+                                        <a href="{{ url('admin/movie_requests?status=Completed') }}">Completed</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <br>
 
                         @if(Session::has('flash_message'))
                             <div class="alert alert-success">
