@@ -95,6 +95,9 @@ class MoviesController extends MainAdminController
         }
         $allMovies = Movies::where('upcoming',0)->where('pending', 0)->orderBy('id','DESC')->get(); // Exclude pending
 
+        // Pending Movies Count
+        $pending_count = Movies::where('pending', 1)->count();
+
         // Calculate duplicate count
         $duplicate_titles = Movies::where('upcoming', 0)
             ->where('pending', 0)
@@ -108,7 +111,7 @@ class MoviesController extends MainAdminController
             ->whereIn('video_title', $duplicate_titles)
             ->count();
 
-        return view('admin.pages.movies.list',compact('page_title','movies_list','language_list','genres_list','allMovies', 'trial_movies', 'duplicate_count'));
+        return view('admin.pages.movies.list',compact('page_title','movies_list','language_list','genres_list','allMovies', 'trial_movies', 'duplicate_count', 'pending_count'));
     }
 
     public function duplicate_movies_list()
@@ -139,7 +142,10 @@ class MoviesController extends MainAdminController
         $allMovies = Movies::where('upcoming',0)->where('pending', 0)->orderBy('id','DESC')->get();
         $duplicate_count = $movies_list->total();
 
-        return view('admin.pages.movies.list', compact('page_title', 'movies_list', 'language_list', 'genres_list', 'allMovies', 'duplicate_count'));
+        // Pending Movies Count
+        $pending_count = Movies::where('pending', 1)->count();
+
+        return view('admin.pages.movies.list', compact('page_title', 'movies_list', 'language_list', 'genres_list', 'allMovies', 'duplicate_count', 'pending_count'));
     }
 
     public function upcoming_movies_list(){

@@ -19,6 +19,9 @@
               <div class="card-box table-responsive">
                    @if(isset($allMovies) && $allMovies->count())
     <h3 class="text-white">Total Movies: ({{ $allMovies->count() }})</h3>
+    @if(isset($pending_count) && $pending_count > 0)
+        <a href="{{ URL::to('admin/pending_movies') }}" class="text-warning" style="font-size: 16px;">Pending Movies: ({{ $pending_count }})</a><br/>
+    @endif
     @if(isset($duplicate_count) && $duplicate_count > 0)
         <a href="{{ URL::to('admin/movies/duplicate') }}" class="text-danger" style="font-size: 16px;">Duplicate Movies: ({{ $duplicate_count }})</a>
     @endif

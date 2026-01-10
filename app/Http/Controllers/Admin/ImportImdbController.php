@@ -12,18 +12,18 @@ use App\Http\Requests;
 use Illuminate\Http\Request;
 use Session;
 use Intervention\Image\Facades\Image;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 
 class ImportImdbController extends MainAdminController
 {
 	public function __construct()
     {
-		 $this->middleware('auth');	
-         
+		 $this->middleware('auth');
+
     }
 
     public function find_imdb_movie()
-    { 
+    {
         $movie_id= $_GET['id'];
 
 //   return response()->json("Hello");
@@ -37,7 +37,7 @@ class ImportImdbController extends MainAdminController
             // It's a title, search for it
             $search_curl = curl_init();
             $search_query = urlencode($movie_id);
-            
+
             curl_setopt_array($search_curl, [
                 CURLOPT_URL => "https://api.themoviedb.org/3/search/movie?query=$search_query&include_adult=false&language=$default_language&page=1",
                 CURLOPT_RETURNTRANSFER => true,
@@ -51,22 +51,36 @@ class ImportImdbController extends MainAdminController
                     "accept: application/json"
                 ],
             ]);
-            
+
             $search_response = curl_exec($search_curl);
             curl_close($search_curl);
-            
+
             $search_result = json_decode($search_response);
-            
+
             if (isset($search_result->results) && count($search_result->results) > 0) {
-                // Take the first result
-                $movie_id = $search_result->results[0]->id;
+                // Return list of candidates for selection
+                $response['imdb_status'] = 'selection_required';
+                $response['results'] = [];
+
+                foreach ($search_result->results as $result) {
+                    $response['results'][] = [
+                        'id' => $result->id,
+                        'title' => $result->title,
+                        'release_date' => isset($result->release_date) ? $result->release_date : 'N/A',
+                        'poster_path' => isset($result->poster_path) ? 'https://image.tmdb.org/t/p/w92' . $result->poster_path : null,
+                        'overview' => isset($result->overview) ? Str::limit($result->overview, 100) : ''
+                    ];
+                }
+
+                echo json_encode($response);
+                exit;
             } else {
                  $response['imdb_status'] = 'fail';
                  echo json_encode($response);
                  exit;
             }
         }
-         
+
         //For Movies Details
         $curl = curl_init();
 
@@ -90,13 +104,13 @@ class ImportImdbController extends MainAdminController
         curl_close($curl);
 
         $result= json_decode($response_obj);
-        
+
         //dd($result);
 
         if(isset($result))
-        {   
+        {
 
-            $response['imdb_status']    = 'success';             
+            $response['imdb_status']    = 'success';
             $response['imdbid']         = $result->imdb_id;
             $response['imdb_rating']         = round($result->vote_average,1);
             $response['imdb_votes']         = '';
@@ -113,13 +127,13 @@ class ImportImdbController extends MainAdminController
 
             //Get Lang
             $lang_list=$result->spoken_languages[0]->english_name;
-            $response['language']          = Language::getLanguageID($lang_list);   
-            
+            $response['language']          = Language::getLanguageID($lang_list);
+
             //Get Genre
             //$genre_names          = $result->genres;
 
             foreach($result->genres as $gname)
-            { 
+            {
                 $genre[]= Genres::getGenresID($gname->name);
             }
 
@@ -133,12 +147,12 @@ class ImportImdbController extends MainAdminController
             $cast_length = count($result->credits->cast);
 
             for($cn=0;$cn<= 10;$cn++)
-            {   
+            {
                 if(isset($result->credits->cast[$cn]))
                 {
                     $a_id = $result->credits->cast[$cn]->id;
                     $a_name = $result->credits->cast[$cn]->original_name;
-                    
+
                     $ad_info = ActorDirector::where('ad_name',$a_name)->where('ad_type','actor')->first();
 
                     if(!$ad_info)
@@ -165,8 +179,8 @@ class ImportImdbController extends MainAdminController
 
                         curl_close($curl1);
 
-                        $actor_result= json_decode($actor_response); 
-                        
+                        $actor_result= json_decode($actor_response);
+
                         $ad_bio = $actor_result->biography;
                         $ad_birthdate = $actor_result->birthday;
                         $ad_place_of_birth = $actor_result->place_of_birth;
@@ -174,35 +188,35 @@ class ImportImdbController extends MainAdminController
                         //Get Actor Details End
 
                         $ad_obj = new ActorDirector;
-            
+
                         $ad_slug = Str::slug($a_name, '-',null);
 
-                        $ad_obj->ad_type = 'actor'; 
-                        $ad_obj->ad_name = addslashes($a_name); 
-                        $ad_obj->ad_bio = addslashes($ad_bio); 
-                        $ad_obj->ad_birthdate = strtotime($ad_birthdate); 
-                        $ad_obj->ad_place_of_birth = addslashes($ad_place_of_birth); 
-                        $ad_obj->ad_tmdb_id = $a_id; 
+                        $ad_obj->ad_type = 'actor';
+                        $ad_obj->ad_name = addslashes($a_name);
+                        $ad_obj->ad_bio = addslashes($ad_bio);
+                        $ad_obj->ad_birthdate = strtotime($ad_birthdate);
+                        $ad_obj->ad_place_of_birth = addslashes($ad_place_of_birth);
+                        $ad_obj->ad_tmdb_id = $a_id;
                         $ad_obj->ad_slug = $ad_slug;
 
                         if($result->credits->cast[$cn]->profile_path!="")
                         {
                             $cast_profile_path = 'https://image.tmdb.org/t/p/w300'.$result->credits->cast[$cn]->profile_path;
-    
+
                             $cast_file_name = parse_url($cast_profile_path, PHP_URL_PATH);
-        
+
                             $cast_image_source           =   $cast_profile_path;
                             $cast_save_to                =   public_path('/upload/images/'.basename($cast_file_name));
-                            
+
                             grab_image($cast_image_source,$cast_save_to);
-        
+
                             $ad_obj->ad_image = 'upload/images/'.basename($cast_file_name);
                         }
-                        
-                        
+
+
                         $ad_obj->save();
-                    }                 
-    
+                    }
+
                     $a_id=ActorDirector::getActorDirectorID($a_name);
 
                     $actors_names[]="<option value='".$a_id."' selected>$a_name</option>";
@@ -212,7 +226,7 @@ class ImportImdbController extends MainAdminController
             $response['actors']=$actors_names;
 
             $crew_length = count($result->credits->crew);
- 
+
             for($cn=0;$cn<= $crew_length;$cn++)
             {
                 //echo $crew_result->crew[$cn]->job;
@@ -223,7 +237,7 @@ class ImportImdbController extends MainAdminController
 
                             $d_id = $result->credits->cast[$cn]->id;
                             $d_name =  $result->credits->crew[$cn]->name;
-                            
+
                             //Add Director
                             $ad_info = ActorDirector::where('ad_name',addslashes($d_name))->where('ad_type','director')->first();
 
@@ -251,8 +265,8 @@ class ImportImdbController extends MainAdminController
 
                                 curl_close($curl2);
 
-                                $director_result= json_decode($director_response); 
-                                
+                                $director_result= json_decode($director_response);
+
                                 $ad_bio = $director_result->biography;
                                 $ad_birthdate = $director_result->birthday;
                                 $ad_place_of_birth = $director_result->place_of_birth;
@@ -260,57 +274,57 @@ class ImportImdbController extends MainAdminController
                                 //Get Actor Details End
 
                                 $ad_obj = new ActorDirector;
-                    
+
                                 $ad_slug = Str::slug($d_name, '-',null);
 
-                                $ad_obj->ad_type = 'director'; 
-                                $ad_obj->ad_name = addslashes($d_name); 
-                                $ad_obj->ad_bio = addslashes($ad_bio); 
-                                $ad_obj->ad_birthdate = strtotime($ad_birthdate); 
-                                $ad_obj->ad_place_of_birth = addslashes($ad_place_of_birth); 
-                                $ad_obj->ad_tmdb_id = $d_id; 
+                                $ad_obj->ad_type = 'director';
+                                $ad_obj->ad_name = addslashes($d_name);
+                                $ad_obj->ad_bio = addslashes($ad_bio);
+                                $ad_obj->ad_birthdate = strtotime($ad_birthdate);
+                                $ad_obj->ad_place_of_birth = addslashes($ad_place_of_birth);
+                                $ad_obj->ad_tmdb_id = $d_id;
                                 $ad_obj->ad_slug = $ad_slug;
 
-                            
+
                             if($result->credits->crew[$cn]->profile_path!="")
                             {
                                 $crew_profile_path = 'https://image.tmdb.org/t/p/w300'.$result->credits->crew[$cn]->profile_path;
 
                                 $crew_file_name = parse_url($crew_profile_path, PHP_URL_PATH);
-        
+
                                 $crew_image_source           =   $crew_profile_path;
                                 $crew_save_to                =   public_path('/upload/images/'.basename($crew_file_name));
-                                
+
                                 grab_image($crew_image_source,$crew_save_to);
 
                                 $ad_obj->ad_image = 'upload/images/'.basename($crew_file_name);
                             }
-                            
-                            
-                            $ad_obj->save();
-                           }                 
 
-    
+
+                            $ad_obj->save();
+                           }
+
+
                         $d_id=ActorDirector::getActorDirectorID($d_name);
 
                         $director_names[]="<option value='".$d_id."' selected>$d_name</option>";
 
                     }
-                        
+
                 }
                 else
                 {
                         $director_names[]='';
                 }
-                
+
             }
-             
+
             $response['director']=$director_names;
- 
+
             $response['plot']  = $result->overview;
- 
+
             $poster_path = 'https://image.tmdb.org/t/p/w300'.$result->poster_path.'?language='.$default_language;
-            
+
             $get_file_name = parse_url($poster_path, PHP_URL_PATH);
 
             $response['thumbnail']          = $poster_path;
@@ -332,7 +346,7 @@ class ImportImdbController extends MainAdminController
                 if(isset($result->videos->results[$vn]->type) AND $result->videos->results[$vn]->type == "Trailer")
                 {
                     $response['trailer_url'] = 'https://www.youtube.com/watch?v='.$result->videos->results[$vn]->key;
-                }                 
+                }
             }
 
         }
@@ -346,5 +360,5 @@ class ImportImdbController extends MainAdminController
          echo json_encode($response);
          exit;
     }
- 
+
 }
