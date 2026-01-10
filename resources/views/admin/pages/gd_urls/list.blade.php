@@ -194,24 +194,32 @@ $(document).ready(function() {
 
                 if (response.success) {
                     if (response.results.length > 0) {
-                        var html = '<div class="table-responsive"><table class="table table-dark table-sm table-striped">';
-                        html += '<thead><tr><th>#</th><th>Video Title</th><th>Release Date</th><th>Duration</th><th>Type</th><th>Action</th></tr></thead>';
+                        var html = '<div class="table-responsive"><table class="table table-sm" style="background-color: #34495e; color: #ffffff; margin-bottom: 0;">';
+                        html += '<thead style="background-color: #2c3e50; color: #ffffff;"><tr>';
+                        html += '<th style="color: #ffffff; border-color: #445566;">#</th>';
+                        html += '<th style="color: #ffffff; border-color: #445566;">Video Title</th>';
+                        html += '<th style="color: #ffffff; border-color: #445566;">Release Date</th>';
+                        html += '<th style="color: #ffffff; border-color: #445566;">Duration</th>';
+                        html += '<th style="color: #ffffff; border-color: #445566;">Type</th>';
+                        html += '<th style="color: #ffffff; border-color: #445566;">Action</th>';
+                        html += '</tr></thead>';
                         html += '<tbody>';
 
                         $.each(response.results, function(index, video) {
                             var releaseDate = video.release_date ? new Date(video.release_date * 1000).toLocaleDateString() : 'N/A';
-                            html += '<tr>';
-                            html += '<td>' + (index + 1) + '</td>';
-                            html += '<td>' + video.video_title + '</td>';
-                            html += '<td>' + releaseDate + '</td>';
-                            html += '<td>' + (video.duration || 'N/A') + '</td>';
-                            html += '<td><span class="badge badge-info">' + (video.video_type || 'N/A') + '</span></td>';
-                            html += '<td><a href="{{ url("admin/movies/edit") }}/' + video.id + '" class="btn btn-xs btn-info" target="_blank"><i class="fa fa-edit"></i> View/Edit</a></td>';
+                            var rowBg = (index % 2 === 0) ? '#34495e' : '#3d566e';
+                            html += '<tr style="background-color: ' + rowBg + ';">';
+                            html += '<td style="color: #ffffff; border-color: #445566;">' + (index + 1) + '</td>';
+                            html += '<td style="color: #ffffff; border-color: #445566;">' + video.video_title + '</td>';
+                            html += '<td style="color: #ffffff; border-color: #445566;">' + releaseDate + '</td>';
+                            html += '<td style="color: #ffffff; border-color: #445566;">' + (video.duration || 'N/A') + '</td>';
+                            html += '<td style="border-color: #445566;"><span class="badge badge-info">' + (video.video_type || 'N/A') + '</span></td>';
+                            html += '<td style="border-color: #445566;"><a href="{{ url("admin/movies/edit") }}/' + video.id + '" class="btn btn-xs btn-info" target="_blank"><i class="fa fa-edit"></i> View/Edit</a></td>';
                             html += '</tr>';
                         });
 
                         html += '</tbody></table></div>';
-                        html += '<p style="color: #4caf50;"><strong>' + response.results.length + ' matching video(s) found</strong></p>';
+                        html += '<p style="color: #4caf50; margin-top: 10px;"><strong>' + response.results.length + ' matching video(s) found</strong></p>';
 
                         $('#results-content-' + gdUrlId).html(html);
                     } else {
