@@ -68,18 +68,18 @@ class GdUrlController extends MainAdminController
         // Get all video URLs from movies to check usage
         $movie_urls = Movies::pluck('video_url')->toArray();
 
-        // Fetch all GD URLs
-        $gd_urls = GdUrl::all();
+        // Fetch all GD URLs with fresh data (no cache)
+        $gd_urls_to_check = GdUrl::all()->fresh();
 
         // Update is_used status for each GD URL based on actual usage in movie_videos
-        foreach ($gd_urls as $gd_url) {
+        foreach ($gd_urls_to_check as $gd_url) {
             $is_used = 0;
             $file_id = $gd_url->file_id;
 
             if (!empty($file_id)) {
                 foreach ($movie_urls as $video_url) {
                     // Check if the video_url contains this file_id in the format /d/{file_id}/
-                    if (strpos($video_url, "/d/{$file_id}/") !== false) {
+                    if (!empty($video_url) && strpos($video_url, "/d/{$file_id}/") !== false) {
                         $is_used = 1;
                         break;
                     }
@@ -94,10 +94,20 @@ class GdUrlController extends MainAdminController
         }
 
         // Fetch URLs sorted: Available first (is_used=0), then Used (is_used=1)
-        // Secondary sort by file_name
-        $gd_urls = GdUrl::orderBy('is_used', 'asc')
+        // Get unique file_ids only (in case there are duplicates)
+        $gd_urls_raw = GdUrl::orderBy('is_used', 'asc')
             ->orderBy('file_name', 'asc')
             ->get();
+
+        // Remove duplicates by file_id, keeping the first occurrence
+        $seen_file_ids = [];
+        $gd_urls = $gd_urls_raw->filter(function($url) use (&$seen_file_ids) {
+            if (in_array($url->file_id, $seen_file_ids)) {
+                return false;
+            }
+            $seen_file_ids[] = $url->file_id;
+            return true;
+        });
 
         // Summary Statistics
         $total_urls = $gd_urls->count();
