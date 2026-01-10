@@ -31,7 +31,6 @@
                                     <th>Language</th>
                                     <th>Message</th>
                                     <th>User / Email</th>
-                                    <th>Payment Proof</th>
                                     <th>Date</th>
                                     <th>Status</th>
                                     <th>Action</th>

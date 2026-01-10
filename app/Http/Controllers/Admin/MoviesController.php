@@ -124,8 +124,8 @@ class MoviesController extends MainAdminController
 
          $genres_list = Genres::orderBy('genre_name')->get();
          $page_title = 'Pending Movies';
-         $movies_list = Movies::where('pending',1)->orderBy('id','DESC')->paginate(12);
-         $allMovies = Movies::where('pending',1)->orderBy('id','DESC')->get();
+         $movies_list = Movies::where('video_type', '!=', 'Embed')->orderBy('id','DESC')->paginate(12);
+         $allMovies = Movies::where('video_type', '!=', 'Embed')->orderBy('id','DESC')->get();
 
          return view('admin.pages.movies.list',compact('movies_list','page_title','language_list','genres_list','allMovies'));
     }
