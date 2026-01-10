@@ -378,14 +378,11 @@ class GdUrlController extends MainAdminController
 
             if ($file_id) {
                 $video_embed_url = "https://drive.google.com/file/d/{$file_id}/preview";
-                $video_embed_code = "
-<div class=\"responsive-video\">
-    <iframe
-        src=\"{$video_embed_url}\"
-        allow=\"autoplay; fullscreen\"
-        allowfullscreen>
-    </iframe>
-</div>";
+                $video_embed_code = "<iframe
+                                            src=\"{$video_embed_url}\"
+                                            allow=\"autoplay; fullscreen\"
+                                            allowfullscreen>
+                                         </iframe>";
 
                 \Log::info('Generated embed code successfully');
 
