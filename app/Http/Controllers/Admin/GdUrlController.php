@@ -295,35 +295,46 @@ class GdUrlController extends MainAdminController
             // Using Movies model to be safe with table name
             $query = Movies::select('id', 'video_title', 'release_date', 'duration', 'video_type', 'video_url');
 
-            $query->where(function($q) use ($searchTerm, $fileName) {
-                // 1. Exact match on full filename (most relevant)
-                $q->where('video_title', 'LIKE', '%' . $fileName . '%');
+            // 1. Exact match on full filename (most relevant) - Highest Priority
+            $exactMatches = clone $query;
+            $exactMatches->where('video_title', 'LIKE', '%' . $fileName . '%');
 
-                // 2. Cleaned search term match
-                if (!empty($searchTerm)) {
-                    $q->orWhere('video_title', 'LIKE', '%' . $searchTerm . '%');
-                }
+            // 2. Cleaned search term match (High relevance)
+            $cleanedMatches = clone $query;
+            if (!empty($searchTerm) && $searchTerm !== $fileName) {
+                $cleanedMatches->where('video_title', 'LIKE', '%' . $searchTerm . '%')
+                               ->where('video_title', 'NOT LIKE', '%' . $fileName . '%'); // Exclude already found
+            } else {
+                $cleanedMatches->whereRaw('0 = 1'); // Return nothing
+            }
 
-                // 3. Robust partial matching: Check if ANY word exists
-                $words = explode(' ', $searchTerm);
-                $words = array_filter($words, function($w) { return strlen($w) > 2; }); // Filter short words
+            // 3. Strict Word Matching: ALL words must be present (Medium relevance)
+            // This prevents "Don 2" from matching "Don 1" or just "2"
+            $wordMatches = clone $query;
+            $words = explode(' ', $searchTerm);
+            $words = array_filter($words, function($w) { return strlen($w) > 2; }); // Filter short words
 
-                if (!empty($words)) {
-                    $q->orWhere(function($subQ) use ($words) {
-                         foreach ($words as $word) {
-                             $subQ->where('video_title', 'LIKE', '%' . $word . '%');
-                         }
-                    });
-                     // Also try matching ANY individual word to catch partial titles like "Don 2" matching "Don"
+            if (!empty($words)) {
+                 $wordMatches->where(function($q) use ($words) {
                      foreach ($words as $word) {
-                        $q->orWhere('video_title', 'LIKE', '%' . $word . '%');
+                         $q->where('video_title', 'LIKE', '%' . $word . '%');
                      }
-                }
-            });
+                 });
 
-            $results = $query->orderBy('id', 'desc')
-                ->limit(50)
-                ->get();
+                 // Exclude previous results to avoid duplicates
+                 $wordMatches->where('video_title', 'NOT LIKE', '%' . $fileName . '%');
+                 if (!empty($searchTerm) && $searchTerm !== $fileName) {
+                    $wordMatches->where('video_title', 'NOT LIKE', '%' . $searchTerm . '%');
+                 }
+            } else {
+                 $wordMatches->whereRaw('0 = 1');
+            }
+
+            // Execute queries and merge results
+            $results = $exactMatches->get()
+                ->merge($cleanedMatches->get())
+                ->merge($wordMatches->get())
+                ->take(50); // Limit total results
 
             return response()->json([
                 'success' => true,
