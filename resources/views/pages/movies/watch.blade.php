@@ -61,31 +61,29 @@
             </div>
           </div>
         @else
-        @if($movies_info->video_url!="")
-
-          @if($movies_info->video_type=="Embed")
-
-          @include("pages.movies.player.embed")
-
-          @elseif($movies_info->video_type=="Local")
-
-          @include("pages.movies.player.local")
-
-          @elseif($movies_info->video_type=="URL")
-
-          @include("pages.movies.player.url")
-
-          @else
-
-          @include("pages.movies.player.other")
-
-          @endif
-
+        @if($movies_info->video_type!="Embed")
+          <div style="text-align: center;padding: 70px 30px;background: #101011;border-radius: 10px;margin-top: 15px;min-height: 280px; display: flex; align-items: center; justify-content: center;">
+            <h3 class="text-white">The video source is being uploaded.</h3>
+          </div>
+          <script>
+             document.addEventListener('DOMContentLoaded', function() {
+                 Swal.fire({
+                     icon: 'info',
+                     title: 'Info',
+                     text: 'The video source is being uploaded.',
+                     confirmButtonText: 'OK',
+                     background: '#101011',
+                     color: '#fff'
+                 });
+             });
+          </script>
         @else
-
-          <div style="text-align: center;padding: 70px 30px;font-size: 24px;	font-weight: 700;	background: #101011;border-radius: 10px;margin-top: 15px;min-height: 280px;
-	line-height: 6;">NO Source  URL Set</div>
-
+            @if($movies_info->video_url!="")
+              @include("pages.movies.player.embed")
+            @else
+              <div style="text-align: center;padding: 70px 30px;font-size: 24px;	font-weight: 700;	background: #101011;border-radius: 10px;margin-top: 15px;min-height: 280px;
+        line-height: 6;">NO Source  URL Set</div>
+            @endif
         @endif
         @endif
 
