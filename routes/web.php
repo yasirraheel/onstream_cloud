@@ -53,6 +53,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     // GD URLs Module
     Route::get('gd_urls', 'GdUrlController@index');
     Route::get('gd_urls/fetch', 'GdUrlController@fetch_urls');
+    Route::get('gd_urls/force_fetch', 'GdUrlController@force_fetch_urls');
     Route::get('gd_urls/settings', 'GdUrlController@settings');
     Route::post('gd_urls/settings', 'GdUrlController@update_settings');
     Route::post('gd_urls/search-video', 'GdUrlController@searchVideo');

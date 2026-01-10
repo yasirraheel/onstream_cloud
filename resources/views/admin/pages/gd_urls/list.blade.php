@@ -44,8 +44,11 @@
                     <a href="{{ URL::to('admin/gd_urls/cleanup-duplicates') }}" class="btn btn-warning btn-md waves-effect waves-light m-b-20 m-r-10" onclick="return confirm('This will delete all duplicate entries (keeping used ones). Continue?')">
                         <i class="fa fa-trash"></i> Cleanup Duplicates
                     </a>
-                    <a href="{{ URL::to('admin/gd_urls/fetch') }}" class="btn btn-success btn-md waves-effect waves-light m-b-20" onclick="return confirm('This will fetch latest files from Google Drive. Continue?')">
+                    <a href="{{ URL::to('admin/gd_urls/fetch') }}" class="btn btn-success btn-md waves-effect waves-light m-b-20 m-r-10" onclick="return confirm('This will fetch latest files from Google Drive. Continue?')">
                         <i class="fa fa-refresh"></i> Fetch/Sync Files from Google Drive
+                    </a>
+                    <a href="{{ URL::to('admin/gd_urls/force_fetch') }}" class="btn btn-danger btn-md waves-effect waves-light m-b-20" onclick="return confirm('This will DELETE ALL EXISTING RECORDS and re-fetch from Google Drive. This action cannot be undone. Continue?')">
+                        <i class="fa fa-refresh"></i> Force Update
                     </a>
                   </div>
                 </div>

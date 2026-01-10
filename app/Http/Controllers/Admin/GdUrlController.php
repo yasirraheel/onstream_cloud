@@ -115,6 +115,21 @@ class GdUrlController extends MainAdminController
         return view('admin.pages.gd_urls.list', compact('page_title', 'gd_urls', 'total_urls', 'used_urls_count', 'available_urls_count', 'total_size_gb', 'total_folders', 'last_fetch'));
     }
 
+    public function force_fetch_urls()
+    {
+        if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
+        {
+            \Session::flash('flash_message', trans('words.access_denied'));
+            return redirect('dashboard');
+        }
+
+        // Truncate the table to remove all existing records
+        GdUrl::truncate();
+
+        // Call the fetch logic
+        return $this->fetch_urls();
+    }
+
     public function fetch_urls()
     {
         if(Auth::User()->usertype!="Admin" AND Auth::User()->usertype!="Sub_Admin")
@@ -123,6 +138,7 @@ class GdUrlController extends MainAdminController
             return redirect('dashboard');
         }
 
+        set_time_limit(0);
         $settings = Settings::findOrFail('1');
 
         // Google Drive folder IDs from settings (comma-separated)
