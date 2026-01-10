@@ -351,14 +351,15 @@ $("#channel_url_type").change(function(){
           $("#live_url_dash_id").hide();
        }
 
-     // Handle selection from modal
-    $(document).on('click', '.movie-candidate', function(e) {
-        e.preventDefault();
-        var tmdbId = $(this).data('id');
-        $('#movieSelectionModal').modal('hide');
-        $('#imdb_id_title').val(tmdbId); // Put ID back in input
-        $('#import_movie_btn').click(); // Trigger fetch again
-    });
+});
+
+// Handle selection from modal
+$(document).on('click', '.movie-candidate', function(e) {
+    e.preventDefault();
+    var tmdbId = $(this).data('id');
+    $('#movieSelectionModal').modal('hide');
+    $('#imdb_id_title').val(tmdbId); // Put ID back in input
+    $('#import_movie_btn').click(); // Trigger fetch again
 });
 </script>
 
@@ -517,10 +518,10 @@ $("select").on("select2:select", function (evt) {
                         var resultHtml = '<div class="list-group">';
                         $.each(response.results, function(key, value) {
                             var poster = value.poster_path ? value.poster_path : 'https://via.placeholder.com/92x138.png?text=No+Image';
-                            resultHtml += '<a href="#" class="list-group-item list-group-item-action movie-candidate" data-id="' + value.id + '" style="display: flex; gap: 15px; align-items: start;">';
+                            resultHtml += '<a href="#" class="list-group-item list-group-item-action movie-candidate" data-id="' + value.id + '" style="display: flex; gap: 15px; align-items: start; background-color: #fff; color: #333; border-bottom: 1px solid #eee;">';
                             resultHtml += '<img src="' + poster + '" alt="' + value.title + '" style="width: 60px; height: 90px; object-fit: cover; border-radius: 4px;">';
                             resultHtml += '<div>';
-                            resultHtml += '<h5 class="mb-1" style="font-weight: bold; font-size: 16px;">' + value.title + '</h5>';
+                            resultHtml += '<h5 class="mb-1" style="font-weight: bold; font-size: 16px; color: #333;">' + value.title + '</h5>';
                             resultHtml += '<p class="mb-1" style="font-size: 14px; color: #666;">Released: ' + value.release_date + '</p>';
                             resultHtml += '<p class="mb-0" style="font-size: 13px; color: #888;">' + value.overview + '</p>';
                             resultHtml += '</div>';
@@ -670,10 +671,10 @@ $("select").on("select2:select", function (evt) {
                         var resultHtml = '<div class="list-group">';
                         $.each(response.results, function(key, value) {
                             var poster = value.poster_path ? value.poster_path : 'https://via.placeholder.com/92x138.png?text=No+Image';
-                            resultHtml += '<a href="#" class="list-group-item list-group-item-action show-candidate" data-id="' + value.id + '" style="display: flex; gap: 15px; align-items: start;">';
+                            resultHtml += '<a href="#" class="list-group-item list-group-item-action show-candidate" data-id="' + value.id + '" style="display: flex; gap: 15px; align-items: start; background-color: #fff; color: #333; border-bottom: 1px solid #eee;">';
                             resultHtml += '<img src="' + poster + '" alt="' + value.title + '" style="width: 60px; height: 90px; object-fit: cover; border-radius: 4px;">';
                             resultHtml += '<div>';
-                            resultHtml += '<h5 class="mb-1" style="font-weight: bold; font-size: 16px;">' + value.title + '</h5>';
+                            resultHtml += '<h5 class="mb-1" style="font-weight: bold; font-size: 16px; color: #333;">' + value.title + '</h5>';
                             resultHtml += '<p class="mb-1" style="font-size: 14px; color: #666;">First Air: ' + value.release_date + '</p>';
                             resultHtml += '<p class="mb-0" style="font-size: 13px; color: #888;">' + value.overview + '</p>';
                             resultHtml += '</div>';
