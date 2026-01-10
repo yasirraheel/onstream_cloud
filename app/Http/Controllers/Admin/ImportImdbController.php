@@ -24,6 +24,7 @@ class ImportImdbController extends MainAdminController
 
     public function find_imdb_movie()
     {
+        ob_start();
         $movie_id= $_GET['id'];
 
 //   return response()->json("Hello");
@@ -72,10 +73,12 @@ class ImportImdbController extends MainAdminController
                     ];
                 }
 
+                ob_end_clean();
                 echo json_encode($response);
                 exit;
             } else {
                  $response['imdb_status'] = 'fail';
+                 ob_end_clean();
                  echo json_encode($response);
                  exit;
             }
@@ -359,6 +362,7 @@ class ImportImdbController extends MainAdminController
         //echo $obj->Title;
          //echo $_GET['id'];
 
+         ob_end_clean();
          echo json_encode($response);
          exit;
     }

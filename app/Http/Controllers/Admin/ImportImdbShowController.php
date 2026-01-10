@@ -25,6 +25,7 @@ class ImportImdbShowController extends MainAdminController
 
     public function find_imdb_show()
     {
+        ob_start();
         $show_id= $_GET['id'];
 
         $default_language=set_tmdb_language();
@@ -73,10 +74,12 @@ class ImportImdbShowController extends MainAdminController
                     ];
                 }
 
+                ob_end_clean();
                 echo json_encode($response);
                 exit;
             } else {
                  $response['imdb_status'] = 'fail';
+                 ob_end_clean();
                  echo json_encode($response);
                  exit;
             }
@@ -377,6 +380,7 @@ class ImportImdbShowController extends MainAdminController
         //echo $obj->Title;
          //echo $_GET['id'];
 
+         ob_end_clean();
          echo json_encode($response);
          exit;
     }
@@ -384,6 +388,7 @@ class ImportImdbShowController extends MainAdminController
 
     public function find_imdb_episode()
     {
+        ob_start();
         $episode_id= $_GET['id'];
 
         $default_language=set_tmdb_language();
@@ -436,6 +441,7 @@ class ImportImdbShowController extends MainAdminController
         $response['poster']          = $backdrop_path;
         $response['poster_name']  =basename($backdrop_file_name);
 
+         ob_end_clean();
          echo json_encode($response);
          exit;
     }
