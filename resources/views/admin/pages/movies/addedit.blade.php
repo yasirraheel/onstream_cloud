@@ -49,11 +49,14 @@
                      <div class="col-sm-6">
                           <a href="{{ URL::to('admin/movies') }}"><h4 class="header-title m-t-0 m-b-30 text-primary pull-left" style="font-size: 20px;"><i class="fa fa-arrow-left"></i> {{trans('words.back')}}</h4></a>
                      </div>
-                     @if(isset($movie->id))
                      <div class="col-sm-6">
-                        <a href="{{ URL::to('movies/watch/'.$movie->video_slug.'/'.$movie->id) }}" target="_blank"><h4 class="header-title m-t-0 m-b-30 text-primary pull-right" style="font-size: 20px;">{{trans('words.preview')}} <i class="fa fa-eye"></i></h4> </a>
+                        <div class="pull-right">
+                            <a href="{{ URL::to('admin/movie_requests') }}" class="btn btn-primary waves-effect waves-light m-r-10" target="_blank" style="margin-top: -10px; margin-right: 15px;"><i class="fa fa-list"></i> Movie Requests</a>
+                            @if(isset($movie->id))
+                            <a href="{{ URL::to('movies/watch/'.$movie->video_slug.'/'.$movie->id) }}" target="_blank"><h4 class="header-title m-t-0 m-b-30 text-primary" style="font-size: 20px; display: inline-block;">{{trans('words.preview')}} <i class="fa fa-eye"></i></h4> </a>
+                            @endif
+                        </div>
                      </div>
-                     @endif
                    </div>
 
                 @if(!getcong('tmdb_api_key'))
