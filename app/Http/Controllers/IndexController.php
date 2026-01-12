@@ -582,6 +582,7 @@ class IndexController extends Controller
             $rule=array(
                 'name' => 'required',
                 'email' => 'required|email|max:200|unique:users',
+                'mobile' => 'required',
                 'password' => 'required|confirmed|min:8',
                 'password_confirmation' => 'required',
                 'g-recaptcha-response' => 'required'
@@ -593,6 +594,7 @@ class IndexController extends Controller
             $rule=array(
                 'name' => 'required',
                 'email' => 'required|email|max:200|unique:users',
+                'mobile' => 'required',
                 'password' => 'required|confirmed|min:8',
                 'password_confirmation' => 'required'
                  );
@@ -644,6 +646,7 @@ class IndexController extends Controller
         $user->usertype = 'User';
         $user->name = $inputs['name'];
         $user->email = $inputs['email'];
+        $user->mobile = $inputs['mobile'];
         $user->password= bcrypt($inputs['password']);
         $user->whatsapp_consent = isset($inputs['whatsapp_consent']) ? 1 : 0;
         $user->save();
