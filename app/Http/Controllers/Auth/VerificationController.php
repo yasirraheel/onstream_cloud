@@ -52,7 +52,7 @@ class VerificationController extends Controller
     public function resend()
     {
         $user = Auth::user();
-        
+
         if ($user->mobile_verified_at) {
             return redirect('dashboard');
         }
@@ -63,7 +63,8 @@ class VerificationController extends Controller
 
         // Send OTP via WhatsApp
         // Hardcoded account name 'Onstream' as requested
-        $message = "Your OTP for verification is: " . $otp;
+        $site_name = getcong('site_name');
+        $message = "Hello! Your OTP for verification on " . $site_name . " is: " . $otp . ". Please do not share this code with anyone.";
         $this->whatsappService->sendMessage($user->mobile, $message, 'Onstream');
 
         Session::flash('flash_message', 'A new OTP has been sent to your WhatsApp number.');

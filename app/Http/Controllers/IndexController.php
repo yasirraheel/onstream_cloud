@@ -568,7 +568,8 @@ class IndexController extends Controller
 
                 try {
                     $whatsappService = new WhatsAppService();
-                    $message = "Your OTP for verification is: " . $otp;
+                    $site_name = getcong('site_name');
+                    $message = "Hello! Your OTP for verification on " . $site_name . " is: " . $otp . ". Please do not share this code with anyone.";
                     $whatsappService->sendMessage($user->mobile, $message, 'Onstream');
                 } catch (\Exception $e) {
                      \Log::error('Login OTP failed: ' . $e->getMessage());
@@ -613,7 +614,7 @@ class IndexController extends Controller
             $rule=array(
                 'name' => 'required',
                 'email' => 'required|email|max:200|unique:users',
-                'mobile' => 'required',
+                'mobile' => 'required|numeric|unique:users,mobile',
                 'password' => 'required|confirmed|min:8',
                 'password_confirmation' => 'required'
                  );
@@ -624,8 +625,7 @@ class IndexController extends Controller
 
         if ($validator->fails())
         {
-                Session::flash('signup_flash_error', 'required');
-                return redirect()->back()->withInput()->withErrors($validator->messages());
+                return redirect()->back()->withErrors($validator->messages())->withInput();
         }
 
         //check reCaptcha
@@ -699,7 +699,8 @@ class IndexController extends Controller
 
         try {
             $whatsappService = new WhatsAppService();
-            $message = "Your OTP for verification is: " . $otp;
+            $site_name = getcong('site_name');
+            $message = "Hello! Your OTP for verification on " . $site_name . " is: " . $otp . ". Please do not share this code with anyone.";
             $whatsappService->sendMessage($user->mobile, $message, 'Onstream');
         } catch (\Exception $e) {
              \Log::error('Signup OTP failed: ' . $e->getMessage());
