@@ -15,7 +15,12 @@ class AddWhatsappConsentToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             if (!Schema::hasColumn('users', 'whatsapp_consent')) {
-                $table->boolean('whatsapp_consent')->default(0)->after('mobile');
+                // Check if mobile column exists, if so put it after that, otherwise after email
+                if (Schema::hasColumn('users', 'mobile')) {
+                    $table->boolean('whatsapp_consent')->default(0)->after('mobile');
+                } else {
+                    $table->boolean('whatsapp_consent')->default(0)->after('email');
+                }
             }
         });
     }
