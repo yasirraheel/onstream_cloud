@@ -238,6 +238,11 @@ class MoviesController extends Controller
         }
         else
         {
+            if($movies_info->video_type != 'Embed')
+            {
+                \Session::flash('error_flash_message', 'The video source is being uploaded.');
+            }
+
             return view('pages.movies.watch',compact('movies_info','related_movies_list'));
         }
 
