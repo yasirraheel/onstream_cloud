@@ -69,6 +69,13 @@ function verifyCaptcha() {
             <div class="form-group">
               <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="{{trans('words.confirm_password')}}">
             </div>
+
+            <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="whatsapp_consent" name="whatsapp_consent" value="1">
+                    <label class="custom-control-label" for="whatsapp_consent">Receive WhatsApp notifications</label>
+                </div>
+            </div>
             
             @if(getcong('recaptcha_on_signup'))
             <div class="form-group">

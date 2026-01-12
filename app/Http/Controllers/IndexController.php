@@ -645,6 +645,7 @@ class IndexController extends Controller
         $user->name = $inputs['name'];
         $user->email = $inputs['email'];
         $user->password= bcrypt($inputs['password']);
+        $user->whatsapp_consent = isset($inputs['whatsapp_consent']) ? 1 : 0;
         $user->save();
 
         //Welcome Email
