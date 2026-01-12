@@ -91,6 +91,8 @@
 
             <li><a href="{{ URL::to('admin/otp_view') }}" class="waves-effect {{classActivePath('otp_view')}}"><i class="fa fa-envelope"></i><span>{{trans('OTP')}}</span></a></li>
 
+            <li><a href="{{ URL::to('admin/whatsapp') }}" class="waves-effect {{classActivePath('whatsapp')}}"><i class="fa fa-whatsapp"></i><span>WhatsApp</span></a></li>
+
             <li><a href="{{ URL::to('admin/coupons') }}" class="waves-effect {{classActivePath('coupons')}}"><i class="fa fa-gift"></i><span>{{trans('words.coupons')}}</span></a></li>
             <li><a href="{{ URL::to('admin/payment_gateway') }}" class="waves-effect {{classActivePath('payment_gateway')}}"><i class="fa fa-credit-card-alt"></i><span>{{trans('words.payment_gateway')}}</span></a></li>
             <li><a href="{{ URL::to('admin/transactions') }}" class="waves-effect {{classActivePath('transactions')}}"><i class="fa fa-list"></i><span>{{trans('words.transactions')}}</span></a></li>
