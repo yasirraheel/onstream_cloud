@@ -13,6 +13,11 @@
                                         <i class="fa fa-whatsapp"></i> {{ $page_title }}
                                     </h4>
                                 </div>
+                                <div class="col-sm-6">
+                                    <a href="{{ route('admin.whatsapp.settings') }}" class="btn btn-info pull-right">
+                                        <i class="fa fa-cog"></i> Settings
+                                    </a>
+                                </div>
                             </div>
 
                             @if (!$isConfigured)
@@ -46,9 +51,9 @@
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Account Name (Optional)</label>
                                     <div class="col-sm-8">
-                                        <input type="text" name="account_name" value="{{ old('account_name', 'OnStream') }}"
-                                            class="form-control" placeholder="e.g., OnStream">
-                                        <small class="form-text text-muted">Leave blank to use default account</small>
+                                        <input type="text" name="account_name" value="{{ old('account_name', env('WA_ACCOUNT_NAME', 'OnStream')) }}"
+                                            class="form-control" placeholder="e.g., {{ env('WA_ACCOUNT_NAME', 'OnStream') }}">
+                                        <small class="form-text text-muted">Leave blank to use default account ({{ env('WA_ACCOUNT_NAME', 'OnStream') }})</small>
                                     </div>
                                 </div>
 

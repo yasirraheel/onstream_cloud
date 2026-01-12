@@ -190,6 +190,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::get('whatsapp', 'WhatsAppController@index')->name('admin.whatsapp.index');
     Route::post('whatsapp/send', 'WhatsAppController@sendMessage')->name('admin.whatsapp.send');
     Route::post('whatsapp/send-ajax', 'WhatsAppController@sendMessageAjax')->name('admin.whatsapp.send.ajax');
+    Route::get('whatsapp/settings', 'WhatsAppSettingsController@index')->name('admin.whatsapp.settings');
+    Route::post('whatsapp/settings', 'WhatsAppSettingsController@update')->name('admin.whatsapp.settings.update');
 
     Route::get('transactions', 'TransactionsController@transactions_list');
     Route::post('transactions/export', 'TransactionsController@transactions_export');

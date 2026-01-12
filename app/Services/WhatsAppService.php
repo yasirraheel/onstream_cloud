@@ -47,8 +47,8 @@ class WhatsAppService
             } elseif ($sessionId) {
                 $body['session_id'] = $sessionId;
             } else {
-                // Default to account_name if neither provided
-                $body['account_name'] = 'OnStream';
+                // Default to account_name from env if neither provided
+                $body['account_name'] = env('WA_ACCOUNT_NAME', 'OnStream');
             }
 
             // Send request
