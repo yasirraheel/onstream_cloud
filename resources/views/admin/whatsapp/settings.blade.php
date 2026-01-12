@@ -65,9 +65,9 @@
 
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <h5 class="text-muted">Important Notes</h5>
-                                    <ul>
-                                        <li>After updating settings, clear Laravel cache: <code>php artisan config:clear</code>
+                                    <h5 class="text-dark"><i class="fa fa-info-circle"></i> Important Notes</h5>
+                                    <ul class="text-dark" style="line-height: 1.8;">
+                                        <li>After updating settings, clear Laravel cache: <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 3px; color: #333;">php artisan config:clear</code>
                                         </li>
                                         <li>API Key is required to authenticate with your WhatsApp server</li>
                                         <li>Account Name should match an account configured on your WhatsApp server</li>
