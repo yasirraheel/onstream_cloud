@@ -3,39 +3,70 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\VerifiesEmails;
+use Illuminate\Http\Request;
+use App\Services\WhatsAppService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use App\User;
+use Carbon\Carbon;
 
 class VerificationController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Email Verification Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller is responsible for handling email verification for any
-    | user that recently registered with the application. Emails may also
-    | be re-sent if the user didn't receive the original email message.
-    |
-    */
+    protected $whatsappService;
 
-    use VerifiesEmails;
-
-    /**
-     * Where to redirect users after verification.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function __construct(WhatsAppService $whatsappService)
     {
         $this->middleware('auth');
-        $this->middleware('signed')->only('verify');
-        $this->middleware('throttle:6,1')->only('verify', 'resend');
+        $this->whatsappService = $whatsappService;
+    }
+
+    public function showVerifyForm()
+    {
+        if (Auth::user()->mobile_verified_at) {
+            return redirect('dashboard');
+        }
+
+        return view('auth.verify_otp');
+    }
+
+    public function verify(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|string|size:4',
+        ]);
+
+        $user = Auth::user();
+
+        if ($request->otp == $user->otp) {
+            $user->mobile_verified_at = Carbon::now();
+            $user->otp = null; // Clear OTP after successful verification
+            $user->save();
+
+            Session::flash('flash_message', 'Mobile number verified successfully!');
+            return redirect('dashboard');
+        }
+
+        return back()->withErrors(['otp' => 'Invalid OTP. Please try again.']);
+    }
+
+    public function resend()
+    {
+        $user = Auth::user();
+        
+        if ($user->mobile_verified_at) {
+            return redirect('dashboard');
+        }
+
+        $otp = rand(1000, 9999);
+        $user->otp = $otp;
+        $user->save();
+
+        // Send OTP via WhatsApp
+        // Hardcoded account name 'Onstream' as requested
+        $message = "Your OTP for verification is: " . $otp;
+        $this->whatsappService->sendMessage($user->mobile, $message, 'Onstream');
+
+        Session::flash('flash_message', 'A new OTP has been sent to your WhatsApp number.');
+        return back();
     }
 }

@@ -18,9 +18,15 @@ use Illuminate\Support\Facades\Route;
     return view('welcome');
 });*/
 
+// Verification Routes
+Route::get('verify-otp', 'Auth\VerificationController@showVerifyForm')->name('verify.otp');
+Route::post('verify-otp', 'Auth\VerificationController@verify')->name('verify.otp.submit');
+Route::post('resend-otp', 'Auth\VerificationController@resend')->name('verify.otp.resend');
+
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
 
     Route::get('/', 'IndexController@index');
+
     Route::patch('/transaction/update-status/{id}', [PaystackController::class, 'updateTransactionStatus'])->name('update.transaction.status');
 
     Route::get('login', [ 'as' => 'login', 'uses' => 'IndexController@index']);

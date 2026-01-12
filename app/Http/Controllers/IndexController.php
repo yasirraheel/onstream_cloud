@@ -42,6 +42,7 @@ AbstractDeviceParser::setVersionTruncation(AbstractDeviceParser::VERSION_TRUNCAT
 use App\SearchHistory;
 use App\MovieRequest;
 use App\Announcement;
+use App\Services\WhatsAppService;
 
 class IndexController extends Controller
 {
@@ -558,6 +559,24 @@ class IndexController extends Controller
 
             /***Save Device End***/
 
+            // OTP Verification Check
+            if(!Auth::user()->mobile_verified_at) {
+                $user = Auth::user();
+                $otp = rand(1000, 9999);
+                $user->otp = $otp;
+                $user->save();
+
+                try {
+                    $whatsappService = new WhatsAppService();
+                    $message = "Your OTP for verification is: " . $otp;
+                    $whatsappService->sendMessage($user->mobile, $message, 'Onstream');
+                } catch (\Exception $e) {
+                     \Log::error('Login OTP failed: ' . $e->getMessage());
+                }
+
+                return redirect()->route('verify.otp');
+            }
+
             return redirect('dashboard');
         }
 
@@ -673,9 +692,22 @@ class IndexController extends Controller
         }
 
 
-        Session::flash('signup_flash_message', trans('words.account_created_successfully'));
+        // Generate and Send OTP
+        $otp = rand(1000, 9999);
+        $user->otp = $otp;
+        $user->save();
 
-        return redirect('signup');
+        try {
+            $whatsappService = new WhatsAppService();
+            $message = "Your OTP for verification is: " . $otp;
+            $whatsappService->sendMessage($user->mobile, $message, 'Onstream');
+        } catch (\Exception $e) {
+             \Log::error('Signup OTP failed: ' . $e->getMessage());
+        }
+
+        Auth::login($user);
+
+        return redirect()->route('verify.otp');
 
 
     }
