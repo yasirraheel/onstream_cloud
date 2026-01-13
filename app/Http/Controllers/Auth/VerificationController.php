@@ -57,6 +57,18 @@ class VerificationController extends Controller
             return redirect('dashboard');
         }
 
+        // Rate Limiting: Check if OTP was sent recently (e.g., within 60 seconds)
+        if ($user->last_otp_sent_at) {
+            $lastSent = Carbon::parse($user->last_otp_sent_at);
+            $now = Carbon::now();
+            $diffInSeconds = $now->diffInSeconds($lastSent);
+
+            if ($diffInSeconds < 60) {
+                $secondsRemaining = 60 - $diffInSeconds;
+                return back()->withErrors(['otp' => "Please wait $secondsRemaining seconds before requesting a new OTP."]);
+            }
+        }
+
         // Generate OTP
         $otp = rand(1000, 9999);
 
@@ -64,7 +76,7 @@ class VerificationController extends Controller
         $whatsappService = new WhatsAppService();
         $site_name = getcong('site_name');
         $message = "Hello! Your OTP for verification on " . $site_name . " is: " . $otp . ". Please do not share this code with anyone.";
-        
+
         $result = $whatsappService->sendMessage($user->mobile, $message, 'Onstream');
 
         if ($result['success']) {
@@ -72,7 +84,7 @@ class VerificationController extends Controller
             $user->otp = $otp;
             $user->last_otp_sent_at = Carbon::now();
             $user->save();
-            
+
             Session::flash('flash_message', 'A new OTP has been sent to your WhatsApp number.');
             return back();
         } else {
