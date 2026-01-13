@@ -8,6 +8,16 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css" />
 <style>
 .iti { width: 100%; }
+.iti__country-list {
+  background-color: #151515;
+  border-color: #333;
+}
+.iti__country {
+  color: #fff;
+}
+.iti__country:hover, .iti__country.iti__highlight {
+  background-color: #333;
+}
 </style>
 
 @if(getcong('recaptcha_on_signup'))
