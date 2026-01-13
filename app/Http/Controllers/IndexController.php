@@ -584,9 +584,18 @@ class IndexController extends Controller
     }
 
 
-    public function signup()
+    public function signup(Request $request)
     {
-        return view('pages.user.signup');
+        $ip = $request->ip();
+        $location = $this->get_location_info($ip);
+        $country_code = isset($location['country_code']) ? strtolower($location['country_code']) : 'in';
+
+        // Fallback for local/private IPs
+        if (in_array($country_code, ['lo', 'pn']) || empty($country_code)) {
+            $country_code = 'in';
+        }
+
+        return view('pages.user.signup', compact('country_code'));
     }
 
     public function postSignup(Request $request)
