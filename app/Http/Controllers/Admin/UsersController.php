@@ -395,6 +395,49 @@ class UsersController extends MainAdminController
     }
 
 
+    public function delete($id)
+    {
+        if(Auth::User()->usertype!="Admin"){
+            \Session::flash('flash_message', trans('words.access_denied'));
+            return redirect('admin/dashboard');
+        }
+
+        if($id==1) {
+             \Session::flash('flash_message', trans('words.access_denied'));
+             return redirect()->back();
+        }
+
+        $user = User::findOrFail($id);
+        $user->status = 0;
+        $user->save();
+
+        $user->delete();
+
+        \Session::flash('flash_message', trans('words.deleted'));
+
+        return redirect()->back();
+    }
+
+    public function admin_delete($id)
+    {
+        if(Auth::User()->usertype!="Admin"){
+            \Session::flash('flash_message', trans('words.access_denied'));
+            return redirect('admin/dashboard');
+        }
+
+        if($id==1) {
+             \Session::flash('flash_message', trans('words.access_denied'));
+             return redirect()->back();
+        }
+
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        \Session::flash('flash_message', trans('words.deleted'));
+
+        return redirect()->back();
+    }
+
     public function deleted_user_list(){ 
          
         if(Auth::User()->usertype!="Admin"){

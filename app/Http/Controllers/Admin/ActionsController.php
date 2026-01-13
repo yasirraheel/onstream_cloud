@@ -9,8 +9,8 @@ use App\Genres;
 use App\ActorDirector;
 use App\Movies;
 use App\Series;
-use App\Season; 
-use App\Episodes; 
+use App\Season;
+use App\Episodes;
 use App\Sports;
 use App\SportsCategory;
 use App\LiveTV;
@@ -23,85 +23,91 @@ use App\Pages;
 use App\Coupons;
 use App\Watchlist;
 use App\RecentlyWatched;
+use App\Transactions;
+use App\MovieRequest;
+use App\SearchHistory;
+use App\UsersDeviceHistory;
+use App\VideoView;
+use Illuminate\Support\Facades\Log;
 
 use App\Http\Requests;
 use Illuminate\Http\Request;
 use Session;
 use Intervention\Image\Facades\Image;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 
 class ActionsController extends MainAdminController
 {
 	public function __construct()
     {
 		 $this->middleware('auth');
-          
+
     }
- 
+
 
     public function ajax_status(Request $request)
-    {  
-       
+    {
+
        //$data =  \Request::except(array('_token'));
 
-        $inputs = $request->all(); 
+        $inputs = $request->all();
         //dd($inputs);exit;
 
         $post_id=$inputs['id'];
         $value=$inputs['value'];
         $action_for=$inputs['action_for'];
-        
+
         if($action_for=="lang_status")
         {
 
-            $data_obj = Language::findOrFail($post_id);        
-     
+            $data_obj = Language::findOrFail($post_id);
+
             if($value=="true")
             {
-                $data_obj->status = 1; 
- 
+                $data_obj->status = 1;
+
             }
             else
             {
-                $data_obj->status = 0; 
-            }        
-             
-            $data_obj->save();             
+                $data_obj->status = 0;
+            }
+
+            $data_obj->save();
             $response['status'] = 1;
-            
+
         }
         else if($action_for=="genres_status")
         {
 
-            $data_obj = Genres::findOrFail($post_id);        
-     
+            $data_obj = Genres::findOrFail($post_id);
+
             if($value=="true")
             {
-                $data_obj->status = 1; 
- 
+                $data_obj->status = 1;
+
             }
             else
             {
-                $data_obj->status = 0; 
-            }        
-             
-            $data_obj->save();             
+                $data_obj->status = 0;
+            }
+
+            $data_obj->save();
             $response['status'] = 1;
-            
+
         }
         else if($action_for=="movie_status")
         {
 
-            $data_obj = Movies::findOrFail($post_id);        
-     
+            $data_obj = Movies::findOrFail($post_id);
+
             if($value=="true")
             {
-                $data_obj->status = 1; 
- 
+                $data_obj->status = 1;
+
             }
             else
             {
-                $data_obj->status = 0; 
+                $data_obj->status = 0;
 
                 //Remove from Home Section
                 $homesec_list = HomeSections::where('post_type','Movie')->get();
@@ -110,7 +116,7 @@ class ActionsController extends MainAdminController
 
                     $home_id=$homesect_data->id;
                     $movie_ids=$homesect_data->movie_ids;
-                    
+
                     $new_ids=remove_from_string($movie_ids,$post_id);
 
                     $homesect_obj = HomeSections::findOrFail($home_id);
@@ -127,7 +133,7 @@ class ActionsController extends MainAdminController
 
                     $slider_id=$slider_data->id;
                     $post_ids=$slider_data->slider_post_id;
-                    
+
                     $new_ids=remove_from_string($post_ids,$post_id);
 
                     $slider_obj = Slider::findOrFail($slider_id);
@@ -136,25 +142,25 @@ class ActionsController extends MainAdminController
 
                     $slider_obj->save();
                 }
-            }        
-             
-            $data_obj->save();             
+            }
+
+            $data_obj->save();
             $response['status'] = 1;
-            
+
         }
         else if($action_for=="shows_status")
         {
 
-            $data_obj = Series::findOrFail($post_id);        
-     
+            $data_obj = Series::findOrFail($post_id);
+
             if($value=="true")
             {
-                $data_obj->status = 1; 
- 
+                $data_obj->status = 1;
+
             }
             else
             {
-                $data_obj->status = 0; 
+                $data_obj->status = 0;
 
                 //Remove from Home Section
                 $homesec_list = HomeSections::where('post_type','Shows')->get();
@@ -163,7 +169,7 @@ class ActionsController extends MainAdminController
 
                     $home_id=$homesect_data->id;
                     $show_ids=$homesect_data->show_ids;
-                    
+
                     $new_ids=remove_from_string($show_ids,$post_id);
 
                     $homesect_obj = HomeSections::findOrFail($home_id);
@@ -180,7 +186,7 @@ class ActionsController extends MainAdminController
 
                     $slider_id=$slider_data->id;
                     $post_ids=$slider_data->slider_post_id;
-                    
+
                     $new_ids=remove_from_string($post_ids,$post_id);
 
                     $slider_obj = Slider::findOrFail($slider_id);
@@ -189,63 +195,63 @@ class ActionsController extends MainAdminController
 
                     $slider_obj->save();
                 }
-            }        
-             
-            $data_obj->save();             
+            }
+
+            $data_obj->save();
             $response['status'] = 1;
-            
+
         }
         else if($action_for=="season_status")
         {
 
-            $data_obj = Season::findOrFail($post_id);        
-     
+            $data_obj = Season::findOrFail($post_id);
+
             if($value=="true")
             {
-                $data_obj->status = 1; 
- 
+                $data_obj->status = 1;
+
             }
             else
             {
-                $data_obj->status = 0; 
-            }        
-             
-            $data_obj->save();             
+                $data_obj->status = 0;
+            }
+
+            $data_obj->save();
             $response['status'] = 1;
-            
+
         }
         else if($action_for=="episode_status")
         {
 
-            $data_obj = Episodes::findOrFail($post_id);        
-     
+            $data_obj = Episodes::findOrFail($post_id);
+
             if($value=="true")
             {
-                $data_obj->status = 1; 
- 
+                $data_obj->status = 1;
+
             }
             else
             {
-                $data_obj->status = 0; 
-            }        
-             
-            $data_obj->save();             
+                $data_obj->status = 0;
+            }
+
+            $data_obj->save();
             $response['status'] = 1;
-            
+
         }
         else if($action_for=="sports_status")
         {
 
-            $data_obj = Sports::findOrFail($post_id);        
-     
+            $data_obj = Sports::findOrFail($post_id);
+
             if($value=="true")
             {
-                $data_obj->status = 1; 
- 
+                $data_obj->status = 1;
+
             }
             else
             {
-                $data_obj->status = 0; 
+                $data_obj->status = 0;
 
                 //Remove from Home Section
                 $homesec_list = HomeSections::where('post_type','Sports')->get();
@@ -254,7 +260,7 @@ class ActionsController extends MainAdminController
 
                     $home_id=$homesect_data->id;
                     $sport_ids=$homesect_data->sport_ids;
-                    
+
                     $new_ids=remove_from_string($sport_ids,$post_id);
 
                     $homesect_obj = HomeSections::findOrFail($home_id);
@@ -271,7 +277,7 @@ class ActionsController extends MainAdminController
 
                     $slider_id=$slider_data->id;
                     $post_ids=$slider_data->slider_post_id;
-                    
+
                     $new_ids=remove_from_string($post_ids,$post_id);
 
                     $slider_obj = Slider::findOrFail($slider_id);
@@ -280,44 +286,44 @@ class ActionsController extends MainAdminController
 
                     $slider_obj->save();
                 }
-            }        
-             
-            $data_obj->save();             
+            }
+
+            $data_obj->save();
             $response['status'] = 1;
-            
+
         }
         else if($action_for=="sports_cat_status")
         {
 
-            $data_obj = SportsCategory::findOrFail($post_id);        
-     
+            $data_obj = SportsCategory::findOrFail($post_id);
+
             if($value=="true")
             {
-                $data_obj->status = 1; 
- 
+                $data_obj->status = 1;
+
             }
             else
             {
-                $data_obj->status = 0; 
-            }        
-             
-            $data_obj->save();             
+                $data_obj->status = 0;
+            }
+
+            $data_obj->save();
             $response['status'] = 1;
-            
+
         }
         else if($action_for=="livetv_status")
         {
 
-            $data_obj = LiveTV::findOrFail($post_id);        
-     
+            $data_obj = LiveTV::findOrFail($post_id);
+
             if($value=="true")
             {
-                $data_obj->status = 1; 
- 
+                $data_obj->status = 1;
+
             }
             else
             {
-                $data_obj->status = 0; 
+                $data_obj->status = 0;
 
                 //Remove from Home Section
                 $homesec_list = HomeSections::where('post_type','LiveTV')->get();
@@ -326,7 +332,7 @@ class ActionsController extends MainAdminController
 
                     $home_id=$homesect_data->id;
                     $tv_ids=$homesect_data->tv_ids;
-                    
+
                     $new_ids=remove_from_string($tv_ids,$post_id);
 
                     $homesect_obj = HomeSections::findOrFail($home_id);
@@ -343,7 +349,7 @@ class ActionsController extends MainAdminController
 
                     $slider_id=$slider_data->id;
                     $post_ids=$slider_data->slider_post_id;
-                    
+
                     $new_ids=remove_from_string($post_ids,$post_id);
 
                     $slider_obj = Slider::findOrFail($slider_id);
@@ -352,112 +358,112 @@ class ActionsController extends MainAdminController
 
                     $slider_obj->save();
                 }
-            }        
-             
-            $data_obj->save();             
+            }
+
+            $data_obj->save();
             $response['status'] = 1;
-            
+
         }
         else if($action_for=="livetv_cat_status")
         {
 
-            $data_obj = TvCategory::findOrFail($post_id);        
-     
+            $data_obj = TvCategory::findOrFail($post_id);
+
             if($value=="true")
             {
-                $data_obj->status = 1; 
- 
+                $data_obj->status = 1;
+
             }
             else
             {
-                $data_obj->status = 0; 
-            }        
-             
-            $data_obj->save();             
+                $data_obj->status = 0;
+            }
+
+            $data_obj->save();
             $response['status'] = 1;
-            
+
         }
         else if($action_for=="slider_status")
         {
 
-            $data_obj = Slider::findOrFail($post_id);        
-     
+            $data_obj = Slider::findOrFail($post_id);
+
             if($value=="true")
             {
-                $data_obj->status = 1; 
- 
+                $data_obj->status = 1;
+
             }
             else
             {
-                $data_obj->status = 0; 
-            }        
-             
-            $data_obj->save();             
+                $data_obj->status = 0;
+            }
+
+            $data_obj->save();
             $response['status'] = 1;
-            
+
         }
         else if($action_for=="home_sec_status")
         {
 
-            $data_obj = HomeSections::findOrFail($post_id);        
-     
+            $data_obj = HomeSections::findOrFail($post_id);
+
             if($value=="true")
             {
-                $data_obj->status = 1; 
- 
+                $data_obj->status = 1;
+
             }
             else
             {
-                $data_obj->status = 0; 
-            }        
-             
-            $data_obj->save();             
+                $data_obj->status = 0;
+            }
+
+            $data_obj->save();
             $response['status'] = 1;
-            
+
         }
         else if($action_for=="payment_status")
         {
 
-            $data_obj = PaymentGateway::findOrFail($post_id);        
-     
+            $data_obj = PaymentGateway::findOrFail($post_id);
+
             if($value=="true")
             {
-                $data_obj->status = 1; 
- 
+                $data_obj->status = 1;
+
             }
             else
             {
-                $data_obj->status = 0; 
-            }        
-             
-            $data_obj->save();             
+                $data_obj->status = 0;
+            }
+
+            $data_obj->save();
             $response['status'] = 1;
-            
+
         }
         else
         {
             $response['status'] = 0;
-        }     
+        }
 
         echo json_encode($response);
-        exit;   
+        exit;
     }
 
     public function ajax_delete(Request $request)
-    {  
-        
-        $inputs = $request->all(); 
+    {
+
+        $inputs = $request->all();
         //dd($inputs);exit;
 
         if(!isset($inputs['id']))
         {
-            $response['status'] = 0;           
-              
+            $response['status'] = 0;
+
             echo json_encode($response);
             exit;
 
         }
-        
+
         if(is_array($inputs['id']))
         {
             $post_ids=$inputs['id'];
@@ -468,32 +474,32 @@ class ActionsController extends MainAdminController
         }
 
         //echo $post_id;exit;
-         
+
         //$post_id=$inputs['id'];
         $action_for=$inputs['action_for'];
-        
+
         if($action_for=="lang_delete")
         {
             $data_obj = Language::findOrFail($post_id);
-            $data_obj->delete(); 
-             
-            $response['status'] = 1;            
+            $data_obj->delete();
+
+            $response['status'] = 1;
         }
         else if($action_for=="genres_delete")
         {
             $data_obj = Genres::findOrFail($post_id);
-            $data_obj->delete(); 
-             
-            $response['status'] = 1;            
+            $data_obj->delete();
+
+            $response['status'] = 1;
         }
         else if($action_for=="movies_delete")
         {
             $recently_obj = RecentlyWatched::where('video_type','Movies')->where('video_id',$post_id)->delete();
 
-            $watchlist_obj = Watchlist::where('post_type','Movies')->where('post_id',$post_id)->delete();     
+            $watchlist_obj = Watchlist::where('post_type','Movies')->where('post_id',$post_id)->delete();
 
             $data_obj = Movies::findOrFail($post_id);
-            $data_obj->delete(); 
+            $data_obj->delete();
 
             //Remove from Home Section
             $homesec_list = HomeSections::where('post_type','Movie')->get();
@@ -502,7 +508,7 @@ class ActionsController extends MainAdminController
 
                 $home_id=$homesect_data->id;
                 $movie_ids=$homesect_data->movie_ids;
-                
+
                 $new_ids=remove_from_string($movie_ids,$post_id);
 
                 $homesect_obj = HomeSections::findOrFail($home_id);
@@ -519,7 +525,7 @@ class ActionsController extends MainAdminController
 
                 $slider_id=$slider_data->id;
                 $post_ids=$slider_data->slider_post_id;
-                
+
                 $new_ids=remove_from_string($post_ids,$post_id);
 
                 $slider_obj = Slider::findOrFail($slider_id);
@@ -528,13 +534,13 @@ class ActionsController extends MainAdminController
 
                 $slider_obj->save();
             }
-             
-            $response['status'] = 1;            
+
+            $response['status'] = 1;
         }
         else if($action_for=="movies_delete_selected")
         {
             foreach($post_ids as $pid){
-                
+
                 $recently_obj = RecentlyWatched::where('video_type','Movies')->where('video_id',$pid)->delete();
 
                 $watchlist_obj = Watchlist::where('post_type','Movies')->where('post_id',$pid)->delete();
@@ -549,7 +555,7 @@ class ActionsController extends MainAdminController
 
                     $home_id=$homesect_data->id;
                     $movie_ids=$homesect_data->movie_ids;
-                    
+
                     $new_ids=remove_from_string($movie_ids,$pid);
 
                     $homesect_obj = HomeSections::findOrFail($home_id);
@@ -566,7 +572,7 @@ class ActionsController extends MainAdminController
 
                     $slider_id=$slider_data->id;
                     $post_ids=$slider_data->slider_post_id;
-                    
+
                     $new_ids=remove_from_string($post_ids,$pid);
 
                     $slider_obj = Slider::findOrFail($slider_id);
@@ -577,7 +583,7 @@ class ActionsController extends MainAdminController
                 }
 
             }
-            
+
             $response['status'] = 1;
         }
         else if($action_for=="shows_delete")
@@ -586,7 +592,7 @@ class ActionsController extends MainAdminController
            $episodes_obj = Episodes::where('episode_series_id',$post_id)->delete();
 
             $data_obj = Series::findOrFail($post_id);
-            $data_obj->delete(); 
+            $data_obj->delete();
 
             //Remove from Home Section
             $homesec_list = HomeSections::where('post_type','Shows')->get();
@@ -595,7 +601,7 @@ class ActionsController extends MainAdminController
 
                 $home_id=$homesect_data->id;
                 $show_ids=$homesect_data->show_ids;
-                
+
                 $new_ids=remove_from_string($show_ids,$post_id);
 
                 $homesect_obj = HomeSections::findOrFail($home_id);
@@ -612,7 +618,7 @@ class ActionsController extends MainAdminController
 
                 $slider_id=$slider_data->id;
                 $post_ids=$slider_data->slider_post_id;
-                
+
                 $new_ids=remove_from_string($post_ids,$post_id);
 
                 $slider_obj = Slider::findOrFail($slider_id);
@@ -621,13 +627,13 @@ class ActionsController extends MainAdminController
 
                 $slider_obj->save();
             }
-             
-            $response['status'] = 1;            
+
+            $response['status'] = 1;
         }
         else if($action_for=="shows_delete_selected")
         {
             foreach($post_ids as $pid){
-                
+
                $season_obj = Season::where('series_id',$pid)->delete();
                $episodes_obj = Episodes::where('episode_series_id',$pid)->delete();
 
@@ -641,7 +647,7 @@ class ActionsController extends MainAdminController
 
                     $home_id=$homesect_data->id;
                     $show_ids=$homesect_data->show_ids;
-                    
+
                     $new_ids=remove_from_string($show_ids,$pid);
 
                     $homesect_obj = HomeSections::findOrFail($home_id);
@@ -658,7 +664,7 @@ class ActionsController extends MainAdminController
 
                     $slider_id=$slider_data->id;
                     $post_ids=$slider_data->slider_post_id;
-                    
+
                     $new_ids=remove_from_string($post_ids,$pid);
 
                     $slider_obj = Slider::findOrFail($slider_id);
@@ -669,29 +675,29 @@ class ActionsController extends MainAdminController
                 }
 
             }
-            
+
             $response['status'] = 1;
         }
         else if($action_for=="season_delete")
-        {   
+        {
             $episodes_obj = Episodes::where('episode_season_id',$post_id)->delete();
 
             $data_obj = Season::findOrFail($post_id);
-            $data_obj->delete(); 
-             
-            $response['status'] = 1;            
+            $data_obj->delete();
+
+            $response['status'] = 1;
         }
         else if($action_for=="season_delete_selected")
         {
             foreach($post_ids as $pid){
-                 
+
                $episodes_obj = Episodes::where('episode_season_id',$pid)->delete();
 
                 $data_obj = Season::findOrFail($pid);
                 $data_obj->delete();
 
             }
-            
+
             $response['status'] = 1;
         }
         else if($action_for=="episodes_delete")
@@ -701,49 +707,49 @@ class ActionsController extends MainAdminController
             $watchlist_obj = Watchlist::where('post_type','Episodes')->where('post_id',$post_id)->delete();
 
             $data_obj = Episodes::findOrFail($post_id);
-            $data_obj->delete(); 
-             
-            $response['status'] = 1;            
+            $data_obj->delete();
+
+            $response['status'] = 1;
         }
         else if($action_for=="episodes_delete_selected")
         {
             foreach($post_ids as $pid){
-                
+
                 $recently_obj = RecentlyWatched::where('video_type','Episodes')->where('video_id',$pid)->delete();
 
                 $watchlist_obj = Watchlist::where('post_type','Episodes')->where('post_id',$pid)->delete();
-                
+
                 $data_obj = Episodes::findOrFail($pid);
                 $data_obj->delete();
 
             }
-            
+
             $response['status'] = 1;
         }
         else if($action_for=="actors_delete")
         {
             $data_obj = ActorDirector::findOrFail($post_id);
-            $data_obj->delete(); 
-             
-            $response['status'] = 1;            
+            $data_obj->delete();
+
+            $response['status'] = 1;
         }
         else if($action_for=="actors_delete_selected")
         {
             foreach($post_ids as $pid){
- 
+
                 $data_obj = ActorDirector::findOrFail($pid);
                 $data_obj->delete();
 
             }
-            
+
             $response['status'] = 1;
         }
         else if($action_for=="sports_cat_delete")
         {
             $data_obj = SportsCategory::findOrFail($post_id);
-            $data_obj->delete(); 
-             
-            $response['status'] = 1;            
+            $data_obj->delete();
+
+            $response['status'] = 1;
         }
         else if($action_for=="sports_delete")
         {
@@ -752,7 +758,7 @@ class ActionsController extends MainAdminController
             $watchlist_obj = Watchlist::where('post_type','Sports')->where('post_id',$post_id)->delete();
 
             $data_obj = Sports::findOrFail($post_id);
-            $data_obj->delete(); 
+            $data_obj->delete();
 
             //Remove from Home Section
             $homesec_list = HomeSections::where('post_type','Sports')->get();
@@ -761,7 +767,7 @@ class ActionsController extends MainAdminController
 
                 $home_id=$homesect_data->id;
                 $sport_ids=$homesect_data->sport_ids;
-                
+
                 $new_ids=remove_from_string($sport_ids,$post_id);
 
                 $homesect_obj = HomeSections::findOrFail($home_id);
@@ -778,7 +784,7 @@ class ActionsController extends MainAdminController
 
                 $slider_id=$slider_data->id;
                 $post_ids=$slider_data->slider_post_id;
-                
+
                 $new_ids=remove_from_string($post_ids,$post_id);
 
                 $slider_obj = Slider::findOrFail($slider_id);
@@ -787,17 +793,17 @@ class ActionsController extends MainAdminController
 
                 $slider_obj->save();
             }
-             
-            $response['status'] = 1;            
+
+            $response['status'] = 1;
         }
         else if($action_for=="sports_delete_selected")
         {
             foreach($post_ids as $pid){
-                
+
                 $recently_obj = RecentlyWatched::where('video_type','Sports')->where('video_id',$pid)->delete();
 
                 $watchlist_obj = Watchlist::where('post_type','Sports')->where('post_id',$pid)->delete();
-                
+
                 $data_obj = Sports::findOrFail($pid);
                 $data_obj->delete();
 
@@ -808,7 +814,7 @@ class ActionsController extends MainAdminController
 
                     $home_id=$homesect_data->id;
                     $sport_ids=$homesect_data->sport_ids;
-                    
+
                     $new_ids=remove_from_string($sport_ids,$pid);
 
                     $homesect_obj = HomeSections::findOrFail($home_id);
@@ -825,7 +831,7 @@ class ActionsController extends MainAdminController
 
                     $slider_id=$slider_data->id;
                     $post_ids=$slider_data->slider_post_id;
-                    
+
                     $new_ids=remove_from_string($post_ids,$pid);
 
                     $slider_obj = Slider::findOrFail($slider_id);
@@ -836,15 +842,15 @@ class ActionsController extends MainAdminController
                 }
 
             }
-            
+
             $response['status'] = 1;
         }
         else if($action_for=="livetv_cat_delete")
         {
             $data_obj = TvCategory::findOrFail($post_id);
-            $data_obj->delete(); 
-             
-            $response['status'] = 1;            
+            $data_obj->delete();
+
+            $response['status'] = 1;
         }
         else if($action_for=="livetv_delete")
         {
@@ -853,7 +859,7 @@ class ActionsController extends MainAdminController
             $watchlist_obj = Watchlist::where('post_type','LiveTV')->where('post_id',$post_id)->delete();
 
             $data_obj = LiveTV::findOrFail($post_id);
-            $data_obj->delete(); 
+            $data_obj->delete();
 
             //Remove from Home Section
             $homesec_list = HomeSections::where('post_type','LiveTV')->get();
@@ -862,7 +868,7 @@ class ActionsController extends MainAdminController
 
                 $home_id=$homesect_data->id;
                 $tv_ids=$homesect_data->tv_ids;
-                
+
                 $new_ids=remove_from_string($tv_ids,$post_id);
 
                 $homesect_obj = HomeSections::findOrFail($home_id);
@@ -879,7 +885,7 @@ class ActionsController extends MainAdminController
 
                 $slider_id=$slider_data->id;
                 $post_ids=$slider_data->slider_post_id;
-                
+
                 $new_ids=remove_from_string($post_ids,$post_id);
 
                 $slider_obj = Slider::findOrFail($slider_id);
@@ -888,13 +894,13 @@ class ActionsController extends MainAdminController
 
                 $slider_obj->save();
             }
-             
-            $response['status'] = 1;            
+
+            $response['status'] = 1;
         }
         else if($action_for=="livetv_delete_selected")
         {
             foreach($post_ids as $pid){
-                 
+
                 $recently_obj = RecentlyWatched::where('video_type','LiveTV')->where('video_id',$pid)->delete();
 
                 $watchlist_obj = Watchlist::where('post_type','LiveTV')->where('post_id',$pid)->delete();
@@ -909,7 +915,7 @@ class ActionsController extends MainAdminController
 
                     $home_id=$homesect_data->id;
                     $tv_ids=$homesect_data->tv_ids;
-                    
+
                     $new_ids=remove_from_string($tv_ids,$pid);
 
                     $homesect_obj = HomeSections::findOrFail($home_id);
@@ -926,7 +932,7 @@ class ActionsController extends MainAdminController
 
                     $slider_id=$slider_data->id;
                     $post_ids=$slider_data->slider_post_id;
-                    
+
                     $new_ids=remove_from_string($post_ids,$pid);
 
                     $slider_obj = Slider::findOrFail($slider_id);
@@ -937,110 +943,132 @@ class ActionsController extends MainAdminController
                 }
 
             }
-            
+
             $response['status'] = 1;
         }
         else if($action_for=="slider_delete")
         {
             $data_obj = Slider::findOrFail($post_id);
-            $data_obj->delete(); 
-             
-            $response['status'] = 1;            
+            $data_obj->delete();
+
+            $response['status'] = 1;
         }
         else if($action_for=="home_sec_delete")
         {
             $data_obj = HomeSections::findOrFail($post_id);
-            $data_obj->delete(); 
-             
-            $response['status'] = 1;            
+            $data_obj->delete();
+
+            $response['status'] = 1;
         }
         else if($action_for=="plan_delete")
         {
             $data_obj = SubscriptionPlan::findOrFail($post_id);
-            $data_obj->delete(); 
-             
-            $response['status'] = 1;            
-        }        
+            $data_obj->delete();
+
+            $response['status'] = 1;
+        }
         else if($action_for=="page_delete")
         {
             if($post_id!=5)
             {
                 $data_obj = Pages::findOrFail($post_id);
-                $data_obj->delete(); 
-                
-                $response['status'] = 1;    
+                $data_obj->delete();
+
+                $response['status'] = 1;
             }
             else
             {
-                $response['status'] = 0;    
-            }        
+                $response['status'] = 0;
+            }
         }
         else if($action_for=="user_delete")
         {
             if($post_id==1)
-            { 
+            {
                 $response['status'] = 0;
             }
             else
-            { 
+            {
                 //Change Status
-                $user_obj = User::findOrFail($post_id); 
+                $user_obj = User::findOrFail($post_id);
                 $user_obj->status=0;
-                $user_obj->save(); 
+                $user_obj->save();
 
                 $data_obj = User::findOrFail($post_id);
-                $data_obj->delete(); 
-             
-                $response['status'] = 1;     
+                $data_obj->delete();
+
+                $response['status'] = 1;
             }
-                   
+
         }
         else if($action_for=="coupon_delete")
         {
             $data_obj = Coupons::findOrFail($post_id);
-            $data_obj->delete(); 
-             
-            $response['status'] = 1;            
+            $data_obj->delete();
+
+            $response['status'] = 1;
         }
         else if($action_for=="user_restore")
         {
             //$data_obj = User::find($post_id);
             $data_obj = User::onlyTrashed()->where('id', $post_id)->restore();
-            
+
              //Change Status
-             $user_obj = User::findOrFail($post_id); 
+             $user_obj = User::findOrFail($post_id);
              $user_obj->status=1;
-             $user_obj->save(); 
-              
-            $response['status'] = 1;            
+             $user_obj->save();
+
+            $response['status'] = 1;
         }
         else if($action_for=="permanent_user_delete")
         {
             if($post_id==1)
-            { 
+            {
                 $response['status'] = 0;
             }
             else
             {
-                $watchlist_obj = Watchlist::where('user_id',$post_id)->delete();                
-                $recently_obj = RecentlyWatched::where('user_id',$post_id)->delete();
+                try {
+                    // Delete related records to avoid foreign key constraints
+                    Watchlist::where('user_id',$post_id)->delete();
+                    RecentlyWatched::where('user_id',$post_id)->delete();
+                    Transactions::where('user_id',$post_id)->delete();
+                    MovieRequest::where('user_id',$post_id)->delete();
+                    SearchHistory::where('user_id',$post_id)->delete();
+                    UsersDeviceHistory::where('user_id',$post_id)->delete();
+                    VideoView::where('user_id',$post_id)->delete();
 
-                $data_obj = User::onlyTrashed()->find($post_id);
+                    $data_obj = User::onlyTrashed()->find($post_id);
 
-                $data_obj->forceDelete(); 
-                  
-                $response['status'] = 1;     
+                    if ($data_obj) {
+                        $data_obj->forceDelete();
+                        $response['status'] = 1;
+                    } else {
+                        // If not found in trash, check if it exists normally (should not happen in deleted list but for safety)
+                        $data_obj_normal = User::find($post_id);
+                        if ($data_obj_normal) {
+                             $data_obj_normal->forceDelete();
+                             $response['status'] = 1;
+                        } else {
+                             // User already deleted or does not exist
+                             $response['status'] = 1;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    Log::error("Error deleting user $post_id: " . $e->getMessage());
+                    $response['status'] = 0;
+                }
             }
-                   
-        }   
+
+        }
         else
         {
-            $response['status'] = 0;            
-        }     
+            $response['status'] = 0;
+        }
 
         echo json_encode($response);
-        exit;    
-             
+        exit;
+
     }
-     
+
 }
