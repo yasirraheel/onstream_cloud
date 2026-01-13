@@ -713,13 +713,28 @@ class IndexController extends Controller
         $user->otp = $otp;
         $user->save();
 
+        $whatsapp_success = false;
+        $whatsapp_error = 'Failed to send OTP. Please check your number.';
+
         try {
             $whatsappService = new WhatsAppService();
             $site_name = getcong('site_name');
             $message = "Hello! Your OTP for verification on " . $site_name . " is: " . $otp . ". Please do not share this code with anyone.";
-            $whatsappService->sendMessage($user->mobile, $message, 'Onstream');
+            $result = $whatsappService->sendMessage($user->mobile, $message, 'Onstream');
+            
+            if ($result['success']) {
+                $whatsapp_success = true;
+            } else {
+                $whatsapp_error = $result['message'];
+            }
         } catch (\Exception $e) {
              \Log::error('Signup OTP failed: ' . $e->getMessage());
+             $whatsapp_error = 'System error sending OTP.';
+        }
+
+        if (!$whatsapp_success) {
+            $user->delete();
+            return redirect()->back()->withErrors(['mobile' => $whatsapp_error])->withInput();
         }
 
         Auth::login($user);

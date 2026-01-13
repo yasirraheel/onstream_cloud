@@ -89,9 +89,24 @@ class WhatsAppService
 
         } catch (RequestException $e) {
             $errorMessage = $e->getMessage();
+            $responseData = null;
+
             if ($e->hasResponse()) {
-                $errorResponse = json_decode($e->getResponse()->getBody(), true);
-                $errorMessage = $errorResponse['message'] ?? $errorMessage;
+                $responseBody = $e->getResponse()->getBody()->getContents();
+                $responseData = json_decode($responseBody, true);
+                
+                // Try to find a meaningful error message
+                if (isset($responseData['message'])) {
+                    $errorMessage = $responseData['message'];
+                } elseif (isset($responseData['body'])) {
+                     // Check if body is JSON string
+                     $bodyJson = json_decode($responseData['body'], true);
+                     if (json_last_error() === JSON_ERROR_NONE && isset($bodyJson['error'])) {
+                         $errorMessage = $bodyJson['error'];
+                     }
+                } elseif (isset($responseData['error'])) {
+                    $errorMessage = $responseData['error'];
+                }
             }
 
             Log::error('WhatsApp API request failed', [
@@ -101,8 +116,8 @@ class WhatsAppService
 
             return [
                 'success' => false,
-                'message' => 'Error: ' . $errorMessage,
-                'data' => null
+                'message' => $errorMessage,
+                'data' => $responseData
             ];
         } catch (\Exception $e) {
             Log::error('WhatsApp service error', [
