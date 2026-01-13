@@ -26,6 +26,10 @@ class VerificationController extends Controller
             return redirect('dashboard');
         }
 
+        if (getcong('wa_otp_verification') == 0) {
+            return redirect('dashboard');
+        }
+
         return view('auth.verify_otp');
     }
 
@@ -52,6 +56,10 @@ class VerificationController extends Controller
     public function resend()
     {
         $user = Auth::user();
+
+        if (getcong('wa_otp_verification') == 0) {
+            return redirect('dashboard');
+        }
 
         if ($user->mobile_verified_at) {
             return redirect('dashboard');

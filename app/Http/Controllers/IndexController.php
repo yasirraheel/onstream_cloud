@@ -560,7 +560,7 @@ class IndexController extends Controller
             /***Save Device End***/
 
             // OTP Verification Check
-            if(!Auth::user()->mobile_verified_at) {
+            if(getcong('wa_otp_verification') == 1 && !Auth::user()->mobile_verified_at) {
                 $user = Auth::user();
                 $otp = rand(1000, 9999);
                 $user->otp = $otp;
@@ -706,19 +706,29 @@ class IndexController extends Controller
             }
 
 
-            // Generate and Send OTP
-            $otp = rand(1000, 9999);
-            $user->otp = $otp;
-            $user->save();
+            // OTP Logic based on setting
+            if (getcong('wa_otp_verification') == 1) {
+                // Generate and Send OTP
+                $otp = rand(1000, 9999);
+                $user->otp = $otp;
+                $user->save();
 
-            $whatsappService = new WhatsAppService();
-            $site_name = getcong('site_name');
-            $message = "Hello! Your OTP for verification on " . $site_name . " is: " . $otp . ". Please do not share this code with anyone.";
-            $result = $whatsappService->sendMessage($user->mobile, $message, 'Onstream');
+                $whatsappService = new WhatsAppService();
+                $site_name = getcong('site_name');
+                $message = "Hello! Your OTP for verification on " . $site_name . " is: " . $otp . ". Please do not share this code with anyone.";
+                $result = $whatsappService->sendMessage($user->mobile, $message, 'Onstream');
 
-            if (!$result['success']) {
-                DB::rollBack();
-                return redirect()->back()->withErrors(['mobile' => $result['message']])->withInput();
+                if (!$result['success']) {
+                    DB::rollBack();
+                    return redirect()->back()->withErrors(['mobile' => $result['message']])->withInput();
+                }
+
+                $redirect_route = 'verify.otp';
+            } else {
+                // No OTP required
+                $user->mobile_verified_at = \Carbon\Carbon::now();
+                $user->save();
+                $redirect_route = '/';
             }
 
             DB::commit();
@@ -731,7 +741,11 @@ class IndexController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('verify.otp');
+        if ($redirect_route == 'verify.otp') {
+            return redirect()->route('verify.otp');
+        } else {
+            return redirect('/');
+        }
 
 
     }

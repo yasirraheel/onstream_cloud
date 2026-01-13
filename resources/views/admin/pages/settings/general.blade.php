@@ -124,6 +124,16 @@
                       <input type="text" name="site_email" value="{{ isset($settings->site_email) ? $settings->site_email : null }}" class="form-control">
                     </div>
                   </div>
+
+                  <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">WhatsApp OTP Verification</label>
+                    <div class="col-sm-8">
+                        <select class="form-control" name="wa_otp_verification">                               
+                            <option value="1" @if(isset($settings->wa_otp_verification) && $settings->wa_otp_verification==1) selected @endif>On</option>
+                            <option value="0" @if(isset($settings->wa_otp_verification) && $settings->wa_otp_verification==0) selected @endif>Off</option>                            
+                        </select>
+                    </div>
+                  </div>
                   
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">{{trans('words.description')}}</label>
