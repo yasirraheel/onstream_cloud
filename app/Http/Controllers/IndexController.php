@@ -606,6 +606,13 @@ class IndexController extends Controller
 
         $inputs = $request->all();
 
+        // Clean mobile number (remove + and any non-numeric characters)
+        if (isset($inputs['mobile'])) {
+            $clean_mobile = preg_replace('/\D/', '', $inputs['mobile']);
+            $inputs['mobile'] = $clean_mobile;
+            $data['mobile'] = $clean_mobile;
+        }
+
         if(getcong('recaptcha_on_signup'))
         {
             $rule=array(

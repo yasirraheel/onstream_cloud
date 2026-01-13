@@ -79,6 +79,7 @@ function verifyCaptcha() {
             </div>
             <div class="form-group">
               <input type="tel" class="form-control" id="phone_number" value="{{old('mobile')}}" placeholder="{{trans('words.mobile')}}">
+              <small class="form-text text-muted" style="color: #999;">{{trans('words.mobile_hint') ?? 'Enter number without leading zero'}}</small>
               <input type="hidden" name="mobile" id="mobile_hidden" value="{{old('mobile')}}">
             </div>
             <div class="form-group">
@@ -146,7 +147,10 @@ function verifyCaptcha() {
 
     function handleSignupSubmit() {
         if (window.iti) {
-             document.querySelector("#mobile_hidden").value = window.iti.getNumber();
+             var full_number = window.iti.getNumber();
+             // Remove any non-numeric characters except for the leading + if present, but we want to remove + too
+             var clean_number = full_number.replace(/\D/g, '');
+             document.querySelector("#mobile_hidden").value = clean_number;
         }
 
         if (typeof submitForm === 'function') {

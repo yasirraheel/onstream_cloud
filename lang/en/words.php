@@ -148,6 +148,8 @@ return [
     'name' => 'Name',
     'email' => 'Email',
     'password' => 'Password',
+    'mobile' => 'Mobile No.',
+    'mobile_hint' => 'Enter number without leading zero',
     'phone' => 'Phone',
     'address' => 'Address',
     'image' => 'Image',
