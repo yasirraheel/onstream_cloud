@@ -5,6 +5,10 @@
 @section('head_url', Request::url())
 
 @section('content')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css" />
+<style>
+.iti { width: 100%; }
+</style>
 
 @if(getcong('recaptcha_on_signup'))
 <script src='https://www.google.com/recaptcha/api.js'></script>
@@ -53,7 +57,7 @@ function verifyCaptcha() {
           <div class="row">
           <div class="col-12 col-lg-12 col-xl-12 mx-auto">
             <h2 class="form-title-item mb-4">{{trans('words.sign_up')}}</h2>
-            {!! Form::open(array('url' => 'signup','class'=>'','id'=>'signupform','role'=>'form','onsubmit'=>'return submitForm();')) !!}
+            {!! Form::open(array('url' => 'signup','class'=>'','id'=>'signupform','role'=>'form','onsubmit'=>'return handleSignupSubmit();')) !!}
 
 
 
@@ -64,7 +68,8 @@ function verifyCaptcha() {
               <input type="email" class="form-control" name="email" id="email" value="{{old('email')}}" placeholder="{{trans('words.email')}}">
             </div>
             <div class="form-group">
-              <input type="text" class="form-control" name="mobile" id="mobile" value="{{old('mobile')}}" placeholder="{{trans('words.mobile')}}">
+              <input type="tel" class="form-control" id="phone_number" value="{{old('mobile')}}" placeholder="{{trans('words.mobile')}}">
+              <input type="hidden" name="mobile" id="mobile_hidden" value="{{old('mobile')}}">
             </div>
             <div class="form-group">
               <input type="password" class="form-control" id="password" name="password" placeholder="{{trans('words.password')}} {{trans('words.at_least_8_char')}}">
@@ -120,6 +125,26 @@ function verifyCaptcha() {
   </div>
 </div>
 <!-- End Signup Main Wrapper -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<script>
+    var input = document.querySelector("#phone_number");
+    window.iti = window.intlTelInput(input, {
+      utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+      separateDialCode: true,
+      initialCountry: "in",
+    });
+
+    function handleSignupSubmit() {
+        if (window.iti) {
+             document.querySelector("#mobile_hidden").value = window.iti.getNumber();
+        }
+
+        if (typeof submitForm === 'function') {
+            return submitForm();
+        }
+        return true;
+    }
+</script>
 
 <script type="text/javascript">
 
