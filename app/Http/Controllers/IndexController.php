@@ -673,68 +673,60 @@ class IndexController extends Controller
                 }
           }
 
-        $user = new User;
-
-        //$confirmation_code = str_random(30);
-
-
-        $user->usertype = 'User';
-        $user->name = $inputs['name'];
-        $user->email = $inputs['email'];
-        $user->mobile = $inputs['mobile'];
-        $user->password= bcrypt($inputs['password']);
-        $user->whatsapp_consent = isset($inputs['whatsapp_consent']) ? 1 : 0;
-        $user->save();
-
-        //Welcome Email
-
-        try{
-            $user_name=$inputs['name'];
-            $user_email=$inputs['email'];
-
-            $data_email = array(
-                'name' => $user_name,
-                'email' => $user_email
-                );
-
-            \Mail::send('emails.welcome', $data_email, function($message) use ($user_name,$user_email){
-                $message->to($user_email, $user_name)
-                ->from(getcong('site_email'), getcong('site_name'))
-                ->subject('Welcome to '.getcong('site_name'));
-            });
-        }catch (\Throwable $e) {
-
-            \Log::info($e->getMessage());
-        }
-
-
-        // Generate and Send OTP
-        $otp = rand(1000, 9999);
-        $user->otp = $otp;
-        $user->save();
-
-        $whatsapp_success = false;
-        $whatsapp_error = 'Failed to send OTP. Please check your number.';
+        DB::beginTransaction();
 
         try {
+            $user = new User;
+
+            $user->usertype = 'User';
+            $user->name = $inputs['name'];
+            $user->email = $inputs['email'];
+            $user->mobile = $inputs['mobile'];
+            $user->password= bcrypt($inputs['password']);
+            $user->whatsapp_consent = isset($inputs['whatsapp_consent']) ? 1 : 0;
+            $user->save();
+
+            //Welcome Email
+            try{
+                $user_name=$inputs['name'];
+                $user_email=$inputs['email'];
+
+                $data_email = array(
+                    'name' => $user_name,
+                    'email' => $user_email
+                    );
+
+                \Mail::send('emails.welcome', $data_email, function($message) use ($user_name,$user_email){
+                    $message->to($user_email, $user_name)
+                    ->from(getcong('site_email'), getcong('site_name'))
+                    ->subject('Welcome to '.getcong('site_name'));
+                });
+            }catch (\Throwable $e) {
+                \Log::info($e->getMessage());
+            }
+
+
+            // Generate and Send OTP
+            $otp = rand(1000, 9999);
+            $user->otp = $otp;
+            $user->save();
+
             $whatsappService = new WhatsAppService();
             $site_name = getcong('site_name');
             $message = "Hello! Your OTP for verification on " . $site_name . " is: " . $otp . ". Please do not share this code with anyone.";
             $result = $whatsappService->sendMessage($user->mobile, $message, 'Onstream');
-            
-            if ($result['success']) {
-                $whatsapp_success = true;
-            } else {
-                $whatsapp_error = $result['message'];
-            }
-        } catch (\Exception $e) {
-             \Log::error('Signup OTP failed: ' . $e->getMessage());
-             $whatsapp_error = 'System error sending OTP.';
-        }
 
-        if (!$whatsapp_success) {
-            $user->delete();
-            return redirect()->back()->withErrors(['mobile' => $whatsapp_error])->withInput();
+            if (!$result['success']) {
+                DB::rollBack();
+                return redirect()->back()->withErrors(['mobile' => $result['message']])->withInput();
+            }
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Signup failed: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['mobile' => 'System error during signup. Please try again.'])->withInput();
         }
 
         Auth::login($user);

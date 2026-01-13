@@ -61,13 +61,18 @@ class VerificationController extends Controller
         $user->otp = $otp;
         $user->save();
 
-        // Send OTP via WhatsApp
-        // Hardcoded account name 'Onstream' as requested
+        $whatsappService = new WhatsAppService();
         $site_name = getcong('site_name');
         $message = "Hello! Your OTP for verification on " . $site_name . " is: " . $otp . ". Please do not share this code with anyone.";
-        $this->whatsappService->sendMessage($user->mobile, $message, 'Onstream');
+        $result = $whatsappService->sendMessage($user->mobile, $message, 'Onstream');
 
-        Session::flash('flash_message', 'A new OTP has been sent to your WhatsApp number.');
-        return back();
+        if ($result['success']) {
+            $user->otp = $otp;
+            $user->save();
+            Session::flash('flash_message', 'A new OTP has been sent to your WhatsApp number.');
+            return back();
+        } else {
+            return back()->withErrors(['otp' => 'Failed to send OTP: ' . $result['message']]);
+        }
     }
 }
