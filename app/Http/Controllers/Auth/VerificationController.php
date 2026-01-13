@@ -57,18 +57,22 @@ class VerificationController extends Controller
             return redirect('dashboard');
         }
 
+        // Generate OTP
         $otp = rand(1000, 9999);
-        $user->otp = $otp;
-        $user->save();
 
+        // Send OTP via WhatsApp Service
         $whatsappService = new WhatsAppService();
         $site_name = getcong('site_name');
         $message = "Hello! Your OTP for verification on " . $site_name . " is: " . $otp . ". Please do not share this code with anyone.";
+        
         $result = $whatsappService->sendMessage($user->mobile, $message, 'Onstream');
 
         if ($result['success']) {
+            // Update DB only on success
             $user->otp = $otp;
+            $user->last_otp_sent_at = Carbon::now();
             $user->save();
+            
             Session::flash('flash_message', 'A new OTP has been sent to your WhatsApp number.');
             return back();
         } else {

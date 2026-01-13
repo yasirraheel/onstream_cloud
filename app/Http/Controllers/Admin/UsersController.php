@@ -4,45 +4,45 @@ namespace App\Http\Controllers\Admin;
 
 use Auth;
 use App\User;
-use App\SubscriptionPlan; 
+use App\SubscriptionPlan;
 use App\Transactions;
 
 use Carbon\Carbon;
 use App\Http\Requests;
 use Illuminate\Http\Request;
 use Session;
-use Intervention\Image\Facades\Image; 
+use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\DB;
 
 use App\Exports\UsersExport;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 
 class UsersController extends MainAdminController
 {
 	public function __construct()
     {
-		 $this->middleware('auth');	
-		
+		 $this->middleware('auth');
+
 		 parent::__construct();
          check_verify_purchase();
-         
+
     }
-    public function user_list(){ 
-         
+    public function user_list(){
+
         if(Auth::User()->usertype!="Admin"){
 
             \Session::flash('flash_message', trans('words.access_denied'));
 
             return redirect('admin/dashboard');
-            
-        } 
+
+        }
 
         $page_title=trans('words.users');
 
         if(isset($_GET['s']))
         {
-            $keyword = $_GET['s'];  
+            $keyword = $_GET['s'];
             $user_list = User::where("usertype", "=","User")->where("name", "LIKE","%$keyword%")->orwhere("email", "LIKE","%$keyword%")->orderBy('id','DESC')->paginate(10);
 
             $user_list->appends(\Request::only('s'))->links();
@@ -56,46 +56,46 @@ class UsersController extends MainAdminController
         }
         else
         {
-          
+
             $user_list = User::where('usertype', '=', 'User')->orderBy('id','DESC')->paginate(10);
         }
-         
+
         return view('admin.pages.users.list',compact('page_title','user_list'));
-    } 
-     
-    public function addUser()    { 
-        
+    }
+
+    public function addUser()    {
+
         if(Auth::User()->usertype!="Admin"){
 
             \Session::flash('flash_message', trans('words.access_denied'));
 
             return redirect('admin/dashboard');
-            
+
         }
 
         $page_title=trans('words.add_user');
 
         $plan_list = SubscriptionPlan::where('status','1')->orderby('id')->get();
-          
+
         return view('admin.pages.users.addedit',compact('page_title','plan_list'));
     }
-    
+
     public function addnew(Request $request)
-    { 
-    	 
+    {
+
     	$data =  \Request::except(array('_token')) ;
-	    
+
 	    $inputs = $request->all();
-	    
+
 	    if(!empty($inputs['id']))
 	    {
 			$rule=array(
 		        'name' => 'required',
 		        'email' => 'required|email|max:255|unique:users,email,'.$inputs['id'],
                 'user_image' => 'mimes:jpg,jpeg,gif,png',
-                'exp_date' => 'required'		        
+                'exp_date' => 'required'
 		   		 );
-			
+
 		}
 		else
 		{
@@ -106,18 +106,18 @@ class UsersController extends MainAdminController
                 'user_image' => 'mimes:jpg,jpeg,gif,png'
 		   		 );
 		}
-	    
-	    
-	    
+
+
+
 	   	 $validator = \Validator::make($data,$rule);
- 
+
         if ($validator->fails())
         {
                 return redirect()->back()->withErrors($validator->messages());
-        } 
-	      
+        }
+
 		if(!empty($inputs['id'])){
-           
+
             $user = User::findOrFail($inputs['id']);
 
         }else{
@@ -125,9 +125,9 @@ class UsersController extends MainAdminController
             $user = new User;
 
         }
-		
-        $icon = $request->file('user_image');        
-                 
+
+        $icon = $request->file('user_image');
+
         if($icon){
             //$tmpFilePath = 'upload/';
             $tmpFilePath = public_path('/upload/');
@@ -140,22 +140,22 @@ class UsersController extends MainAdminController
             //$img->fit(80, 80)->save($tmpFilePath.$hardPath. '-s.jpg');
 
             $user->user_image = $hardPath.'-b.jpg';
-        }  
-		
-        //Get Plan info 
+        }
+
+        //Get Plan info
         $plan_id=$inputs['subscription_plan'];
-        $plan_info = SubscriptionPlan::where('id',$plan_id)->where('status','1')->first();        
+        $plan_info = SubscriptionPlan::where('id',$plan_id)->where('status','1')->first();
         $plan_days=$plan_info->plan_days;
 
-		$user->name = $inputs['name'];		 
+		$user->name = $inputs['name'];
 		$user->email = $inputs['email'];
-        
+
         if($inputs['password'])
         {
-            $user->password= bcrypt($inputs['password']); 
-        }        
+            $user->password= bcrypt($inputs['password']);
+        }
         $user->phone = $inputs['phone'];
- 
+
         if(empty($inputs['id']) && $inputs['exp_date']=="")
         {
             $user->exp_date = strtotime(date('m/d/Y', strtotime("+$plan_days days")));
@@ -164,12 +164,12 @@ class UsersController extends MainAdminController
         {
             $user->exp_date = strtotime($inputs['exp_date']);
         }
-         
+
 
         $user->plan_id = $plan_id;
         $user->status = $inputs['status'];
-	    $user->save(); 
-		
+	    $user->save();
+
 		if(!empty($inputs['id'])){
 
             \Session::flash('flash_message', trans('words.successfully_updated'));
@@ -181,41 +181,41 @@ class UsersController extends MainAdminController
 
             return \Redirect::back();
 
-        }		     
-        
-         
-    }     
-    
-    public function editUser($id)    
-    {     
+        }
+
+
+    }
+
+    public function editUser($id)
+    {
     	  if(Auth::User()->usertype!="Admin"){
 
             \Session::flash('flash_message', trans('words.access_denied'));
 
             return redirect('admin/dashboard');
-            
-        }		
+
+        }
     	  $page_title=trans('words.edit_user');
 
           $user = User::findOrFail($id);
 
           $plan_list = SubscriptionPlan::where('status','1')->orderby('id')->get();
-           
-          return view('admin.pages.users.addedit',compact('page_title','user','plan_list'));
-        
-    }	 
-    
-     
 
-    public function user_history($id)    
-    {     
+          return view('admin.pages.users.addedit',compact('page_title','user','plan_list'));
+
+    }
+
+
+
+    public function user_history($id)
+    {
           if(Auth::User()->usertype!="Admin"){
 
             \Session::flash('flash_message', trans('words.access_denied'));
 
             return redirect('admin/dashboard');
-            
-        }       
+
+        }
           $page_title=trans('words.user_history');
 
           $user = User::findOrFail($id);
@@ -223,86 +223,86 @@ class UsersController extends MainAdminController
           $user_id=$user->id;
 
           $transactions_list = Transactions::where('user_id',$user_id)->orderBy('id','DESC')->paginate(10);
-           
-           
+
+
           return view('admin.pages.users.history',compact('page_title','user','transactions_list'));
-        
+
     }
 
-    public function user_export()    
+    public function user_export()
     {
         if(Auth::User()->usertype!="Admin"){
 
             \Session::flash('flash_message', trans('words.access_denied'));
 
             return redirect('admin/dashboard');
-            
+
         }
 
           return Excel::download(new UsersExport, 'users.xlsx');
 
     }
-    
+
     //Sub Admin
 
-    public function admin_user_list()    { 
-         
+    public function admin_user_list()    {
+
         if(Auth::User()->usertype!="Admin"){
 
             \Session::flash('flash_message', trans('words.access_denied'));
 
             return redirect('admin/dashboard');
-            
-        } 
+
+        }
 
         $page_title=trans('words.admin_list');
 
         if(isset($_GET['s']))
         {
-            $keyword = $_GET['s'];  
+            $keyword = $_GET['s'];
             $user_list = User::where("usertype", "!=","User")->where('id', '!=', 1)->where("name", "LIKE","%$keyword%")->where("email", "LIKE","%$keyword%")->orderBy('id','DESC')->paginate(10);
 
             $user_list->appends(\Request::only('s'))->links();
-        }        
+        }
         else
         {
-          
+
             $user_list = User::where('usertype', '!=', 'User')->where('id', '!=', 1)->orderBy('id')->paginate(10);
         }
-         
-        return view('admin.pages.users.admin_list',compact('page_title','user_list'));
-    } 
 
-    public function admin_addUser()    { 
-        
+        return view('admin.pages.users.admin_list',compact('page_title','user_list'));
+    }
+
+    public function admin_addUser()    {
+
         if(Auth::User()->usertype!="Admin"){
 
             \Session::flash('flash_message', trans('words.access_denied'));
 
             return redirect('admin/dashboard');
-            
+
         }
 
         $page_title=trans('words.add_admin');
-           
+
         return view('admin.pages.users.addeditadmin',compact('page_title'));
     }
-    
+
     public function admin_addnew(Request $request)
-    { 
-         
+    {
+
         $data =  \Request::except(array('_token')) ;
-        
+
         $inputs = $request->all();
-        
+
         if(!empty($inputs['id']))
         {
             $rule=array(
                 'name' => 'required',
                 'email' => 'required|email|max:255|unique:users,email,'.$inputs['id'],
-                'user_image' => 'mimes:jpg,jpeg,gif,png' 
+                'user_image' => 'mimes:jpg,jpeg,gif,png'
                  );
-            
+
         }
         else
         {
@@ -313,18 +313,18 @@ class UsersController extends MainAdminController
                 'user_image' => 'mimes:jpg,jpeg,gif,png'
                  );
         }
-        
-        
-        
+
+
+
          $validator = \Validator::make($data,$rule);
- 
+
         if ($validator->fails())
         {
                 return redirect()->back()->withErrors($validator->messages());
-        } 
-          
+        }
+
         if(!empty($inputs['id'])){
-           
+
             $user = User::findOrFail($inputs['id']);
 
         }else{
@@ -332,9 +332,9 @@ class UsersController extends MainAdminController
             $user = new User;
 
         }
-        
-        $icon = $request->file('user_image');        
-                 
+
+        $icon = $request->file('user_image');
+
         if($icon){
             $tmpFilePath = public_path('/upload/');
 
@@ -346,21 +346,21 @@ class UsersController extends MainAdminController
             //$img->fit(80, 80)->save($tmpFilePath.$hardPath. '-s.jpg');
 
             $user->user_image = $hardPath.'-b.jpg';
-        }          
-         
+        }
+
 
         $user->usertype = $inputs['usertype'];
-        $user->name = $inputs['name'];       
+        $user->name = $inputs['name'];
         $user->email = $inputs['email'];
-        
+
         if($inputs['password'])
         {
-            $user->password= bcrypt($inputs['password']); 
-        }        
+            $user->password= bcrypt($inputs['password']);
+        }
         $user->phone = $inputs['phone'];
         $user->status = $inputs['status'];
-        $user->save(); 
-        
+        $user->save();
+
         if(!empty($inputs['id'])){
 
             \Session::flash('flash_message', trans('words.successfully_updated'));
@@ -372,26 +372,26 @@ class UsersController extends MainAdminController
 
             return \Redirect::back();
 
-        }            
-        
-         
+        }
+
+
     }
 
-    public function admin_editUser($id)    
-    {     
+    public function admin_editUser($id)
+    {
           if(Auth::User()->usertype!="Admin"){
 
             \Session::flash('flash_message', trans('words.access_denied'));
 
             return redirect('admin/dashboard');
-            
-        }       
+
+        }
           $page_title=trans('words.edit_admin');
 
           $user = User::findOrFail($id);
-            
+
           return view('admin.pages.users.addeditadmin',compact('page_title','user'));
-        
+
     }
 
 
@@ -418,6 +418,49 @@ class UsersController extends MainAdminController
         return redirect()->back();
     }
 
+    public function forceDelete($id)
+    {
+        if(Auth::User()->usertype!="Admin"){
+            \Session::flash('flash_message', trans('words.access_denied'));
+            return redirect('admin/dashboard');
+        }
+
+        if($id==1) {
+             \Session::flash('flash_message', trans('words.access_denied'));
+             return redirect()->back();
+        }
+
+        // Delete related records
+        try {
+            \App\Watchlist::where('user_id',$id)->delete();
+            \App\RecentlyWatched::where('user_id',$id)->delete();
+            \App\Transactions::where('user_id',$id)->delete();
+            \App\MovieRequest::where('user_id',$id)->delete();
+            \App\SearchHistory::where('user_id',$id)->delete();
+            \App\UsersDeviceHistory::where('user_id',$id)->delete();
+            \App\VideoView::where('user_id',$id)->delete();
+        } catch (\Exception $e) {
+            // Log error but continue if possible, or fail
+            \Illuminate\Support\Facades\Log::error("Error deleting user related data: " . $e->getMessage());
+        }
+
+        $user = User::onlyTrashed()->find($id);
+
+        if($user) {
+            $user->forceDelete();
+            \Session::flash('flash_message', trans('words.deleted'));
+        } else {
+             // Try finding in normal users if not in trash
+             $user = User::find($id);
+             if($user) {
+                 $user->forceDelete();
+                 \Session::flash('flash_message', trans('words.deleted'));
+             }
+        }
+
+        return redirect()->back();
+    }
+
     public function admin_delete($id)
     {
         if(Auth::User()->usertype!="Admin"){
@@ -438,33 +481,33 @@ class UsersController extends MainAdminController
         return redirect()->back();
     }
 
-    public function deleted_user_list(){ 
-         
+    public function deleted_user_list(){
+
         if(Auth::User()->usertype!="Admin"){
 
             \Session::flash('flash_message', trans('words.access_denied'));
 
             return redirect('admin/dashboard');
-            
-        } 
+
+        }
 
         $page_title=trans('words.users');
 
         if(isset($_GET['s']))
         {
-            $keyword = $_GET['s'];  
+            $keyword = $_GET['s'];
             $user_list = User::where("usertype", "=","User")->where("name", "LIKE","%$keyword%")->orwhere("email", "LIKE","%$keyword%")->onlyTrashed()->orderBy('id','DESC')->paginate(10);
 
             $user_list->appends(\Request::only('s'))->links();
-        }        
+        }
         else
         {
-          
+
             $user_list = User::where('usertype', '=', 'User')->onlyTrashed()->orderBy('id','DESC')->paginate(10);
         }
-         
+
         return view('admin.pages.users.deleted_list',compact('page_title','user_list'));
-    } 
-     
-    	
+    }
+
+
 }

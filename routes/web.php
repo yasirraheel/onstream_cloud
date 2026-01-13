@@ -153,6 +153,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::get('users/edit_user/{id}', 'UsersController@editUser');
     Route::post('users/add_edit_user', 'UsersController@addnew');
     Route::get('users/delete/{id}', 'UsersController@delete');
+    Route::get('users/permanent_delete/{id}', 'UsersController@forceDelete');
     Route::get('users/history/{id}', 'UsersController@user_history');
     Route::get('users/export', 'UsersController@user_export');
 

@@ -156,77 +156,37 @@
 
 
  $(".data_remove").click(function () {  
-   
-   var post_id = $(this).data("id");
-   var action_name='permanent_user_delete';
- 
-   Swal.fire({
-     title: '{{trans('words.dlt_warning')}}',
-   text: "{{trans('words.dlt_warning_text')}}",
-   icon: 'warning',
-   showCancelButton: true,
-   confirmButtonColor: '#3085d6',
-   cancelButtonColor: '#d33',
-   confirmButtonText: '{{trans('words.dlt_confirm')}}',
-   cancelButtonText: "{{trans('words.btn_cancel')}}",
-   background:"#1a2234",
-   color:"#fff"
- 
- }).then((result) => {
- 
-   //alert(post_id);
- 
-   //alert(JSON.stringify(result));
- 
-     if(result.isConfirmed) { 
- 
-         $.ajax({
-             type: 'post',
-             url: "{{ URL::to('admin/ajax_delete') }}",
-             dataType: 'json',
-             data: {"_token": "{{ csrf_token() }}",id: post_id, action_for: action_name},
-             success: function(res) {
- 
-               if(res.status=='1')
-               {  
- 
-                   var selector = "#card_box_id_"+post_id;
-                     $(selector ).fadeOut(1000);
-                     setTimeout(function(){
-                             $(selector ).remove()
-                         }, 1000);
- 
-                   Swal.fire({
-                     position: 'center',
-                     icon: 'success',
-                     title: '{{trans('words.deleted')}}!',
-                     showConfirmButton: true,
-                     confirmButtonColor: '#10c469',
-                     background:"#1a2234",
-                     color:"#fff"
-                   })
-                 
-               } 
-               else
-               { 
-                 Swal.fire({
-                         position: 'center',
-                         icon: 'error',
-                         title: 'Something went wrong!',
-                         showConfirmButton: true,
-                         confirmButtonColor: '#10c469',
-                         background:"#1a2234",
-                         color:"#fff"
-                        })
-               }
-               
-             }
-         });
-     }
   
- })
+  var post_id = $(this).data("id");
+  var action_name='permanent_user_delete';
+
+  Swal.fire({
+    title: '{{trans('words.dlt_warning')}}',
+  text: "{{trans('words.dlt_warning_text')}}",
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: '{{trans('words.dlt_confirm')}}',
+  cancelButtonText: "{{trans('words.btn_cancel')}}",
+  background:"#1a2234",
+  color:"#fff"
+
+}).then((result) => {
+
+  //alert(post_id);
+
+  //alert(JSON.stringify(result));
+
+    if(result.isConfirmed) { 
+
+        window.location.href = "{{ URL::to('admin/users/permanent_delete') }}/" + post_id;
+        
+    }
  
- });
+})
+
+});
  
  
  </script>
