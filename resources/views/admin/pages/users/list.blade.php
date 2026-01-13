@@ -64,7 +64,7 @@
                       @endif
 
                       </td>
-                      <td>{{ $user_data->phone }}</td>
+                      <td>{{ $user_data->mobile }}</td>
                       <td>@if($user_data->status==1)<span class="badge badge-success">{{trans('words.active')}}</span> @else<span class="badge badge-danger">{{trans('words.inactive')}}</span>@endif</td>
                                              
                       <td>

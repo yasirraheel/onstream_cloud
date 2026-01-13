@@ -45,7 +45,7 @@
                     <tr id="card_box_id_{{$user_data->id}}">
                       <td>{{ $user_data->name }}</td>
                       <td>{{ $user_data->email }}</td>
-                      <td>{{ $user_data->phone }}</td>
+                      <td>{{ $user_data->mobile }}</td>
                       <td>@if($user_data->status==1)<span class="badge badge-success">{{trans('words.active')}}</span> @else<span class="badge badge-danger">{{trans('words.inactive')}}</span>@endif</td>
                                              
                       <td>
