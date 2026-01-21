@@ -13,9 +13,11 @@ class AddCommentsApprovalToSettingsTable extends Migration
      */
     public function up()
     {
-        Schema::table('settings', function (Blueprint $table) {
-            $table->tinyInteger('comments_approval')->default(1); // 1: Auto Approve, 0: Manual Approve
-        });
+        if (Schema::hasTable('settings') && !Schema::hasColumn('settings', 'comments_approval')) {
+            Schema::table('settings', function (Blueprint $table) {
+                $table->tinyInteger('comments_approval')->default(1); // 1: Auto Approve, 0: Manual Approve
+            });
+        }
     }
 
     /**

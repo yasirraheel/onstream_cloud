@@ -13,16 +13,18 @@ class CreateCommentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('comments', function (Blueprint $table) {
-            $table->id();
-            $table->integer('user_id')->unsigned();
-            $table->morphs('commentable'); // Adds commentable_id and commentable_type
-            $table->text('comment');
-            $table->tinyInteger('status')->default(1); // 0: Pending, 1: Approved
-            $table->timestamps();
+        if (!Schema::hasTable('comments')) {
+            Schema::create('comments', function (Blueprint $table) {
+                $table->id();
+                $table->integer('user_id')->unsigned();
+                $table->morphs('commentable'); // Adds commentable_id and commentable_type
+                $table->text('comment');
+                $table->tinyInteger('status')->default(1); // 0: Pending, 1: Approved
+                $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-        });
+                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            });
+        }
     }
 
     /**
