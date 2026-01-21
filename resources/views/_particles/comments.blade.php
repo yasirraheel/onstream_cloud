@@ -3,6 +3,21 @@
         <div class="vfx-item-section">
             <h3>Comments</h3>
         </div>
+
+        <!-- Highlight Badge -->
+        <div id="comment-badge" class="comment-badge" style="display: none;">
+            <div class="comment-badge-content">
+                <i class="fa fa-commenting-o"></i>
+                <span>Join the conversation! You can now post comments here.</span>
+                <button class="btn-close-badge" onclick="closeCommentBadge()">
+                     <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="comment-badge-footer">
+                <a href="javascript:void(0)" onclick="dontShowAgain()">Don't show again</a>
+            </div>
+        </div>
+
         <div class="comment-section">
             <div id="comments-list">
                 @foreach($comments as $comment)
@@ -115,11 +130,121 @@
         background-color: #cc0000;
         border-color: #cc0000;
     }
+
+    /* Comment Badge Styles */
+    .comment-badge {
+        background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+        color: #fff;
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+        position: relative;
+        animation: fadeIn 0.5s ease-in-out;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .comment-badge-content {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .comment-badge-content i {
+        font-size: 24px;
+    }
+
+    .btn-close-badge {
+        background: transparent;
+        border: none;
+        color: rgba(255, 255, 255, 0.7);
+        cursor: pointer;
+        margin-left: auto;
+        font-size: 18px;
+        padding: 0;
+        transition: color 0.3s;
+    }
+
+    .btn-close-badge:hover {
+        color: #fff;
+    }
+
+    .comment-badge-footer {
+        margin-top: 8px;
+        text-align: right;
+        font-size: 12px;
+    }
+
+    .comment-badge-footer a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: underline;
+        transition: color 0.3s;
+    }
+
+    .comment-badge-footer a:hover {
+        color: #fff;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 
 @push('scripts')
 <script>
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+    }
+
+    function setCookie(name,value,days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    }
+
+    function closeCommentBadge() {
+        $('#comment-badge').fadeOut();
+    }
+
+    function dontShowAgain() {
+        setCookie("hide_comment_badge", "true", 365); // Set for 1 year
+        closeCommentBadge();
+        if(typeof Swal !== 'undefined') {
+             const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: false,
+            })
+            Toast.fire({
+                icon: 'info',
+                title: 'Badge will not be shown again.'
+            })
+        }
+    }
+
     $(document).ready(function() {
+        // Check if cookie exists
+        var hideBadge = getCookie("hide_comment_badge");
+        if (!hideBadge) {
+            $('#comment-badge').show();
+        }
+
         console.log("Comments script loaded");
 
         // Unbind any previous handlers to prevent duplicates if loaded multiple times via AJAX (though unlikely here)
