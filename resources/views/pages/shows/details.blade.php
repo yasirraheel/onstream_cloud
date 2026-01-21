@@ -1,5 +1,5 @@
 @extends('site_app')
-  
+
 
 @if($series_info->seo_title)
   @section('head_title', stripslashes($series_info->seo_title).' | '.getcong('site_name'))
@@ -14,7 +14,7 @@
 @endif
 
 @if($series_info->seo_keyword)
-  @section('head_keywords', stripslashes($series_info->seo_keyword)) 
+  @section('head_keywords', stripslashes($series_info->seo_keyword))
 @endif
 
 
@@ -25,14 +25,14 @@
 @section('content')
 
 <!-- Banner -->
-@if(get_web_banner('details_top')!="")      
+@if(get_web_banner('details_top')!="")
 <div class="vid-item-ptb banner_ads_item">
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-12">
 				{!!stripslashes(get_web_banner('details_top'))!!}
 			</div>
-		</div>  
+		</div>
 	</div>
 </div>
 @endif
@@ -41,33 +41,33 @@
 <div class="page-content-area vfx-item-ptb pt-3">
   <div class="container-fluid">
     <div class="row">
-    <div class="col-lg-7 col-md-12 col-sm-12 col-xs-12 mb-4"> 
+    <div class="col-lg-7 col-md-12 col-sm-12 col-xs-12 mb-4">
     <div class="detail-poster-area">
 
     <div class="play-icon-item">
 
-       @if($series_latest_episode!='')  
+       @if($series_latest_episode!='')
         <a class="icon" href="{{ URL::to('shows/'.$series_info->series_slug.'/'.$series_latest_episode->video_slug.'/'.$series_latest_episode->id) }}" title="{{stripslashes($series_info->series_name)}}" title="play">
           <i class="icon fa fa-play"></i><span class="ripple"></span>
-        </a> 
+        </a>
        @else
        <a class="icon" href="#" title="{{stripslashes($series_info->series_name)}}" title="play">
           <i class="icon fa fa-play"></i><span class="ripple"></span>
-        </a> 
+        </a>
        @endif
- 
+
 			</div>
 
       <div class="video-post-date">
 
         <div class="video-watch-share-item">
-          
-          @if($series_info->imdb_rating)           
-           <span class="video-imdb-view"><img src="{{URL::to('site_assets/images/imdb-logo.png')}}" alt="imdb-logo" title="imdb-logo" />{{$series_info->imdb_rating}}</span> 
-          @endif 
+
+          @if($series_info->imdb_rating)
+           <span class="video-imdb-view"><img src="{{URL::to('site_assets/images/imdb-logo.png')}}" alt="imdb-logo" title="imdb-logo" />{{$series_info->imdb_rating}}</span>
+          @endif
            &nbsp;
-          <span class="btn-share"><a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#social-media"><i class="fas fa-share-alt mr-5"></i>{{trans('words.share_text')}}</a></span> 
-           
+          <span class="btn-share"><a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#social-media"><i class="fas fa-share-alt mr-5"></i>{{trans('words.share_text')}}</a></span>
+
         </div>
       </div>
 
@@ -87,7 +87,7 @@
                   <li><a title="Sharing" href="https://www.instagram.com/?url={{share_url_get('shows',$series_info->series_slug,$series_info->id)}}" class="instagram-icon" target="_blank"><i class="ion-social-instagram"></i></a></li>
                    <li><a title="Sharing" href="https://wa.me?text={{share_url_get('shows',$series_info->series_slug,$series_info->id)}}" class="whatsapp-icon" target="_blank"><i class="ion-social-whatsapp"></i></a></li>
                 </ul>
-              </div>        
+              </div>
               </div>
             </div>
             </div>
@@ -99,10 +99,10 @@
       </div>
     </div>
     </div>
-    <div class="col-lg-5 col-md-12 col-sm-12 col-xs-12 mb-4"> 
+    <div class="col-lg-5 col-md-12 col-sm-12 col-xs-12 mb-4">
       <div class="poster-dtl-item">
-      
-      @if($series_latest_episode!='')  
+
+      @if($series_latest_episode!='')
       <h2><a href="{{ URL::to('shows/'.$series_info->series_slug.'/'.$series_latest_episode->video_slug.'/'.$series_latest_episode->id) }}" title="{{stripslashes($series_info->series_name)}}">{{stripslashes($series_info->series_name)}}</a></h2>
       @else
       <h2><a href="#" title="{{stripslashes($series_info->series_name)}}">{{stripslashes($series_info->series_name)}}</a></h2>
@@ -110,25 +110,25 @@
 
       <ul class="dtl-list-link dtl-link-col">
         <li><a href="#" title="Seasons">{{\App\Series::getSeriesTotalSeason($series_info->id)}} Seasons</a></li>
-        <li><a href="#" title="Episodes">{{\App\Series::getSeriesTotalEpisodes($series_info->id)}} Episodes</a></li>       
+        <li><a href="#" title="Episodes">{{\App\Series::getSeriesTotalEpisodes($series_info->id)}} Episodes</a></li>
       </ul>
       <ul class="dtl-list-link">
         @foreach(explode(',',$series_info->series_genres) as $genres_ids)
           <li><a href="{{ URL::to('shows?genre_id='.$genres_ids) }}" title="{{App\Genres::getGenresInfo($genres_ids,'genre_name')}}">{{App\Genres::getGenresInfo($genres_ids,'genre_name')}}</a></li>
         @endforeach
-         
+
         <li><a href="{{ URL::to('shows?lang_id='.$series_info->series_lang_id) }}" title="{{\App\Language::getLanguageInfo($series_info->series_lang_id,'language_name')}}">{{\App\Language::getLanguageInfo($series_info->series_lang_id,'language_name')}}</a></li>
 
-        @if($series_info->content_rating) 
-                        
+        @if($series_info->content_rating)
+
         <li><span class="channel_info_count">{{$series_info->content_rating}}</span></li>
-               
+
         @endif
 
       </ul>
       @if(!is_null($series_info->actor_id)>0)
-          
-        <span class="des-bold-text"><strong>{{trans('words.actors')}}:</strong> 
+
+        <span class="des-bold-text"><strong>{{trans('words.actors')}}:</strong>
           <?php $a = ''; $n = count(explode(',',$series_info->actor_id,6));?>
           @foreach(explode(',',$series_info->actor_id,6) as $i => $actor_ids)
           <a href="{{ URL::to('actors/'.App\ActorDirector::getActorDirectorInfo($actor_ids,'ad_slug')) }}/{{$actor_ids}}" title="actors">{{App\ActorDirector::getActorDirectorInfo($actor_ids,'ad_name')}}</a><?php if (($i+1) != $n) echo $a = ',';?>
@@ -136,11 +136,11 @@
           @endforeach
 
         </span>
-          
+
       @endif
 
       @if(!is_null($series_info->director_id)>0)
-      <span class="des-bold-text"><strong>{{trans('words.directors')}}:</strong> 
+      <span class="des-bold-text"><strong>{{trans('words.directors')}}:</strong>
 
               <?php $a = ''; $n = count(explode(',',$series_info->director_id,6));?>
               @foreach(explode(',',$series_info->director_id,6) as $i =>$director_ids)
@@ -154,26 +154,28 @@
       </div>
     </div>
     </div>
-    <!-- Start Popular Videos --> 
-    
+    <!-- Start Popular Videos -->
+
+    @include('_particles.comments', ['comments' => $comments, 'item_id' => $series_info->id, 'item_type' => 'App\\Series'])
+
     <!-- Start Season Video Carousel -->
     <div class="row">
-     <div class="video-shows-section vfx-item-ptb tv-season-related-block">
+    <div class="video-shows-section vfx-item-ptb tv-season-related-block">
       <div class="container-fluid">
       <div class="row">
         <div class="col-md-12 p-0">
         <div class="vfx-item-section">
-          <h3>{{trans('words.seasons_text')}}</h3>           
+          <h3>{{trans('words.seasons_text')}}</h3>
         </div>
         <div class="season-item-related owl-carousel">
           @foreach($season_list as $season_data)
 
               @php
-                    
+
                     $season_image_size = getImageSizeFromURL(URL::to('/'.str_replace(" ", "%20", $season_data->season_poster)));
-              
+
                     $orientation = "portrait"; // default
-                   
+
                    if ($season_image_size && isset($season_image_size['width']) && isset($season_image_size['height'])) {
                         if ($season_image_size['width'] > $season_image_size['height']) {
                             $orientation = "landscape";
@@ -183,42 +185,40 @@
 
           <div class="single-video {{$orientation}}">
           <a href="{{ URL::to('shows/'.$series_info->series_slug.'/seasons/'.$season_data->season_slug.'/'.$season_data->id) }}" title="{{stripslashes($season_data->season_name)}}">
-             <div class="video-img">  
-  
-              <img src="{{URL::to('/'.$season_data->season_poster)}}" alt="{{$season_data->season_name}}" alt="{{stripslashes($season_data->season_name)}}" title="{{stripslashes($season_data->season_name)}}">         
+             <div class="video-img">
+
+              <img src="{{URL::to('/'.$season_data->season_poster)}}" alt="{{$season_data->season_name}}" alt="{{stripslashes($season_data->season_name)}}" title="{{stripslashes($season_data->season_name)}}">
              </div>
              <div class="season-title-item">
               <h3>{{stripslashes($season_data->season_name)}}</h3>
-             </div> 
+             </div>
           </a>
           </div>
           @endforeach
-                      
-        </div>
-        </div>
-      </div>
-      </div>
-    </div>    
-    </div>  
-    <!-- End Season Video Carousel -->
 
-    @include('_particles.comments', ['comments' => $comments, 'item_id' => $series_info->id, 'item_type' => 'App\\Series'])
+        </div>
+        </div>
+      </div>
+      </div>
+    </div>
+    </div>
+    <!-- End Season Video Carousel -->
 
   </div>
 </div>
-<!-- End Page Content Area --> 
+<!-- End Page Content Area -->
 
 <!-- Banner -->
-@if(get_web_banner('details_bottom')!="")      
+@if(get_web_banner('details_bottom')!="")
 <div class="vid-item-ptb banner_ads_item pb-3">
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-12">
 				{!!stripslashes(get_web_banner('details_bottom'))!!}
 			</div>
-		</div>  
+		</div>
 	</div>
 </div>
 @endif
- 
+
 @endsection

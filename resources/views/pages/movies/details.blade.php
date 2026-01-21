@@ -182,6 +182,8 @@
     </div>
     <!-- Start Popular Videos -->
 
+    @include('_particles.comments', ['comments' => $comments, 'item_id' => $movies_info->id, 'item_type' => 'App\\Movies'])
+
     <!-- Start You May Also Like Video Carousel -->
     <div class="row">
     <div class="video-carousel-area vfx-item-ptb related-video-item">
@@ -216,8 +218,6 @@
     </div>
     </div>
     <!-- End You May Also Like Video Carousel -->
-
-    @include('_particles.comments', ['comments' => $comments, 'item_id' => $movies_info->id, 'item_type' => 'App\\Movies'])
 
   </div>
 </div>
