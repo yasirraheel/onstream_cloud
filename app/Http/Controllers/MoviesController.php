@@ -82,7 +82,7 @@ class MoviesController extends Controller
                     ->paginate($pagination_limit);
                 $movies_list->appends(\Request::only('filter'))->links();
             }
-            
+
         }
         else
         {
@@ -223,7 +223,7 @@ class MoviesController extends Controller
             $video_obj = Movies::findOrFail($v_id);
             $video_obj->increment('views');
             $video_obj->save();
-            
+
             // Add to new VideoView log
             add_video_view($v_id, 'Movies');
 
@@ -244,7 +244,9 @@ class MoviesController extends Controller
                 \Session::flash('error_flash_message', 'The video source is being uploaded.');
             }
 
-            return view('pages.movies.watch',compact('movies_info','related_movies_list'));
+            $comments = $movies_info->comments()->with('user')->get();
+
+            return view('pages.movies.watch',compact('movies_info','related_movies_list', 'comments'));
         }
 
     }

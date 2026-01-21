@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Auth;
 use App\User;
 use App\Series;
-use App\Season; 
-use App\Episodes; 
+use App\Season;
+use App\Episodes;
 use App\HomeSection;
 use App\RecentlyWatched;
 use App\Slider;
@@ -16,21 +16,21 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
-use Intervention\Image\Facades\Image; 
+use Intervention\Image\Facades\Image;
 
 use Session;
 
 class ShowsController extends Controller
 {
-	  
+
     public function shows()
-    {   
+    {
         if(Auth::check())
-        {             
-            if(Auth::user()->usertype!="Admin" AND Auth::user()->usertype!="Sub_Admin")  
+        {
+            if(Auth::user()->usertype!="Admin" AND Auth::user()->usertype!="Sub_Admin")
            {
               if(user_device_limit_reached(Auth::user()->id,Auth::user()->plan_id))
-              {                 
+              {
                   return redirect('dashboard');
               }
            }
@@ -41,14 +41,14 @@ class ShowsController extends Controller
         $pagination_limit=12;
 
         if(isset($_GET['lang_id']))
-        {   
+        {
                 $series_lang_id = $_GET['lang_id'];
 
                 $series_list = Series::where('status',1)->where('upcoming',0)->where('series_lang_id',$series_lang_id)->orderBy('id','DESC')->paginate($pagination_limit);
                 $series_list->appends(\Request::only('lang_id'))->links();
-        } 
+        }
         else if(isset($_GET['genre_id']))
-        {   
+        {
                 $series_genres_id = $_GET['genre_id'];
 
                 $series_list = Series::where('status',1)->where('upcoming',0)->whereRaw("find_in_set('$series_genres_id',series_genres)")->orderBy('id','DESC')->paginate($pagination_limit);
@@ -56,7 +56,7 @@ class ShowsController extends Controller
         }
         else if(isset($_GET['filter']))
         {
-            $keyword = $_GET['filter'];  
+            $keyword = $_GET['filter'];
 
             if($keyword=='old')
             {
@@ -78,33 +78,33 @@ class ShowsController extends Controller
                 $series_list = Series::where('status',1)->where('upcoming',0)->orderBy('id','DESC')->paginate($pagination_limit);
                 $series_list->appends(\Request::only('filter'))->links();
             }
-            
+
         }
         else
-        {  
+        {
           $series_list = Series::where('status','1')->where('upcoming',0)->orderBy('id','DESC')->paginate($pagination_limit);
 
-        }        
+        }
         return view('pages.shows.list',compact('slider','series_list'));
-         
+
     }
 
-     
+
 
     public function show_details($slug,$id)
-    {   
+    {
 
         if(Auth::check())
-        {             
-            if(Auth::user()->usertype!="Admin" AND Auth::user()->usertype!="Sub_Admin")  
+        {
+            if(Auth::user()->usertype!="Admin" AND Auth::user()->usertype!="Sub_Admin")
            {
               if(user_device_limit_reached(Auth::user()->id,Auth::user()->plan_id))
-              {                 
+              {
                   return redirect('dashboard');
               }
            }
         }
-    	   
+
        $series_info = Series::where('status',1)->where('id',$id)->first();
 
        if($series_info=='')
@@ -114,42 +114,42 @@ class ShowsController extends Controller
 
        $season_list = Season::where('status',1)->where('series_id',$id)->get();
 
-       $series_latest_episode = Episodes::where('status',1)->where('episode_series_id',$series_info->id)->first();  
- 
+       $series_latest_episode = Episodes::where('status',1)->where('episode_series_id',$series_info->id)->first();
+
        $comments = $series_info->comments()->with('user')->get();
 
         return view('pages.shows.details',compact('series_info','season_list','series_latest_episode', 'comments'));
-         
+
     }
 
     public function season_episodes($series_slug,$season_slug,$id)
-    {   
-    	   
+    {
+
        $season_info = Season::where('id',$id)->first();
-       $episode_list = Episodes::where('status',1)->where('episode_season_id',$id)->get();  
+       $episode_list = Episodes::where('status',1)->where('episode_season_id',$id)->get();
 
        $series_name= Series::getSeriesInfo($season_info->series_id,'series_name');
        $series_slug= Series::getSeriesInfo($season_info->series_id,'series_slug');
 
 
         return view('pages.shows.season_episodes',compact('season_info','episode_list','series_name','series_slug'));
-         
+
     }
 
     public function episodes_details($series_slug,$season_slug,$id)
-    {   
+    {
         if(Auth::check())
-        {             
-            if(Auth::user()->usertype!="Admin" AND Auth::user()->usertype!="Sub_Admin")  
+        {
+            if(Auth::user()->usertype!="Admin" AND Auth::user()->usertype!="Sub_Admin")
            {
               if(user_device_limit_reached(Auth::user()->id,Auth::user()->plan_id))
-              {                 
+              {
                   return redirect('dashboard');
               }
            }
         }
-           
-       $episode_info = Episodes::where('id',$id)->first();  
+
+       $episode_info = Episodes::where('id',$id)->first();
 
        if($episode_info=='')
        {
@@ -162,7 +162,7 @@ class ShowsController extends Controller
             if(Auth::check())
             {
                 if(Auth::User()->usertype =="User")
-                {   
+                {
                     $user_id=Auth::User()->id;
 
                     $user_info = User::findOrFail($user_id);
@@ -170,7 +170,7 @@ class ShowsController extends Controller
                     $user_plan_exp_date=$user_info->exp_date;
 
                     if($user_plan_id==0 OR strtotime(date('m/d/Y'))>$user_plan_exp_date)
-                    {          
+                    {
                         //\Session::flash('flash_message', 'Login status reset!');
                         return redirect('membership_plan');
                     }
@@ -191,7 +191,7 @@ class ShowsController extends Controller
 
        //echo $series_info->series_slug;exit;
 
- 
+
 
        $season_name= Season::getSeasonInfo($episode_info->episode_season_id,'season_name');
 
@@ -215,7 +215,7 @@ class ShowsController extends Controller
                 $current_user_video_count = RecentlyWatched::where('user_id',$current_user_id)->count();
 
                 if($current_user_video_count == 10)
-                {   
+                {
                     DB::table("recently_watched")
                     ->where("user_id", "=", $current_user_id)
                     ->orderBy("id", "ASC")
@@ -236,23 +236,24 @@ class ShowsController extends Controller
                     $video_recent_obj->video_id = $video_id;
                     $video_recent_obj->save();
                 }
-            } 
+            }
 
         }
 
         //View Update
         $v_id=$episode_info->id;
-        $video_obj = Episodes::findOrFail($v_id);        
-        $video_obj->increment('views');     
+        $video_obj = Episodes::findOrFail($v_id);
+        $video_obj->increment('views');
         $video_obj->save();
 
         // Add to new VideoView log
         add_video_view($v_id, 'Episodes');
 
+        $comments = $episode_info->comments()->with('user')->get();
 
-        return view('pages.shows.episodes_details',compact('episode_info','episode_up_next_list','series_info','season_name','season_trailer_url','episode_list','season_list'));
-         
-    } 
+        return view('pages.shows.episodes_details',compact('episode_info','episode_up_next_list','series_info','season_name','season_trailer_url','episode_list','season_list', 'comments'));
 
-      
+    }
+
+
 }

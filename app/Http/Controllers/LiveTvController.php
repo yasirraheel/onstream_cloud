@@ -14,40 +14,40 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
-use Intervention\Image\Facades\Image; 
+use Intervention\Image\Facades\Image;
 
 use Session;
 
 class LiveTvController extends Controller
 {
-	  
+
     public function live_tv_list()
-    {   
+    {
         if(Auth::check())
-        {             
-            if(Auth::user()->usertype!="Admin" AND Auth::user()->usertype!="Sub_Admin")  
+        {
+            if(Auth::user()->usertype!="Admin" AND Auth::user()->usertype!="Sub_Admin")
            {
               if(user_device_limit_reached(Auth::user()->id,Auth::user()->plan_id))
-              {                 
+              {
                   return redirect('dashboard');
               }
            }
         }
 
         $slider= Slider::where('status',1)->whereRaw("find_in_set('LiveTV',slider_display_on)")->orderby('id','DESC')->get();
-        
+
         $pagination_limit=12;
 
         if(isset($_GET['cat_id']))
-        {   
+        {
             $channel_cat_id = $_GET['cat_id'];
 
             $live_tv_list = LiveTV::where('status',1)->where('channel_cat_id',$channel_cat_id)->orderBy('id','DESC')->paginate($pagination_limit);
             $live_tv_list->appends(\Request::only('cat_id'))->links();
-        } 
+        }
         else if(isset($_GET['filter']))
         {
-            $keyword = $_GET['filter'];  
+            $keyword = $_GET['filter'];
 
             if($keyword=='old')
             {
@@ -69,40 +69,40 @@ class LiveTvController extends Controller
                 $live_tv_list = LiveTV::where('status',1)->orderBy('id','DESC')->paginate($pagination_limit);
                 $live_tv_list->appends(\Request::only('filter'))->links();
             }
-            
+
         }
         else
-        {	   
+        {
             $live_tv_list = LiveTV::where('status',1)->orderBy('id','DESC')->paginate($pagination_limit);
 
-        }        
+        }
        return view('pages.livetv.list',compact('slider','live_tv_list'));
-         
+
     }
 
     public function live_tv_by_category($slug)
-    {  
+    {
 
         if(Auth::check())
-        {             
-            if(Auth::user()->usertype!="Admin" AND Auth::user()->usertype!="Sub_Admin")  
+        {
+            if(Auth::user()->usertype!="Admin" AND Auth::user()->usertype!="Sub_Admin")
            {
               if(user_device_limit_reached(Auth::user()->id,Auth::user()->plan_id))
-              {                 
+              {
                   return redirect('dashboard');
               }
            }
-        } 
+        }
 
-       $tv_cat_info = TvCategory::where('category_slug',$slug)->first();       
-       
-       $cat_id=$tv_cat_info->id;    
+       $tv_cat_info = TvCategory::where('category_slug',$slug)->first();
 
-       $pagination_limit=16;   
+       $cat_id=$tv_cat_info->id;
+
+       $pagination_limit=16;
 
        if(isset($_GET['filter']))
         {
-            $keyword = $_GET['filter'];  
+            $keyword = $_GET['filter'];
 
             if($keyword=='old')
             {
@@ -124,25 +124,25 @@ class LiveTvController extends Controller
                 $live_tv_list = LiveTV::where('status',1)->where('channel_cat_id',$cat_id)->orderBy('id','DESC')->paginate($pagination_limit);
                 $live_tv_list->appends(\Request::only('filter'))->links();
             }
-            
+
         }
         else
         {
 
-             $live_tv_list = LiveTV::where('status',1)->where('channel_cat_id',$cat_id)->orderBy('id','DESC')->paginate($pagination_limit);  
-        }      
+             $live_tv_list = LiveTV::where('status',1)->where('channel_cat_id',$cat_id)->orderBy('id','DESC')->paginate($pagination_limit);
+        }
        return view('pages.livetv_by_category',compact('live_tv_list','tv_cat_info'));
-         
+
     }
 
     public function live_tv_details($slug,$id)
     {
         if(Auth::check())
-        {             
-            if(Auth::user()->usertype!="Admin" AND Auth::user()->usertype!="Sub_Admin")  
+        {
+            if(Auth::user()->usertype!="Admin" AND Auth::user()->usertype!="Sub_Admin")
            {
               if(user_device_limit_reached(Auth::user()->id,Auth::user()->plan_id))
-              {                 
+              {
                   return redirect('dashboard');
               }
            }
@@ -154,22 +154,22 @@ class LiveTvController extends Controller
 
         $comments = $tv_info->comments()->with('user')->get();
 
-        return view('pages.livetv.details',compact('tv_info','related_livetv_list', 'comments')); 
+        return view('pages.livetv.details',compact('tv_info','related_livetv_list', 'comments'));
     }
 
     public function live_tv_single($slug,$id)
-    {   
+    {
         if(Auth::check())
-        {             
-            if(Auth::user()->usertype!="Admin" AND Auth::user()->usertype!="Sub_Admin")  
+        {
+            if(Auth::user()->usertype!="Admin" AND Auth::user()->usertype!="Sub_Admin")
            {
               if(user_device_limit_reached(Auth::user()->id,Auth::user()->plan_id))
-              {                 
+              {
                   return redirect('dashboard');
               }
            }
         }
-    	   
+
         $tv_info = LiveTV::where('id',$id)->first();
 
         //Check user plan
@@ -178,7 +178,7 @@ class LiveTvController extends Controller
             if(Auth::check())
             {
                 if(Auth::User()->usertype =="User")
-                {   
+                {
                     $user_id=Auth::User()->id;
 
                     $user_info = User::findOrFail($user_id);
@@ -186,7 +186,7 @@ class LiveTvController extends Controller
                     $user_plan_exp_date=$user_info->exp_date;
 
                     if($user_plan_id==0 OR strtotime(date('m/d/Y'))>$user_plan_exp_date)
-                    {        
+                    {
                         return redirect('membership_plan');
                     }
                 }
@@ -199,9 +199,9 @@ class LiveTvController extends Controller
             }
         }
 
-         
+
         $related_livetv_list = LiveTV::where('status',1)->where('id','!=',$id)->where('channel_cat_id',$tv_info->channel_cat_id)->orderBy('id','DESC')->take(10)->get();
- 
+
         //Recently Watched
         if(Auth::check())
         {
@@ -216,7 +216,7 @@ class LiveTvController extends Controller
                 $current_user_video_count = RecentlyWatched::where('user_id',$current_user_id)->count();
 
                 if($current_user_video_count == 10)
-                {   
+                {
                     DB::table("recently_watched")
                     ->where("user_id", "=", $current_user_id)
                     ->orderBy("id", "ASC")
@@ -237,22 +237,24 @@ class LiveTvController extends Controller
                     $video_recent_obj->video_id = $video_id;
                     $video_recent_obj->save();
                 }
-            } 
+            }
 
         }
 
         //View Update
         $v_id=$tv_info->id;
-        $video_obj = LiveTV::findOrFail($v_id);        
-        $video_obj->increment('views');     
+        $video_obj = LiveTV::findOrFail($v_id);
+        $video_obj->increment('views');
         $video_obj->save();
 
         // Add to new VideoView log
         add_video_view($v_id, 'LiveTV');
 
-        return view('pages.livetv.watch',compact('tv_info','related_livetv_list')); 
+        $comments = $tv_info->comments()->with('user')->get();
+
+        return view('pages.livetv.watch',compact('tv_info','related_livetv_list', 'comments'));
     }
 
-    
-    
+
+
 }

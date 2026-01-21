@@ -284,6 +284,9 @@
       </div>
       <!-- Start Popular Videos -->
     </div>
+
+    @include('_particles.comments', ['comments' => $comments, 'item_id' => $episode_info->id, 'item_type' => 'App\\Episodes'])
+
   <!-- Start Season Video Carousel -->
     <div class="row">
      <div class="video-shows-section vfx-item-ptb tv-season-related-block">

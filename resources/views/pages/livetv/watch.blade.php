@@ -210,6 +210,8 @@
       </div>
       <!-- Start Popular Videos -->
 
+    @include('_particles.comments', ['comments' => $comments, 'item_id' => $tv_info->id, 'item_type' => 'App\\LiveTV'])
+
     <!-- Start You May Also Like Video Carousel -->
     <div class="video-carousel-area vfx-item-ptb related-video-item">
       <div class="container-fluid">
