@@ -9,6 +9,9 @@ use App\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
+use DeviceDetector\DeviceDetector;
+use DeviceDetector\Parser\Device\AbstractDeviceParser;
+
 class CommentsController extends Controller
 {
     public function store(Request $request)
@@ -30,15 +33,26 @@ class CommentsController extends Controller
         $settings = Settings::findOrFail(1);
         $status = isset($settings->comments_approval) && $settings->comments_approval == 1 ? 1 : 0;
         
-        // If the setting column doesn't exist yet (migration skipped), default to approved (1) or pending (0). 
-        // Safer to check if property exists or handle exception, but usually Eloquent returns null for non-existent columns if not strict.
-        // Actually, if I added the column, it should be there.
+        // Detect Country
+        $client_ip = \Request::ip();
+        $country_code = 'Unknown';
+        
+        try {
+             $geoplugin_url = "http://www.geoplugin.net/json.gp?ip=".$client_ip;
+             $geoplugin_info = json_decode(@file_get_contents($geoplugin_url));
+             if($geoplugin_info && isset($geoplugin_info->geoplugin_countryName)) {
+                 $country_code = $geoplugin_info->geoplugin_countryName;
+             }
+        } catch (\Exception $e) {
+            // Fallback or ignore
+        }
         
         $comment = new Comment();
         $comment->user_id = Auth::id();
         $comment->commentable_id = $request->commentable_id;
         $comment->commentable_type = $request->commentable_type;
         $comment->comment = $request->comment;
+        $comment->country = $country_code;
         $comment->status = $status;
         $comment->save();
 

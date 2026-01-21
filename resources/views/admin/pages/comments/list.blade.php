@@ -23,6 +23,7 @@
                       <th>User</th>
                       <th>Content</th>
                       <th>Comment</th>
+                      <th>Country</th>
                       <th>Date</th>
                       <th>Status</th>
                       <th>Action</th>
@@ -44,6 +45,7 @@
                           @endif
                       </td>
                       <td>{{ $comment->comment }}</td>
+                      <td>{{ $comment->country ?? 'Unknown' }}</td>
                       <td>{{ $comment->created_at->format('Y-m-d H:i') }}</td>
                       <td>
                           @if($comment->status == 1)

@@ -19,6 +19,7 @@ class CreateCommentsTable extends Migration
                 $table->integer('user_id')->unsigned();
                 $table->morphs('commentable'); // Adds commentable_id and commentable_type
                 $table->text('comment');
+                $table->string('country')->nullable();
                 $table->tinyInteger('status')->default(1); // 0: Pending, 1: Approved
                 $table->timestamps();
 
