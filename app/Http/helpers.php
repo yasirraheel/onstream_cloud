@@ -1275,6 +1275,32 @@ if (! function_exists('get_user_country')) {
     }
 }
 
+if (! function_exists('get_user_country_name')) {
+    function get_user_country_name()
+    {
+        $ip = get_user_ip();
+
+        // Don't check for localhost/private IPs
+        if ($ip == '127.0.0.1' || $ip == '::1' || strpos($ip, '192.168.') === 0 || strpos($ip, '10.') === 0) {
+            return null;
+        }
+
+        try {
+            $response = @file_get_contents("http://ip-api.com/json/{$ip}?fields=country");
+            if ($response) {
+                $data = json_decode($response);
+                if (isset($data->country)) {
+                    return $data->country;
+                }
+            }
+        } catch (Exception $e) {
+            return null;
+        }
+
+        return null;
+    }
+}
+
 if (! function_exists('is_country_blocked')) {
     function is_country_blocked()
     {

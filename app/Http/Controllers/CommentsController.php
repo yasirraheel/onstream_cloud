@@ -32,21 +32,30 @@ class CommentsController extends Controller
 
         $settings = Settings::findOrFail(1);
         $status = isset($settings->comments_approval) && $settings->comments_approval == 1 ? 1 : 0;
-        
+
         // Detect Country
-        $client_ip = \Request::ip();
         $country_code = 'Unknown';
-        
-        try {
-             $geoplugin_url = "http://www.geoplugin.net/json.gp?ip=".$client_ip;
-             $geoplugin_info = json_decode(@file_get_contents($geoplugin_url));
-             if($geoplugin_info && isset($geoplugin_info->geoplugin_countryName)) {
-                 $country_code = $geoplugin_info->geoplugin_countryName;
+
+        // Try getting country code using helper function if available
+        if (function_exists('get_user_country_name')) {
+             $detected_country = get_user_country_name();
+             if($detected_country) {
+                 $country_code = $detected_country;
              }
-        } catch (\Exception $e) {
-            // Fallback or ignore
+        } else {
+             // Fallback to manual detection if helper not exists
+            $client_ip = get_user_ip();
+            try {
+                 $geoplugin_url = "http://www.geoplugin.net/json.gp?ip=".$client_ip;
+                 $geoplugin_info = json_decode(@file_get_contents($geoplugin_url));
+                 if($geoplugin_info && isset($geoplugin_info->geoplugin_countryName)) {
+                     $country_code = $geoplugin_info->geoplugin_countryName;
+                 }
+            } catch (\Exception $e) {
+                // Fallback or ignore
+            }
         }
-        
+
         $comment = new Comment();
         $comment->user_id = Auth::id();
         $comment->commentable_id = $request->commentable_id;
@@ -57,7 +66,7 @@ class CommentsController extends Controller
         $comment->save();
 
         $message = $status == 1 ? 'Comment added successfully.' : 'Comment submitted for approval.';
-        
+
         $html = '';
         if ($status == 1) {
             $html = view('_particles.comment_item', compact('comment'))->render();
