@@ -151,7 +151,10 @@
       </div>
     </div>
     </div>  
-    <!-- End You May Also Like Video Carousel -->       
+    <!-- End You May Also Like Video Carousel -->
+
+    @include('_particles.comments', ['comments' => $comments, 'item_id' => $tv_info->id, 'item_type' => 'App\\LiveTV'])
+
   </div>
 </div>
 <!-- End Page Content Area --> 

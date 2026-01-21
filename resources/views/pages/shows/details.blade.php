@@ -200,7 +200,10 @@
       </div>
     </div>    
     </div>  
-    <!-- End Season Video Carousel -->      
+    <!-- End Season Video Carousel -->
+
+    @include('_particles.comments', ['comments' => $comments, 'item_id' => $series_info->id, 'item_type' => 'App\\Series'])
+
   </div>
 </div>
 <!-- End Page Content Area --> 

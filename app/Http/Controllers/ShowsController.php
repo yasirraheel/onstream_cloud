@@ -116,8 +116,9 @@ class ShowsController extends Controller
 
        $series_latest_episode = Episodes::where('status',1)->where('episode_series_id',$series_info->id)->first();  
  
+       $comments = $series_info->comments()->with('user')->get();
 
-        return view('pages.shows.details',compact('series_info','season_list','series_latest_episode'));
+        return view('pages.shows.details',compact('series_info','season_list','series_latest_episode', 'comments'));
          
     }
 

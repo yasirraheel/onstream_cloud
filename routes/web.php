@@ -23,6 +23,8 @@ Route::get('verify-otp', 'Auth\VerificationController@showVerifyForm')->name('ve
 Route::post('verify-otp', 'Auth\VerificationController@verify')->name('verify.otp.submit');
 Route::post('resend-otp', 'Auth\VerificationController@resend')->name('verify.otp.resend');
 
+Route::post('comments/add', 'CommentsController@store');
+
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
 
     Route::get('/', 'IndexController@index');
@@ -77,6 +79,10 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     Route::get('genres/edit_genre/{id}', 'GenresController@editGenre');
     Route::post('genres/add_edit_genre', 'GenresController@addnew');
     Route::get('genres/delete/{id}', 'GenresController@delete');
+
+    Route::get('comments', 'CommentsController@comments_list');
+    Route::get('comments/approve/{id}', 'CommentsController@approve');
+    Route::get('comments/delete/{id}', 'CommentsController@delete');
 
     Route::get('movies', 'MoviesController@movies_list');
     Route::get('movies/duplicate', 'MoviesController@duplicate_movies_list');

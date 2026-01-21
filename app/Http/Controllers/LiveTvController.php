@@ -152,7 +152,9 @@ class LiveTvController extends Controller
 
         $related_livetv_list = LiveTV::where('status',1)->where('id','!=',$id)->where('channel_cat_id',$tv_info->channel_cat_id)->orderBy('id','DESC')->take(10)->get();
 
-        return view('pages.livetv.details',compact('tv_info','related_livetv_list')); 
+        $comments = $tv_info->comments()->with('user')->get();
+
+        return view('pages.livetv.details',compact('tv_info','related_livetv_list', 'comments')); 
     }
 
     public function live_tv_single($slug,$id)

@@ -216,6 +216,9 @@
     </div>
     </div>
     <!-- End You May Also Like Video Carousel -->
+
+    @include('_particles.comments', ['comments' => $comments, 'item_id' => $movies_info->id, 'item_type' => 'App\\Movies'])
+
   </div>
 </div>
 <!-- End Page Content Area -->

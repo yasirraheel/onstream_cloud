@@ -119,8 +119,9 @@ class MoviesController extends Controller
 
        $related_movies_list = Movies::where('status',1)->where('id','!=',$id)->where('movie_lang_id',$movies_info->movie_lang_id)->orderBy('id','DESC')->take(10)->get();
 
-       return view('pages.movies.details',compact('movies_info','related_movies_list'));
+       $comments = $movies_info->comments()->with('user')->get();
 
+       return view('pages.movies.details',compact('movies_info','related_movies_list', 'comments'));
     }
 
     public function movies_watch($slug,$id)

@@ -69,6 +69,12 @@ class User extends Authenticatable
 
         $this->notify(new CustomPassword($token));
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
 }
 
 class CustomPassword extends ResetPassword

@@ -40,7 +40,11 @@ class Series extends Model
 	public static function getSeriesTotalEpisodes($id) 
     {
     	$total_episode = Episodes::where('episode_series_id',$id)->count(); 
-
     	return $total_episode;
+    }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
     }	
 }

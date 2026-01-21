@@ -103,6 +103,7 @@ class SettingsController extends MainAdminController
         $settings->tmdb_api_key = trim($inputs['tmdb_api_key']);
 
         $settings->tmdb_api_language = $inputs['tmdb_api_language'];
+        $settings->comments_approval = isset($inputs['comments_approval']) ? $inputs['comments_approval'] : 1;
 
 	    $settings->save();
 
