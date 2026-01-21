@@ -337,6 +337,7 @@ $(document).ready(function() {
 @endif
 
 @yield('scripts')
+@stack('scripts')
 
 </body>
 </html>

@@ -117,12 +117,21 @@
     }
 </style>
 
+@push('scripts')
 <script>
     $(document).ready(function() {
-        $('#comment-form').on('submit', function(e) {
+        console.log("Comments script loaded");
+
+        // Unbind any previous handlers to prevent duplicates if loaded multiple times via AJAX (though unlikely here)
+        $(document).off('submit', '#comment-form');
+
+        $(document).on('submit', '#comment-form', function(e) {
             e.preventDefault();
+            console.log("Form submit intercepted");
+
             var form = $(this);
             var formData = form.serialize();
+            var submitBtn = form.find('button[type="submit"]');
 
             // Basic validation
             var commentText = form.find('textarea[name="comment"]').val();
@@ -140,6 +149,8 @@
                 return;
             }
 
+            submitBtn.prop('disabled', true);
+
             $.ajax({
                 url: "{{ url('comments/add') }}",
                 type: "POST",
@@ -148,6 +159,8 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
+                    submitBtn.prop('disabled', false);
+
                     if (response.status == 'success') {
                         if (response.comment_status == 1) {
                             $('#comments-list').prepend(response.html);
@@ -185,6 +198,7 @@
                     }
                 },
                 error: function(xhr, status, error) {
+                    submitBtn.prop('disabled', false);
                     console.log(xhr.responseText);
                     var msg = 'An error occurred.';
                     if(xhr.status === 419) {
@@ -204,3 +218,4 @@
         });
     });
 </script>
+@endpush
