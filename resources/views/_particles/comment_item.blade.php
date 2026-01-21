@@ -4,6 +4,6 @@
         <span class="comment-date">{{ $comment->created_at->diffForHumans() }}</span>
     </div>
     <div class="comment-text">
-        {{ $comment->comment }}
+        {!! nl2br(e($comment->comment)) !!}
     </div>
 </div>

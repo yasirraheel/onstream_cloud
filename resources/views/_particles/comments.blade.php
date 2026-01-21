@@ -53,33 +53,67 @@
 @endif
 
 <style>
+    .comment-section {
+        margin-top: 20px;
+    }
     .comment-item {
-        background: #222;
+        background: #1a1a1a;
         padding: 15px;
-        margin-bottom: 10px;
-        border-radius: 5px;
+        margin-bottom: 15px;
+        border-radius: 8px;
         border: 1px solid #333;
     }
     .comment-user {
-        font-weight: bold;
-        color: #ff0000; /* Adjust to theme */
+        font-weight: 600;
+        color: #fff;
         margin-bottom: 5px;
         display: block;
+        font-size: 16px;
     }
     .comment-date {
-        font-size: 0.8em;
-        color: #888;
+        font-size: 0.85em;
+        color: #aaa;
         margin-left: 10px;
         font-weight: normal;
     }
     .comment-text {
-        color: #ddd;
+        color: #ccc;
+        font-size: 14px;
+        line-height: 1.5;
     }
     .login-to-comment {
-        background: #222;
-        padding: 15px;
-        border-radius: 5px;
+        background: #1a1a1a;
+        padding: 20px;
+        border-radius: 8px;
         text-align: center;
+        border: 1px solid #333;
+        color: #ccc;
+    }
+    .login-to-comment a {
+        color: #ff0000; /* Theme color */
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .comment-form textarea {
+        background-color: #1a1a1a;
+        border: 1px solid #333;
+        color: #fff;
+    }
+    .comment-form textarea:focus {
+        background-color: #222;
+        border-color: #555;
+        color: #fff;
+        box-shadow: none;
+    }
+    .comment-form .btn-primary {
+        background-color: #ff0000;
+        border-color: #ff0000;
+        padding: 8px 20px;
+        font-weight: 600;
+    }
+    .comment-form .btn-primary:hover {
+        background-color: #cc0000;
+        border-color: #cc0000;
     }
 </style>
 
@@ -90,10 +124,29 @@
             var form = $(this);
             var formData = form.serialize();
 
+            // Basic validation
+            var commentText = form.find('textarea[name="comment"]').val();
+            if (!commentText.trim()) {
+                if(typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Please enter a comment',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    alert('Please enter a comment');
+                }
+                return;
+            }
+
             $.ajax({
                 url: "{{ url('comments/add') }}",
                 type: "POST",
                 data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
                 success: function(response) {
                     if (response.status == 'success') {
                         if (response.comment_status == 1) {
@@ -115,13 +168,37 @@
                          if(response.message == 'Login required') {
                              $('#loginModal').modal('show');
                          } else {
-                             alert('Error: ' + JSON.stringify(response.errors));
+                             var errorMsg = response.message || 'An error occurred';
+                             if(response.errors) {
+                                 errorMsg = Object.values(response.errors).join('\n');
+                             }
+                             if(typeof Swal !== 'undefined') {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: errorMsg
+                                });
+                             } else {
+                                 alert(errorMsg);
+                             }
                          }
                     }
                 },
-                error: function(xhr) {
+                error: function(xhr, status, error) {
                     console.log(xhr.responseText);
-                    alert('An error occurred.');
+                    var msg = 'An error occurred.';
+                    if(xhr.status === 419) {
+                        msg = 'Session expired. Please refresh the page.';
+                    }
+                    if(typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: msg
+                        });
+                    } else {
+                        alert(msg);
+                    }
                 }
             });
         });
